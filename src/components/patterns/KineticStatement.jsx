@@ -76,9 +76,12 @@ export default function KineticStatement({ text, as = 'p', className = '', ...re
  * interpolation (both layers use token colors from CSS).
  */
 function Word({ progress, index, count, armed, children }) {
-  // Stagger the per-word windows across the whole scroll range, with a
-  // window wide enough that neighbouring words overlap softly.
-  const start = count > 1 ? (index / count) * 0.8 : 0;
+  // Stagger the per-word windows across the scroll range, with a window
+  // wide enough that neighbouring words overlap softly. Starts spread over
+  // [0, 0.75] so the LAST window ends at ≈0.95 — the statement finishes
+  // coloring safely before the offset range runs out, even for near-bottom
+  // placements (hardening for e.g. the future QNG page).
+  const start = count > 1 ? (index / (count - 1)) * 0.75 : 0;
   const opacity = useTransform(progress, [start, start + 0.2], [0, 1]);
 
   return (
