@@ -1,0 +1,3 @@
+# Placeholder — final robots.txt (incl. sitemap reference) lands in Phase 6.
+User-agent: *
+Disallow: /dev/
