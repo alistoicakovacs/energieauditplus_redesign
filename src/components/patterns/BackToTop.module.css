@@ -1,0 +1,39 @@
+.button {
+  position: fixed;
+  right: var(--space-5);
+  bottom: var(--space-5);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background-color: var(--color-primary);
+  color: var(--color-text-invert);
+  box-shadow: var(--shadow-brand);
+  cursor: pointer;
+  z-index: var(--z-header);
+  transition:
+    background-color var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-base) var(--ease-out);
+}
+
+.button:hover {
+  background-color: var(--color-primary-hover);
+  box-shadow: var(--shadow-lg);
+}
+
+.button:active {
+  background-color: var(--blue-800);
+}
+
+.button:focus-visible {
+  outline: none;
+  box-shadow: var(--ring-focus), var(--shadow-brand);
+}
+
+.icon {
+  width: 22px;
+  height: 22px;
+}

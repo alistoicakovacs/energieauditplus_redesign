@@ -1,0 +1,59 @@
+.band {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Soft decorative glow — pure token colors, transform/opacity-free. */
+.band::before {
+  content: '';
+  position: absolute;
+  top: -40%;
+  right: -10%;
+  width: 55%;
+  aspect-ratio: 1;
+  border-radius: var(--radius-pill);
+  pointer-events: none;
+}
+
+.blueTint::before {
+  background: radial-gradient(closest-side, var(--blue-100), transparent);
+}
+
+.dark::before {
+  background: radial-gradient(closest-side, var(--green-500), transparent);
+  opacity: 0.12;
+}
+
+.inner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-4);
+}
+
+.title {
+  margin: 0;
+  max-width: 22ch;
+}
+
+.support {
+  margin: 0;
+  max-width: 55ch;
+  color: var(--color-text-muted);
+  font-size: var(--fs-lead);
+  line-height: 1.6;
+}
+
+.dark .support {
+  color: var(--blue-200);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-4);
+  margin-top: var(--space-3);
+}

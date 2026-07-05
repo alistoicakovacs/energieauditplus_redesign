@@ -1,0 +1,12 @@
+.bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background-image: var(--grad-eco);
+  transform-origin: 0 50%;
+  /* Above sticky header chrome, below full-screen overlays. */
+  z-index: var(--z-mega-menu);
+  pointer-events: none;
+}
