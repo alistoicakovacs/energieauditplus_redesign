@@ -4,6 +4,10 @@
   margin-top: var(--space-4);
 }
 
+.mapFrame {
+  max-width: 420px;
+}
+
 .note {
   font-size: var(--fs-small);
   color: var(--color-text-muted);

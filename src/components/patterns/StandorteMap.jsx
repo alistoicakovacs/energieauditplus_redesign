@@ -38,18 +38,22 @@ const OUTLINE = [
   [53.55, 8.55], [53.85, 8.7], [53.9, 9.0], [54.3, 8.6], [54.75, 8.55],
 ];
 
-/* Equirectangular projection into the viewBox (lon shrunk by cos ~51°). */
+/* Equirectangular projection into the viewBox (lon shrunk by cos ~51°).
+   Extremes are derived from OUTLINE so outline edits can never desync the
+   viewBox. Location dots lie inside Germany, i.e. inside these bounds. */
 const PAD = 12;
 const KX = 62.5;
 const KY = 100;
-const MIN_LON = 5.8;
-const MAX_LAT = 55.1;
+const MIN_LON = Math.min(...OUTLINE.map(([, lon]) => lon));
+const MAX_LON = Math.max(...OUTLINE.map(([, lon]) => lon));
+const MIN_LAT = Math.min(...OUTLINE.map(([lat]) => lat));
+const MAX_LAT = Math.max(...OUTLINE.map(([lat]) => lat));
 const project = ([lat, lon]) => [
   PAD + (lon - MIN_LON) * KX,
   PAD + (MAX_LAT - lat) * KY,
 ];
-const VIEW_W = Math.round(PAD * 2 + (15.05 - MIN_LON) * KX);
-const VIEW_H = Math.round(PAD * 2 + (MAX_LAT - 47.27) * KY);
+const VIEW_W = Math.round(PAD * 2 + (MAX_LON - MIN_LON) * KX);
+const VIEW_H = Math.round(PAD * 2 + (MAX_LAT - MIN_LAT) * KY);
 
 const OUTLINE_PATH = `M${OUTLINE.map((p) =>
   project(p)
@@ -73,6 +77,7 @@ export default function StandorteMap({ locations = [], label, className = '', ..
       className={classes}
       {...rest}
     >
+      <title>{altText}</title>
       <path d={OUTLINE_PATH} className={styles.outline} />
       <g aria-hidden="true">
         {locations.map((location) => {

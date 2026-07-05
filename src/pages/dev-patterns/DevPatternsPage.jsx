@@ -485,7 +485,7 @@ export default function DevPatternsPage() {
               eigene Standorte, grüne Punkte = Partner.
             </p>
           </div>
-          <div style={{ maxWidth: 420 }}>
+          <div className={styles.mapFrame}>
             <StandorteMap
               locations={[
                 { name: 'Strausberg - Zentrale', lat: 52.58, lon: 13.88 },
