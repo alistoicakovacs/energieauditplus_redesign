@@ -1,0 +1,128 @@
+.lead {
+  margin-top: var(--space-4);
+  font-size: var(--fs-lead);
+  color: var(--ink-700);
+  line-height: 1.5;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  margin-top: var(--space-6);
+}
+
+.stackSm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+  margin-top: var(--space-3);
+}
+
+/* ---- token swatches ---- */
+.tokenGroup {
+  margin-top: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.swatchGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: var(--space-4);
+}
+
+.swatch {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.swatchColor {
+  height: 56px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+}
+
+.swatchName {
+  font-size: var(--fs-overline);
+  color: var(--color-text-muted);
+  word-break: break-all;
+}
+
+/* ---- type scale ---- */
+.typeRow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: var(--space-4);
+}
+
+.typeSample {
+  font-family: var(--font-display);
+  line-height: 1.2;
+  color: var(--color-heading);
+  max-width: none;
+}
+
+/* ---- demo blocks ---- */
+.demoBlock {
+  padding: var(--space-5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-bg);
+  box-shadow: var(--shadow-xs);
+}
+
+.demoBlockDark {
+  background-color: var(--color-bg-dark);
+  border-color: var(--blue-800);
+}
+
+.demoTitle {
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-3);
+}
+
+.demoTitleDark {
+  color: var(--blue-200);
+}
+
+/* ---- forms ---- */
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-5);
+  margin-top: var(--space-6);
+  max-width: 880px;
+}
+
+@media (min-width: 768px) {
+  .formGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.formFull {
+  grid-column: 1 / -1;
+}
+
+/* ---- section demos ---- */
+.sectionDemo {
+  border-top: 1px solid var(--color-border);
+}
+
+.codeOnDark {
+  color: var(--green-400);
+}
