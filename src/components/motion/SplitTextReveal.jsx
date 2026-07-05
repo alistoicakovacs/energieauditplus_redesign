@@ -32,6 +32,13 @@ import styles from './SplitTextReveal.module.css';
  * @param {number} [props.stagger=0.06] Seconds between words.
  * @param {number} [props.duration=0.6] Seconds per word.
  * @param {number} [props.amount=0.5] Portion visible before triggering.
+ * @param {boolean} [props.forceArm=false] Arm the word entrance even when the
+ *   element mounts inside the viewport (the below-fold gate is bypassed).
+ *   ONLY for content that appears after hydration as a real state change —
+ *   e.g. a hero slide the slider just activated (HeroSlider remounts the
+ *   headline per activation). Never set it on initially rendered/prerendered
+ *   content: that would re-hide the LCP headline and break the hydration
+ *   contract above. Reduced motion still wins (words stay static).
  * @param {string} [props.className]
  */
 export default function SplitTextReveal({
@@ -41,6 +48,7 @@ export default function SplitTextReveal({
   stagger = 0.06,
   duration = DUR_SLOW,
   amount = 0.5,
+  forceArm = false,
   className,
   ...rest
 }) {
@@ -68,7 +76,7 @@ export default function SplitTextReveal({
 
   // Split on whitespace runs, keeping them, so the sentence re-assembles 1:1.
   const tokens = text.split(/(\s+)/);
-  const armed = belowFold && !reduced;
+  const armed = (belowFold || forceArm) && !reduced;
 
   return (
     <Tag ref={ref} className={className} {...rest}>
