@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Team Card — B on white</title>
+<style>
+  :root{
+    --blue-900:#082A45; --blue-800:#0C3A5E; --blue-700:#105388; --blue-600:#1466A8;
+    --blue-500:#1E87C9; --blue-200:#B9D6EA; --blue-100:#E2EEF6; --blue-50:#F0F6FB;
+    --green-700:#4E8A1F; --green-600:#6BA82E; --green-500:#8DC63F; --green-400:#A6D45F;
+    --green-100:#EAF5D8; --green-50:#F4FAEA;
+    --ink-900:#0F1B2D; --ink-800:#1E293B; --ink-700:#334155; --ink-600:#475569; --ink-500:#67768E;
+    --ink-300:#CBD5E1; --ink-200:#E2E8F0; --ink-100:#F2F5F7; --ink-50:#F8FAFC; --white:#fff;
+    --font:"Calibri","Carlito",system-ui,"Segoe UI",sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--font);background:#f3f5f7;color:var(--ink-800);line-height:1.5;
+    -webkit-font-smoothing:antialiased;padding-bottom:90px}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+  .topbar{background:var(--ink-900);color:#fff;padding:24px 0;margin-bottom:8px}
+  .topbar h1{font-size:21px;font-weight:700;letter-spacing:-.01em}
+  .topbar p{color:#9fb3c8;font-size:13.5px;margin-top:4px}
+  .ctx-label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-500);font-weight:700;margin:46px 0 18px}
+  svg{display:block}
+
+  /* shared card */
+  .card{position:relative;background:#fff;border:1px solid var(--ink-200);border-radius:18px;
+    overflow:hidden;box-shadow:0 1px 2px rgba(15,27,45,.05);
+    transition:transform .35s cubic-bezier(.2,.7,.3,1),box-shadow .35s}
+  .card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;z-index:3;
+    background:linear-gradient(90deg,var(--blue-700),var(--green-500))}
+  /* reactbits-style spotlight */
+  .card::after{content:"";position:absolute;inset:0;z-index:1;opacity:0;transition:opacity .4s;pointer-events:none;
+    background:radial-gradient(420px circle at var(--mx,50%) var(--my,0%),rgba(141,198,63,.16),transparent 60%)}
+  .card:hover{transform:translateY(-8px);box-shadow:0 26px 54px rgba(16,83,136,.18)}
+  .card:hover::after{opacity:1}
+
+  .photo{position:relative;height:240px;background:linear-gradient(150deg,#11507f,#1d6fa6 60%,#5aa0c4);
+    clip-path:polygon(0 0,100% 0,100% 100%,0 85%)}
+  .photo .mono{position:absolute;inset:0 0 30px 0;display:flex;align-items:center;justify-content:center;
+    font-size:74px;font-weight:300;color:rgba(255,255,255,.92)}
+  .photo .pin{position:absolute;top:14px;right:14px;display:flex;align-items:center;gap:5px;
+    background:rgba(255,255,255,.16);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.3);
+    color:#fff;font-size:11.5px;font-weight:600;padding:5px 10px;border-radius:999px}
+
+  .body{position:relative;z-index:2;padding:6px 22px 24px;text-align:center}
+  .name{font-size:22px;font-weight:700;color:var(--ink-900);letter-spacing:-.02em}
+  .rule{width:42px;height:3px;border-radius:2px;background:var(--green-500);margin:11px auto 13px}
+  .role{font-size:11px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--green-700)}
+  .creds{font-size:13px;color:var(--ink-600);margin-top:10px;line-height:1.45;min-height:38px}
+
+  .actions{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:18px}
+  .ibtn{width:40px;height:40px;border-radius:11px;border:1px solid var(--ink-200);background:#fff;
+    color:var(--ink-600);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.22s;text-decoration:none}
+  .ibtn:hover{color:#fff;background:var(--blue-700);border-color:var(--blue-700);transform:translateY(-2px)}
+  .ibtn.wa:hover{background:var(--green-600);border-color:var(--green-600)}
+
+  .cta{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:18px;
+    background:var(--blue-700);color:#fff;font-weight:700;font-size:14.5px;padding:12px;border-radius:11px;
+    border:none;cursor:pointer;box-shadow:0 10px 24px rgba(16,83,136,.2);transition:.25s;font-family:var(--font)}
+  .card:hover .cta{background:var(--blue-600)}
+  .cta .arr{transition:.25s}.card:hover .cta .arr{transform:translateX(4px)}
+  .ico{width:18px;height:18px;stroke:currentColor;stroke-width:1.85;fill:none;stroke-linecap:round;stroke-linejoin:round}
+  .ico.sm{width:15px;height:15px}
+
+  /* hero single */
+  .hero-card{width:340px}
+
+  /* section heading like the reference */
+  .teamhead{text-align:center;margin:14px 0 34px}
+  .teamhead .ov{font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--green-700)}
+  .teamhead h2{font-size:40px;font-weight:700;color:var(--ink-900);letter-spacing:-.025em;margin-top:8px}
+  .teamhead .hr{width:60px;height:3px;background:var(--green-500);margin:16px auto 0;border-radius:2px}
+
+  .row4{display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
+  .row4 .photo{height:200px}.row4 .photo .mono{font-size:58px}
+  .row4 .name{font-size:18px}.row4 .creds{font-size:12px;min-height:34px}
+  .row4 .body{padding:6px 16px 20px}
+
+  .note{font-size:12.5px;color:var(--ink-500);margin-top:18px;font-style:italic;text-align:center}
+  .pickbar{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);
+    border-top:1px solid var(--ink-200);padding:13px 0;text-align:center;font-size:13.5px;color:var(--ink-600)}
+  .rb{display:inline-block;font-size:11px;font-weight:700;color:var(--blue-700);background:var(--blue-100);
+    padding:2px 8px;border-radius:6px;letter-spacing:.02em}
+</style>
+</head>
+<body>
+<!-- icon sprite -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.6A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.4-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2Z"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></symbol>
+  <symbol id="i-wa" viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-12.3 7.4L3 21l2.2-5.6A8.4 8.4 0 1 1 21 11.5Z"/><path d="M8.5 8.5c0 4 3 7 7 7 .6 0 1-.2 1.2-.8.1-.4 0-.7-.3-1l-1.3-.9c-.3-.2-.6-.1-.8.1l-.5.6c-1-.5-1.8-1.3-2.3-2.3l.6-.5c.2-.2.3-.5.1-.8l-.9-1.3c-.3-.3-.6-.4-1-.3-.6.2-.8.6-.8 1.2Z"/></symbol>
+  <symbol id="i-arr" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+</svg>
+
+<div class="topbar"><div class="wrap">
+  <h1>Team Card — Direction B, on white &nbsp;·&nbsp; reference card anatomy</h1>
+  <p>Angled photo + centered name + green rule + real icons (no emojis) + blue→green energy accent · Reactbits hover spotlight</p>
+</div></div>
+
+<div class="wrap">
+
+  <div class="ctx-label">Single card (detailed)</div>
+  <div class="card hero-card" data-spot>
+    <div class="photo">
+      <span class="pin"><svg class="ico sm"><use href="#i-pin"/></svg> Strausberg</span>
+      <div class="mono">FL</div>
+    </div>
+    <div class="body">
+      <div class="name">Frederik Lippe</div>
+      <div class="rule"></div>
+      <div class="role">Geschäftsführer · Energieberater</div>
+      <div class="creds">Zimmerermeister · M. Sc.<br>Auditor</div>
+      <div class="actions">
+        <a class="ibtn" title="E-Mail"><svg class="ico"><use href="#i-mail"/></svg></a>
+        <a class="ibtn" title="Anrufen"><svg class="ico"><use href="#i-phone"/></svg></a>
+        <a class="ibtn wa" title="WhatsApp"><svg class="ico"><use href="#i-wa"/></svg></a>
+      </div>
+      <button class="cta"><svg class="ico sm"><use href="#i-cal"/></svg> Termin vereinbaren <span class="arr"><svg class="ico sm"><use href="#i-arr"/></svg></span></button>
+    </div>
+  </div>
+
+  <div class="teamhead" style="margin-top:64px">
+    <div class="ov">Unser Team</div>
+    <h2>Menschen, die Energie verstehen</h2>
+    <div class="hr"></div>
+  </div>
+
+  <div class="ctx-label" style="margin-top:0">The 4-up row (your reference layout, EA+ content)</div>
+  <div class="row4">
+    <div class="card" data-spot>
+      <div class="photo" style="background:linear-gradient(150deg,#11507f,#1d6fa6)"><span class="pin"><svg class="ico sm"><use href="#i-pin"/></svg> Strausberg</span><div class="mono">FL</div></div>
+      <div class="body"><div class="name">Frederik Lippe</div><div class="rule"></div><div class="role">Geschäftsführer</div><div class="creds">Zimmerermeister · M. Sc. · Auditor</div>
+        <div class="actions"><a class="ibtn" title="E-Mail"><svg class="ico"><use href="#i-mail"/></svg></a><a class="ibtn" title="Anrufen"><svg class="ico"><use href="#i-phone"/></svg></a><a class="ibtn wa" title="WhatsApp"><svg class="ico"><use href="#i-wa"/></svg></a></div></div>
+    </div>
+    <div class="card" data-spot>
+      <div class="photo" style="background:linear-gradient(150deg,#15597f,#3f86a8)"><span class="pin"><svg class="ico sm"><use href="#i-pin"/></svg> Berlin</span><div class="mono">TS</div></div>
+      <div class="body"><div class="name">Thomas Schubert</div><div class="rule"></div><div class="role">Geschäftsführer</div><div class="creds">Energieberater · Baubiologe · Auditor</div>
+        <div class="actions"><a class="ibtn" title="E-Mail"><svg class="ico"><use href="#i-mail"/></svg></a><a class="ibtn" title="Anrufen"><svg class="ico"><use href="#i-phone"/></svg></a><a class="ibtn wa" title="WhatsApp"><svg class="ico"><use href="#i-wa"/></svg></a></div></div>
+    </div>
+    <div class="card" data-spot>
+      <div class="photo" style="background:linear-gradient(150deg,#2a6f8f,#56a0bf)"><span class="pin"><svg class="ico sm"><use href="#i-pin"/></svg> Strausberg</span><div class="mono">PK</div></div>
+      <div class="body"><div class="name">Patricia Klose</div><div class="rule"></div><div class="role">Office Managerin</div><div class="creds">Organisation · Ansprechpartnerin Backoffice</div>
+        <div class="actions"><a class="ibtn" title="E-Mail"><svg class="ico"><use href="#i-mail"/></svg></a><a class="ibtn" title="Anrufen"><svg class="ico"><use href="#i-phone"/></svg></a><a class="ibtn wa" title="WhatsApp"><svg class="ico"><use href="#i-wa"/></svg></a></div></div>
+    </div>
+    <div class="card" data-spot>
+      <div class="photo" style="background:linear-gradient(150deg,#1c627f,#4a93b3)"><span class="pin"><svg class="ico sm"><use href="#i-pin"/></svg> Güstrow</span><div class="mono">DK</div></div>
+      <div class="body"><div class="name">Dominique Krumm</div><div class="rule"></div><div class="role">Teamleiter</div><div class="creds">Zimmerermeister · Energieberater · Auditor</div>
+        <div class="actions"><a class="ibtn" title="E-Mail"><svg class="ico"><use href="#i-mail"/></svg></a><a class="ibtn" title="Anrufen"><svg class="ico"><use href="#i-phone"/></svg></a><a class="ibtn wa" title="WhatsApp"><svg class="ico"><use href="#i-wa"/></svg></a></div></div>
+    </div>
+  </div>
+
+  <p class="note">Monograms = placeholders for real photos (which drop into the angled frame). &nbsp;Reactbits map: <span class="rb">Spotlight Card</span> hover glow · <span class="rb">Tilted Card</span> optional 3D tilt · <span class="rb">Star Border</span> reserved for the one hero CTA.</p>
+</div>
+
+<div class="pickbar">Refresh <b>localhost:51330</b>. Move your mouse across a card to see the spotlight. Tell me in the terminal what to tune — accent, spacing, icon set, photo angle.</div>
+
+<script>
+  document.querySelectorAll('[data-spot]').forEach(c=>{
+    c.addEventListener('mousemove',e=>{
+      const r=c.getBoundingClientRect();
+      c.style.setProperty('--mx',(e.clientX-r.left)+'px');
+      c.style.setProperty('--my',(e.clientY-r.top)+'px');
+    });
+  });
+</script>
+</body>
+</html>
