@@ -27,15 +27,25 @@ const written = [];
 
 for (const route of targets) {
   const url = route.prerenderPath ?? route.path;
-  const appHtml = await render(url);
 
-  if (!appHtml || appHtml.trim() === '') {
-    throw new Error(`Prerender produced empty HTML for ${url}`);
+  let appHtml;
+  try {
+    appHtml = await render(url);
+  } catch (cause) {
+    throw new Error(`Prerender failed for route "${route.path}" (${url}): ${cause.message}`, {
+      cause,
+    });
   }
 
-  let html = template.replace('<!--app-html-->', appHtml);
+  if (!appHtml || appHtml.trim() === '') {
+    throw new Error(`Prerender produced empty HTML for route "${route.path}" (${url})`);
+  }
+
+  // Function replacements so "$&"-style patterns in the HTML are inert.
+  let html = template.replace('<!--app-html-->', () => appHtml);
   if (route.title) {
-    html = html.replace(/<title>.*?<\/title>/, `<title>${escapeHtml(route.title)}</title>`);
+    const titleTag = `<title>${escapeHtml(route.title)}</title>`;
+    html = html.replace(/<title>.*?<\/title>/, () => titleTag);
   }
 
   let outFile;
