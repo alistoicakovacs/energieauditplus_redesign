@@ -24,7 +24,6 @@
 .button:focus-visible {
   outline: none;
   box-shadow: var(--ring-focus);
-  border-radius: var(--radius-pill);
 }
 
 .button:disabled {

@@ -42,8 +42,14 @@ figcaption:lang(de) {
   hyphens: auto;
 }
 
-/* Comfortable reading measure for long-form text */
-p {
+/* Comfortable reading measure — opt-in for long-form text blocks.
+   (Intentionally not applied to every <p>: hero/card/footer copy must
+   be free to fill its layout.) */
+.prose {
+  max-width: 72ch;
+}
+
+.prose p {
   max-width: 72ch;
 }
 
@@ -110,10 +116,10 @@ select {
   outline: none;
 }
 
+/* Outlines follow the element's own border-radius — never force one here. */
 :focus-visible {
   outline: 3px solid var(--color-focus-ring);
   outline-offset: 2px;
-  border-radius: var(--radius-sm);
 }
 
 ::selection {
