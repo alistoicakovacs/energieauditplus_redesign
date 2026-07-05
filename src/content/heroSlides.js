@@ -76,6 +76,19 @@ const heroCopy = {
   },
 };
 
+// The copy join is keyed on the service route: renaming a route in
+// navigation.js must fail loudly here, not ship a half-empty slide.
+if (import.meta.env.DEV) {
+  for (const service of services) {
+    if (!heroCopy[service.to]) {
+      throw new Error(
+        `heroSlides: no hero copy for service route "${service.to}" — ` +
+          'update the heroCopy map in src/content/heroSlides.js'
+      );
+    }
+  }
+}
+
 /**
  * The 7 slides in service order. Each entry carries the navigation fields
  * (`name`, `to`, `icon`, `descriptor`) plus the hero copy above.

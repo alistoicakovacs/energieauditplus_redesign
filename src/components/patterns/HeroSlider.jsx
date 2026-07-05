@@ -14,9 +14,12 @@ const COUNT = heroSlides.length;
  * numbered indicators, desktop side service-nav, swipe + arrows + keyboard.
  *
  * Autoplay pause/stop policy (conservative standard, documented per gate):
- * - TEMPORARY pause: hover, focus anywhere inside the slider, or the hero
- *   scrolling out of view (plan §7.6: no off-screen loops) — autoplay
- *   resumes with the remaining time when the condition ends.
+ * - TEMPORARY pause: mouse hover (pointerType-guarded — a tap must not
+ *   stall autoplay), KEYBOARD focus inside the slider (`:focus-visible`
+ *   only — pointer-click focus, e.g. on the Play button, must not
+ *   immediately re-pause), or the hero scrolling out of view (plan §7.6:
+ *   no off-screen loops) — autoplay resumes with the remaining time when
+ *   the condition ends.
  * - PERMANENT stop (for the session): ANY manual slide change — arrow
  *   buttons, arrow keys, indicators, side-nav, swipe. The visible play
  *   button is the explicit way to re-enable autoplay afterwards.
@@ -24,9 +27,11 @@ const COUNT = heroSlides.length;
  *   motion autoplay is disabled entirely and the button is hidden (CSS);
  *   slides remain fully manually operable.
  *
- * A11y (dev brief §5.3): `role="region"` + `aria-roledescription="carousel"`,
- * slides as `role="group"` with „Folie X von 7", inactive slides `inert`,
- * live region polite whenever autoplay is not running, off while it is.
+ * A11y (dev brief §5.3): implicit region (section + label) with
+ * `aria-roledescription="carousel"`, slides as `role="group"` +
+ * `aria-roledescription="slide"` with „Folie X von 7", inactive slides
+ * `inert` (with focus rescued to the root on slide change), live region
+ * polite whenever autoplay is not running, off while it is.
  *
  * Hydration/LCP contract: slide 1 is fully present in the prerendered HTML
  * (H1 text, eager image with fetchpriority="high") and is never re-hidden —
@@ -58,21 +63,41 @@ export default function HeroSlider() {
   // The user's intent (ignoring the temporary pauses) — drives the button.
   const autoplayEnabled = !stopped && !paused;
 
-  const goTo = (target, viaUser) => {
-    const next = ((target % COUNT) + COUNT) % COUNT;
-    if (viaUser) setStopped(true);
-    if (next === index) return;
+  // Single slide-change path (used by goTo and the autoplay timer).
+  const advance = (next) => {
     elapsedRef.current = 0;
     if (barRef.current) barRef.current.style.transform = 'scaleX(0)';
     setGens((g) => g.map((gen, i) => (i === next ? gen + 1 : gen)));
     setIndex(next);
+    // The outgoing slide turns `inert` on commit; focus inside it would be
+    // expelled to <body> and arrow keys would die. Park focus on the
+    // carousel root (tabIndex={-1}) instead — before inert applies.
+    const focused = document.activeElement;
+    if (
+      rootRef.current &&
+      focused &&
+      rootRef.current.contains(focused) &&
+      focused.closest('[aria-roledescription="slide"]')
+    ) {
+      rootRef.current.focus({ preventScroll: true });
+    }
   };
 
-  // Mount the active image and preload the next one (runs post-hydration
-  // only, so the static HTML stays slide-1-only).
+  const goTo = (target, viaUser) => {
+    const next = ((target % COUNT) + COUNT) % COUNT;
+    if (viaUser) setStopped(true);
+    if (next === index) return;
+    advance(next);
+  };
+
+  // Mount the active image and preload both neighbours (Prev/jump nav would
+  // otherwise show a bare scrim). Runs post-hydration only, so the static
+  // HTML stays slide-1-only.
   useEffect(() => {
     setImagesMounted((prev) => {
-      const wanted = [index, (index + 1) % COUNT].filter((i) => !prev.has(i));
+      const wanted = [index, (index + 1) % COUNT, (index - 1 + COUNT) % COUNT].filter(
+        (i) => !prev.has(i)
+      );
       if (wanted.length === 0) return prev;
       const nextSet = new Set(prev);
       wanted.forEach((i) => nextSet.add(i));
@@ -90,10 +115,7 @@ export default function HeroSlider() {
       elapsedRef.current += Math.min(now - last, 100);
       last = now;
       if (elapsedRef.current >= AUTOPLAY_MS) {
-        elapsedRef.current = 0;
-        if (barRef.current) barRef.current.style.transform = 'scaleX(0)';
-        setGens((g) => g.map((gen, i) => (i === (index + 1) % COUNT ? gen + 1 : gen)));
-        setIndex((index + 1) % COUNT);
+        advance((index + 1) % COUNT);
         return;
       }
       if (barRef.current) {
@@ -119,6 +141,13 @@ export default function HeroSlider() {
   // native meaning (text selection), not flip slides.
   const handlePointerDown = (event) => {
     if (event.pointerType === 'mouse') return;
+    // Keep receiving the pointer when a finger/pen drifts off the viewport
+    // mid-swipe (otherwise pointerup lands elsewhere and the swipe is lost).
+    try {
+      event.currentTarget.setPointerCapture(event.pointerId);
+    } catch {
+      // Inactive pointer (e.g. synthetic test events) — swipe still works.
+    }
     pointerStart.current = { x: event.clientX, y: event.clientY };
   };
   const handlePointerUp = (event) => {
@@ -139,14 +168,26 @@ export default function HeroSlider() {
   return (
     <section
       ref={rootRef}
+      /* Focus parking spot for the slide-change focus rescue (see advance);
+         implicit region role via <section> + aria-label. */
+      tabIndex={-1}
       className={styles.root}
-      role="region"
       aria-roledescription="carousel"
       aria-label="Unsere Leistungen"
       onKeyDown={handleKeyDown}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      onFocus={() => setFocusWithin(true)}
+      /* Hover-pause is a mouse affordance: an emulated mouseenter from a tap
+         would stall autoplay indefinitely on touch devices. */
+      onPointerEnter={(event) => {
+        if (event.pointerType === 'mouse') setHovered(true);
+      }}
+      onPointerLeave={(event) => {
+        if (event.pointerType === 'mouse') setHovered(false);
+      }}
+      /* Focus-pause only for keyboard focus (:focus-visible): pointer clicks
+         focus buttons too, and e.g. tapping Play would immediately re-pause. */
+      onFocus={(event) => {
+        if (event.target.matches(':focus-visible')) setFocusWithin(true);
+      }}
       onBlur={handleBlur}
     >
       <div

@@ -25,6 +25,7 @@ export default function HeroSlide({ slide, index, count, active, gen, showImage,
     <div
       className={active ? `${styles.slide} ${styles.slideActive}` : styles.slide}
       role="group"
+      aria-roledescription="slide"
       aria-label={`Folie ${index + 1} von ${count}`}
       inert={!active}
     >
@@ -65,7 +66,11 @@ export default function HeroSlide({ slide, index, count, active, gen, showImage,
             <span className={styles.eyebrowName}>{slide.name}</span>
           </p>
           <Heading level={index === 0 ? 1 : 2} size="display" className={styles.claim}>
-            <SplitTextReveal key={gen} text={slide.claim} forceArm={gen > 0} />
+            {/* amount 0.1: a remounted (gen>0) reveal must fire even when the
+                hero is only partially in view (manual nav mid-scroll) — the
+                default 0.5 could leave a headline hidden. gen 0 is unarmed,
+                so this never affects the prerendered slide. */}
+            <SplitTextReveal key={gen} text={slide.claim} forceArm={gen > 0} amount={0.1} />
           </Heading>
           <p className={styles.line}>{slide.line}</p>
           <p className={styles.chipRow}>

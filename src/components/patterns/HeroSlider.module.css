@@ -44,6 +44,11 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  /* Base transform = Ken-Burns END state: when deactivation removes the
+     animation mid-flight, the outgoing image lands on the end scale instead
+     of popping back to 1. The restart from scale(1) on re-activation happens
+     while the slide is still at opacity 0 — invisible. */
+  transform: scale(1.07);
 }
 
 /* Subtle Ken-Burns on the active slide only (restarts per activation).
@@ -358,6 +363,10 @@
 @media (prefers-reduced-motion: reduce) {
   .slide {
     transition-duration: var(--dur-fast);
+  }
+
+  .image {
+    transform: none; /* the base scale(1.07) exists only for the Ken-Burns handoff */
   }
 
   .slideActive .image {

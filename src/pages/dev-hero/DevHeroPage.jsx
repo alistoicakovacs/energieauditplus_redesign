@@ -19,7 +19,8 @@ export default function DevHeroPage() {
           </Heading>
           <ul className="prose">
             <li>
-              Autoplay 6 s; pausiert bei Hover, Fokus im Slider und außerhalb
+              Autoplay 6 s; pausiert bei Maus-Hover (nicht bei Touch),
+              Tastaturfokus im Slider (nicht bei Klick-Fokus) und außerhalb
               des Viewports. Jede manuelle Folienwahl (Pfeile, Tasten,
               Indikatoren, Seitennavigation, Wischen) stoppt Autoplay dauerhaft
               für die Sitzung — der Play-Button startet es wieder.
