@@ -18,6 +18,12 @@ const devRoutes = import.meta.env.DEV
         Component: lazy(() => import('./pages/kitchen-sink/KitchenSinkPage.jsx')),
         prerender: false,
       },
+      {
+        path: '/dev/motion',
+        title: 'Motion-Wrapper (dev) — EnergieAudit Plus',
+        Component: lazy(() => import('./pages/dev-motion/DevMotionPage.jsx')),
+        prerender: false,
+      },
     ]
   : [];
 
