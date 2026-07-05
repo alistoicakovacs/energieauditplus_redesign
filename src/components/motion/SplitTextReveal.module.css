@@ -1,0 +1,11 @@
+/* SplitTextReveal — words are inline-blocks so translateY works; the
+   container is inline so it flows like normal heading text. */
+
+.words {
+  display: inline;
+}
+
+.word {
+  display: inline-block;
+  /* transform/opacity only — no will-change by hand (plan §7.6). */
+}

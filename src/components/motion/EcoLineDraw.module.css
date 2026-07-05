@@ -1,0 +1,19 @@
+/* EcoLineDraw — gradient stops read the brand tokens via CSS custom
+   properties (stop-color: var() is supported in all modern browsers),
+   keeping hex values out of JSX and out of this module.
+   Eco gradient = --grad-eco anchors: blue-700 → green-700. */
+
+.svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.stopStart {
+  stop-color: var(--blue-700);
+}
+
+.stopEnd {
+  stop-color: var(--green-700);
+}
