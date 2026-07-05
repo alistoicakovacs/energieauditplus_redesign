@@ -1,0 +1,228 @@
+/* Two-tier global header: navy utility strip + sticky white main bar. */
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  transition: box-shadow var(--dur-base) var(--ease-out);
+}
+
+.header[data-scrolled] {
+  box-shadow: var(--shadow-md);
+}
+
+/* ---- utility strip (navy) ---- */
+.utility {
+  background: var(--blue-900);
+  color: var(--blue-200);
+  font-size: var(--fs-small);
+  max-height: 60px;
+  overflow: hidden;
+  transition:
+    max-height var(--dur-base) var(--ease-out),
+    visibility 0s linear;
+}
+
+/* condense to a slim bar on scroll (Figma revamp §4 build note) */
+.header[data-scrolled] .utility {
+  max-height: 0;
+  visibility: hidden;
+  transition:
+    max-height var(--dur-base) var(--ease-out),
+    visibility 0s linear var(--dur-base);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .header,
+  .utility,
+  .header[data-scrolled] .utility {
+    transition: none;
+  }
+}
+
+.utilityInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-5);
+  min-height: 44px;
+}
+
+.utilityGroup {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  min-width: 0;
+}
+
+.utilityLink,
+.utilityHint {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  white-space: nowrap;
+}
+
+.utilityLink {
+  color: var(--blue-200);
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.utilityLink:hover {
+  color: var(--white);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.utilityLink:active {
+  color: var(--blue-100);
+}
+
+.utilityIcon {
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+}
+
+/* hours + Standorte hint: hide progressively on narrow viewports */
+@media (max-width: 860px) {
+  .utilityMeta {
+    display: none;
+  }
+}
+
+/* ---- main bar (white, blur) ---- */
+.bar {
+  background: color-mix(in srgb, var(--white) 88%, transparent);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.barInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-5);
+  min-height: 76px;
+  transition: min-height var(--dur-base) var(--ease-out);
+}
+
+.header[data-scrolled] .barInner {
+  min-height: 64px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .barInner,
+  .header[data-scrolled] .barInner {
+    transition: none;
+  }
+}
+
+/* ---- nav ---- */
+.nav {
+  display: none;
+}
+
+.navList {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.navLink {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  color: var(--ink-700);
+  text-decoration: none;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.navLink:hover {
+  color: var(--color-primary);
+}
+
+.navLink:active {
+  color: var(--blue-800);
+}
+
+.navLink[data-active] {
+  color: var(--blue-900);
+}
+
+/* sliding active underline (Motion layoutId) — eco-gradient signature */
+.underline {
+  position: absolute;
+  left: var(--space-3);
+  right: var(--space-3);
+  bottom: 4px;
+  height: 3px;
+  border-radius: var(--radius-pill);
+  background: var(--grad-eco);
+  pointer-events: none;
+}
+
+/* ---- actions ---- */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.cta {
+  display: none;
+}
+
+.hamburger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  border-radius: var(--radius-sm);
+  color: var(--blue-900);
+  cursor: pointer;
+  transition: background-color var(--dur-fast) var(--ease-out);
+}
+
+.hamburger:hover {
+  background-color: var(--blue-50);
+}
+
+.hamburger:active {
+  background-color: var(--blue-100);
+}
+
+.hamburgerIcon {
+  width: 26px;
+  height: 26px;
+}
+
+/* ---- desktop ---- */
+@media (min-width: 960px) {
+  .nav {
+    display: block;
+  }
+
+  .cta {
+    display: inline-flex;
+  }
+
+  .hamburger {
+    display: none;
+  }
+}

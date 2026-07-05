@@ -1,0 +1,194 @@
+/* Full-screen mobile menu — dark navy slide-in dialog. */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  flex-direction: column;
+  background: var(--grad-dark);
+  color: var(--blue-100);
+  overflow-y: auto;
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--container-pad);
+  border-bottom: 1px solid color-mix(in srgb, var(--white) 14%, transparent);
+}
+
+.close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  border-radius: var(--radius-sm);
+  color: var(--white);
+  cursor: pointer;
+  transition: background-color var(--dur-fast) var(--ease-out);
+}
+
+.close:hover {
+  background-color: color-mix(in srgb, var(--white) 12%, transparent);
+}
+
+.close:active {
+  background-color: color-mix(in srgb, var(--white) 20%, transparent);
+}
+
+.closeIcon {
+  width: 26px;
+  height: 26px;
+}
+
+/* ---- nav ---- */
+.nav {
+  flex: 1;
+  padding: var(--space-5) var(--container-pad);
+}
+
+.navList {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.navLink,
+.accordionTrigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 52px;
+  padding: var(--space-3) var(--space-2);
+  border: 0;
+  background: none;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-display);
+  font-size: var(--fs-h3);
+  font-weight: 600;
+  color: var(--white);
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.navLink:hover,
+.accordionTrigger:hover {
+  color: var(--green-400);
+}
+
+.navLink:active,
+.accordionTrigger:active {
+  color: var(--green-500);
+}
+
+.navLink[aria-current='page'] {
+  color: var(--green-400);
+}
+
+.chevron {
+  width: 0.9em;
+  height: 0.9em;
+  flex-shrink: 0;
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+
+.chevron[data-open] {
+  transform: rotate(180deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chevron {
+    transition: none;
+  }
+}
+
+/* ---- Leistungen accordion ---- */
+.serviceList {
+  margin: 0;
+  padding: 0 0 var(--space-3) var(--space-4);
+  list-style: none;
+  overflow: hidden;
+}
+
+.serviceLink {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: var(--space-2);
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-body);
+  color: var(--blue-200);
+  text-decoration: none;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.serviceLink:hover {
+  color: var(--white);
+}
+
+.serviceLink:active {
+  color: var(--blue-100);
+}
+
+/* ---- contact shortcuts ---- */
+.contact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-5);
+  padding: 0 var(--container-pad) var(--space-4);
+}
+
+.contactLink {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-small);
+  color: var(--blue-200);
+  text-decoration: none;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.contactLink:hover {
+  color: var(--white);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.contactLink:active {
+  color: var(--blue-100);
+}
+
+.contactIcon {
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+}
+
+/* ---- pinned CTA ---- */
+.ctaBar {
+  position: sticky;
+  bottom: 0;
+  padding: var(--space-4) var(--container-pad);
+  background: color-mix(in srgb, var(--blue-950) 82%, transparent);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid color-mix(in srgb, var(--white) 14%, transparent);
+}
+
+.ctaButton {
+  width: 100%;
+}
