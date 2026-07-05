@@ -1,0 +1,54 @@
+.chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+}
+
+.blue {
+  background-color: var(--blue-100);
+  color: var(--blue-700);
+}
+
+.green {
+  background-color: var(--green-100);
+  color: var(--green-700);
+}
+
+/* Signature eco gradient — icon renders white on the fill (large fill use is allowed) */
+.gradient {
+  background-image: var(--grad-eco);
+  color: var(--color-text-invert);
+}
+
+.sm {
+  width: 40px;
+  height: 40px;
+}
+
+.sm .icon {
+  width: 20px;
+  height: 20px;
+}
+
+.md {
+  width: 52px;
+  height: 52px;
+}
+
+.md .icon {
+  width: 24px;
+  height: 24px;
+}
+
+.lg {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-lg);
+}
+
+.lg .icon {
+  width: 32px;
+  height: 32px;
+}

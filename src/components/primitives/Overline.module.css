@@ -1,0 +1,17 @@
+.overline {
+  font-family: var(--font-body);
+  font-size: var(--fs-overline);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* Dark sections override the private props to on-dark accessible steps. */
+.blue {
+  color: var(--overline-blue, var(--blue-700));
+}
+
+.green {
+  color: var(--overline-green, var(--green-700));
+}

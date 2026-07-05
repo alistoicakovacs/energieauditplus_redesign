@@ -1,0 +1,165 @@
+/* Button — pill radius per Figma revamp; states: default/hover/active/focus-visible/disabled */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body);
+  font-weight: 700;
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  transition:
+    background-color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-base) var(--ease-out);
+}
+
+.button:focus-visible {
+  outline: none;
+  box-shadow: var(--ring-focus);
+  border-radius: var(--radius-pill);
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  box-shadow: none;
+}
+
+/* ---- sizes (style guide §5.1: sm 36 / md 44 / lg 52) ---- */
+.sm {
+  min-height: 36px;
+  padding: 0 var(--space-4);
+  font-size: var(--fs-small);
+}
+
+.md {
+  min-height: 44px;
+  padding: 0 var(--space-5);
+  font-size: var(--fs-body);
+}
+
+.lg {
+  min-height: 52px;
+  padding: 0 var(--space-6);
+  font-size: var(--fs-body);
+}
+
+/* ---- variants ---- */
+.primary {
+  background-color: var(--color-primary);
+  color: var(--color-text-invert);
+  box-shadow: var(--shadow-brand);
+}
+
+.primary:hover:not(:disabled) {
+  background-color: var(--color-primary-hover);
+}
+
+.primary:active:not(:disabled) {
+  background-color: var(--blue-800);
+}
+
+.accent {
+  background-color: var(--color-accent);
+  color: var(--color-text-invert);
+}
+
+.accent:hover:not(:disabled) {
+  background-color: var(--green-600);
+  box-shadow: var(--shadow-brand);
+}
+
+.accent:active:not(:disabled) {
+  background-color: var(--green-800);
+}
+
+.outline {
+  background-color: transparent;
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.outline:hover:not(:disabled) {
+  background-color: var(--blue-50);
+  box-shadow: var(--shadow-sm);
+}
+
+.outline:active:not(:disabled) {
+  background-color: var(--blue-100);
+}
+
+.ghost {
+  background-color: transparent;
+  color: var(--color-primary);
+}
+
+.ghost:hover:not(:disabled) .label {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1.5px;
+}
+
+.ghost:active:not(:disabled) {
+  color: var(--blue-800);
+}
+
+.onDark {
+  background-color: var(--white);
+  color: var(--blue-900);
+}
+
+.onDark:hover:not(:disabled) {
+  background-color: var(--blue-50);
+  box-shadow: var(--shadow-md);
+}
+
+.onDark:active:not(:disabled) {
+  background-color: var(--blue-100);
+}
+
+/* Primary/accent hover lift keeps brand shadow strong */
+.primary:hover:not(:disabled),
+.onDark:hover:not(:disabled) {
+  box-shadow: var(--shadow-brand);
+}
+
+/* ---- icon & spinner ---- */
+.icon,
+.spinner {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.iconSvg {
+  width: 1.125em;
+  height: 1.125em;
+}
+
+.spinner .iconSvg {
+  animation: spin 0.8s linear infinite;
+}
+
+.loading {
+  pointer-events: none;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner .iconSvg {
+    animation-duration: 1.6s;
+  }
+}

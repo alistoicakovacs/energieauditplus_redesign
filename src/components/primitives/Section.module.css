@@ -1,0 +1,37 @@
+.section {
+  padding-block: var(--space-8);
+}
+
+@media (min-width: 1024px) {
+  .section {
+    padding-block: var(--space-10);
+  }
+}
+
+.white {
+  background-color: var(--color-bg);
+}
+
+.subtle {
+  background-color: var(--color-bg-subtle);
+}
+
+.blueTint {
+  background-color: var(--color-bg-brand);
+}
+
+.ecoTint {
+  background-color: var(--color-bg-eco);
+}
+
+.dark {
+  background-color: var(--color-bg-dark);
+  color: var(--color-text-invert);
+  /* Overline eyebrows need lighter steps for contrast on navy */
+  --overline-blue: var(--blue-200);
+  --overline-green: var(--green-400);
+}
+
+.dark :is(h1, h2, h3, h4, h5, h6) {
+  color: var(--color-text-invert);
+}

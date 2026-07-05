@@ -1,0 +1,73 @@
+/* Shared form-control styles (style guide §5.4) */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.label {
+  font-size: var(--fs-small);
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1.4;
+}
+
+.required {
+  color: var(--color-danger);
+}
+
+.hint {
+  font-size: var(--fs-small);
+  color: var(--color-text-muted);
+  line-height: 1.4;
+}
+
+.error {
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--color-danger);
+  line-height: 1.4;
+}
+
+/* the actual control */
+.control {
+  width: 100%;
+  min-height: 44px;
+  padding: var(--space-2) var(--space-4);
+  border: 1.5px solid var(--ink-200);
+  border-radius: var(--radius-md);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  line-height: 1.4;
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out);
+}
+
+.control::placeholder {
+  color: var(--color-text-muted);
+}
+
+.control:hover:not(:disabled) {
+  border-color: var(--ink-300);
+}
+
+.control:focus-visible {
+  outline: none;
+  border-color: var(--color-focus-ring);
+  box-shadow: var(--ring-focus);
+}
+
+.control:disabled {
+  background-color: var(--ink-100);
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+}
+
+.invalid,
+.invalid:hover:not(:disabled) {
+  border-color: var(--color-danger);
+}
