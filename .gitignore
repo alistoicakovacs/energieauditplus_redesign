@@ -1,6 +1,7 @@
 node_modules/
 dist/
 dist-server/
+.claude/
 .env
 .env.local
 *.local
