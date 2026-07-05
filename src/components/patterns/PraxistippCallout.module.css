@@ -1,0 +1,46 @@
+.callout {
+  display: flex;
+  gap: var(--space-4);
+  background-color: var(--amber-100);
+  border-left: 4px solid var(--amber-500);
+  border-radius: var(--radius-sm) var(--radius-md) var(--radius-md) var(--radius-sm);
+  padding: var(--space-5);
+}
+
+.icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  color: var(--color-warning);
+  padding-top: 2px;
+}
+
+.iconSvg {
+  width: 24px;
+  height: 24px;
+}
+
+.content {
+  min-width: 0;
+}
+
+.overline {
+  margin: 0 0 var(--space-2);
+  font-size: var(--fs-overline);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-warning);
+}
+
+.body {
+  color: var(--color-text);
+  line-height: 1.65;
+}
+
+.body > :first-child {
+  margin-top: 0;
+}
+
+.body > :last-child {
+  margin-bottom: 0;
+}

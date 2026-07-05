@@ -50,6 +50,7 @@
   --grad-hero-veil:linear-gradient(180deg, rgba(6,30,51,.15) 0%, rgba(6,30,51,.78) 100%);
   --grad-dark:linear-gradient(160deg, #082A45 0%, #061E33 100%);
   --grad-sheen:linear-gradient(100deg, transparent 0%, rgba(255,255,255,.18) 50%, transparent 100%);
+  --glass-veil:rgba(255, 255, 255, .16); /* glass pills/chips on photos & gradients */
 
   /* ---- type scale (style guide §2.2, fluid clamp) ---- */
   --fs-display:clamp(2.5rem, 1.6rem + 4.5vw, 4.5rem);

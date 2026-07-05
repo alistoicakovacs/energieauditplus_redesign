@@ -1,0 +1,82 @@
+.accordion {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.item {
+  background-color: var(--white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden; /* contains the height animation (plan §7.6) */
+}
+
+.heading {
+  margin: 0;
+  font-size: inherit; /* the trigger owns the type styles */
+}
+
+.trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  width: 100%;
+  min-height: 56px; /* > 44px touch target */
+  padding: var(--space-4) var(--space-5);
+  border: 0;
+  background: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  font-weight: 700;
+  color: var(--color-heading);
+  transition: background-color var(--dur-fast) var(--ease-out);
+}
+
+.trigger:hover {
+  background-color: var(--blue-50);
+}
+
+.trigger:active {
+  background-color: var(--blue-100);
+}
+
+.trigger:focus-visible {
+  outline: none;
+  box-shadow: inset var(--ring-focus);
+}
+
+.trigger[aria-expanded='true'] {
+  color: var(--color-primary);
+}
+
+.chevron {
+  display: inline-flex;
+  flex-shrink: 0;
+  color: var(--color-primary);
+}
+
+.chevronIcon {
+  width: 20px;
+  height: 20px;
+}
+
+.panel {
+  overflow: hidden;
+}
+
+.panelInner {
+  padding: 0 var(--space-5) var(--space-5);
+  color: var(--color-text);
+  line-height: 1.65;
+}
+
+.panelInner > :first-child {
+  margin-top: 0;
+}
+
+.panelInner > :last-child {
+  margin-bottom: 0;
+}

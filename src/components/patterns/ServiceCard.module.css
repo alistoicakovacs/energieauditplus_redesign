@@ -1,0 +1,39 @@
+.service {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-4);
+  padding: var(--space-6);
+  height: 100%;
+}
+
+.title {
+  margin: 0;
+}
+
+.description {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--fs-body);
+  line-height: 1.55;
+}
+
+.more {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: auto;
+  color: var(--color-primary);
+  font-weight: 700;
+  font-size: var(--fs-body);
+}
+
+.arrow {
+  display: inline-flex;
+  align-items: center;
+}
+
+.arrowIcon {
+  width: 1.125em;
+  height: 1.125em;
+}

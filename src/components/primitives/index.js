@@ -4,6 +4,7 @@ export { default as Checkbox } from './Checkbox.jsx';
 export { default as Chip } from './Chip.jsx';
 export { default as Container } from './Container.jsx';
 export { default as Heading } from './Heading.jsx';
+export { default as IconButton } from './IconButton.jsx';
 export { default as IconChip } from './IconChip.jsx';
 export { default as Input } from './Input.jsx';
 export { default as Link } from './Link.jsx';

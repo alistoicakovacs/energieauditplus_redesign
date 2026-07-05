@@ -30,6 +30,12 @@ const devRoutes = import.meta.env.DEV
         Component: lazy(() => import('./pages/dev-hero/DevHeroPage.jsx')),
         prerender: false,
       },
+      {
+        path: '/dev/patterns',
+        title: 'Pattern-Bibliothek (dev) — EnergieAudit Plus',
+        Component: lazy(() => import('./pages/dev-patterns/DevPatternsPage.jsx')),
+        prerender: false,
+      },
     ]
   : [];
 

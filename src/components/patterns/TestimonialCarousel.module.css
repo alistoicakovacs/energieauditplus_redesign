@@ -1,0 +1,128 @@
+.carousel {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.viewport {
+  position: relative;
+}
+
+/* Card-styled slide (white, hairline, shadow-sm — card family look). */
+.slide {
+  background-color: var(--white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-7) var(--space-6);
+  min-height: clamp(220px, 40vw, 280px);
+  display: flex;
+  cursor: grab;
+  touch-action: pan-y; /* horizontal swipe belongs to the carousel */
+}
+
+.slide:active {
+  cursor: grabbing;
+}
+
+.figure {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--space-5);
+  width: 100%;
+}
+
+.quote {
+  margin: 0;
+  font-size: var(--fs-lead);
+  line-height: 1.6;
+  color: var(--color-text);
+}
+
+.caption {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-4);
+}
+
+.stars {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.star,
+.starFilled {
+  width: 18px;
+  height: 18px;
+}
+
+.star {
+  color: var(--ink-300);
+}
+
+/* Amber star fill — large decorative fill, meaning also in the aria-label. */
+.starFilled {
+  color: var(--amber-500);
+  fill: var(--amber-500);
+}
+
+.name {
+  font-weight: 700;
+  color: var(--color-heading);
+}
+
+.date {
+  color: var(--color-text-muted);
+  font-size: var(--fs-small);
+}
+
+/* ---- controls ---- */
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  margin-top: var(--space-5);
+}
+
+/* Prev/next are the shared IconButton primitive (44px circle). */
+
+.indicators {
+  display: flex;
+}
+
+/* 44px touch target around a 10px visual dot. */
+.indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  border-radius: var(--radius-pill);
+}
+
+.indicator:focus-visible {
+  outline: none;
+  box-shadow: var(--ring-focus);
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-pill);
+  background-color: var(--ink-300);
+  transition: background-color var(--dur-fast) var(--ease-out);
+}
+
+.indicator:hover .dot {
+  background-color: var(--blue-500);
+}
+
+.indicatorActive .dot {
+  background-color: var(--color-primary);
+}

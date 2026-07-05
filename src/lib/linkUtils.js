@@ -11,6 +11,14 @@ export function relForHref(href) {
 }
 
 /**
+ * Display phone number → tel:-safe href VALUE (no scheme):
+ * "03341 4272935" → "033414272935", "+49 1742 434739" → "+491742434739".
+ */
+export function telHref(phone) {
+  return phone.replace(/[^+\d]/g, '');
+}
+
+/**
  * Trailing-slash-insensitive pathname. Static hosts serve /foo/ for /foo, so
  * every route-equality check (active nav, transition keys) must normalize —
  * otherwise SSR (rendered at /foo) and hydration (at /foo/) disagree.

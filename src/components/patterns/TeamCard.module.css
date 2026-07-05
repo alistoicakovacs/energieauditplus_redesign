@@ -1,0 +1,115 @@
+/* TeamCard — Direction B on white (revamp spec §3 / team-card-B-white.html). */
+
+.team {
+  overflow: hidden; /* clips the top gradient edge + photo to the radius */
+  text-align: center;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Eco-gradient "energy" signature along the top edge. */
+.team::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 2;
+  background-image: var(--grad-eco);
+}
+
+/* ---- diagonal-cut photo ---- */
+.photo {
+  position: relative;
+  aspect-ratio: 5 / 4;
+  background-image: var(--grad-brand);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 85%);
+}
+
+.photoImg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Monogram placeholder until real portraits land. */
+.monogram {
+  position: absolute;
+  inset: 0 0 12% 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-body);
+  font-size: clamp(3rem, 2rem + 4vw, 4.5rem);
+  font-weight: 300;
+  color: var(--blue-100);
+}
+
+/* Glass location pill, top-right. */
+.pin {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--blue-200);
+  background-color: var(--glass-veil);
+  backdrop-filter: blur(8px);
+  color: var(--white);
+  font-size: var(--fs-overline);
+  font-weight: 600;
+}
+
+.pinIcon {
+  width: 14px;
+  height: 14px;
+}
+
+/* ---- body (centered) ---- */
+.body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  padding: var(--space-2) var(--space-5) var(--space-6);
+}
+
+.name {
+  margin: 0;
+}
+
+/* 42×3 green rule — green-500 is a fill here (allowed). */
+.rule {
+  display: block;
+  width: 42px;
+  height: 3px;
+  border-radius: var(--radius-pill);
+  background-color: var(--green-500);
+  margin: var(--space-3) 0;
+}
+
+.role {
+  margin: 0;
+}
+
+.credentials {
+  margin: var(--space-2) 0 0;
+  color: var(--color-text-muted);
+  font-size: var(--fs-small);
+  line-height: 1.5;
+}
+
+/* ---- circular icon actions (IconButton primitive: 44px mailto:/tel:) ---- */
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+}
