@@ -63,5 +63,8 @@
 }
 
 .cta {
-  margin-top: var(--space-4);
+  /* Pin the CTA to the tile's bottom edge: in stretched contexts (bento
+     2×2 span) leftover height sits between content and CTA instead of
+     dangling below it. Collapses to the flex gap when content-sized. */
+  margin-top: auto;
 }

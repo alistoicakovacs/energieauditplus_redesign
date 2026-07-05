@@ -23,6 +23,7 @@ import { ParallaxMedia, Reveal, StaggerGroup } from '../../components/motion/ind
 import {
   ablauf,
   bentoFeatured,
+  bentoLayout,
   bentoServices,
   bentoStat,
   ctaBand,
@@ -44,6 +45,8 @@ import styles from './Home.module.css';
  * with per-block provenance; layout CSS here is grid composition only.
  * The page's single H1 is the hero's slide-1 claim (HeroSlider owns it).
  */
+const serviceByRoute = new Map(bentoServices.map((service) => [service.to, service]));
+
 export default function HomePage() {
   return (
     <>
@@ -100,34 +103,48 @@ export default function HomePage() {
             <Overline>Leistungen</Overline> {/* NEW COPY: review (eyebrow) */}
             <Heading level={2}>Unsere Leistungen</Heading>
           </Reveal>
+          {/* Cell order + spans are content-owned (bentoLayout in
+              src/content/home.js); this page only resolves and renders. */}
           <StaggerGroup className={styles.bento}>
-            <Reveal className={`${styles.bentoCell} ${styles.bentoFeatured}`}>
-              <FeaturedCard
-                overline={bentoFeatured.overline}
-                title={bentoFeatured.title}
-                description={bentoFeatured.description}
-                cta={bentoFeatured.cta}
-              />
-            </Reveal>
-            {bentoServices.slice(0, 4).map((service) => (
-              <Reveal key={service.to} className={styles.bentoCell}>
-                <ServiceCard {...service} />
-              </Reveal>
-            ))}
-            <Reveal className={styles.bentoCell}>
-              <StatCard
-                value={bentoStat.value}
-                prefix={bentoStat.prefix}
-                suffix={bentoStat.suffix}
-                label={bentoStat.label}
-              />
-            </Reveal>
-            <Reveal className={styles.bentoCell}>
-              <ServiceCard {...bentoServices[4]} />
-            </Reveal>
-            <Reveal className={`${styles.bentoCell} ${styles.bentoWide}`}>
-              <ServiceCard {...bentoServices[5]} />
-            </Reveal>
+            {bentoLayout.map((cell) => {
+              if (cell.kind === 'featured') {
+                return (
+                  <Reveal key="featured" className={`${styles.bentoCell} ${styles.bentoFeatured}`}>
+                    <FeaturedCard
+                      icon={bentoFeatured.icon}
+                      overline={bentoFeatured.overline}
+                      title={bentoFeatured.title}
+                      description={bentoFeatured.description}
+                      stat={bentoFeatured.stat}
+                      cta={bentoFeatured.cta}
+                    />
+                  </Reveal>
+                );
+              }
+              if (cell.kind === 'stat') {
+                return (
+                  <Reveal key="stat" className={styles.bentoCell}>
+                    <StatCard
+                      icon={bentoStat.icon}
+                      value={bentoStat.value}
+                      prefix={bentoStat.prefix}
+                      suffix={bentoStat.suffix}
+                      label={bentoStat.label}
+                    />
+                  </Reveal>
+                );
+              }
+              const service = serviceByRoute.get(cell.to);
+              if (!service) return null; // guarded in DEV by content/home.js
+              return (
+                <Reveal
+                  key={cell.to}
+                  className={`${styles.bentoCell}${cell.wide ? ` ${styles.bentoWide}` : ''}`}
+                >
+                  <ServiceCard {...service} />
+                </Reveal>
+              );
+            })}
           </StaggerGroup>
         </Container>
       </Section>
@@ -253,7 +270,7 @@ export default function HomePage() {
               />
               <ul className={styles.standorteList}>
                 {standorte.locations
-                  .filter((location) => location.name !== standorte.zentrale.name)
+                  .filter((location) => !location.zentrale)
                   .map((location) => (
                     <li key={location.name}>
                       <span>{location.name}</span>

@@ -70,6 +70,9 @@
   }
 }
 
+/* 1024–1199: 3 columns, featured spans one row only (a 2×2 span here left
+   ~319px slack against its content — review finding). The wide card drops
+   to a single cell so the 9 tiles fill a clean 3×3. */
 @media (min-width: 1024px) {
   .bento {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -77,6 +80,16 @@
 
   .bentoFeatured {
     grid-column: span 2;
+  }
+
+  .bentoWide {
+    grid-column: auto;
+  }
+}
+
+/* ≥1200: the full asymmetric bento — featured 2×2, last service double-wide. */
+@media (min-width: 1200px) {
+  .bentoFeatured {
     grid-row: span 2;
   }
 

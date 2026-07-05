@@ -1,4 +1,5 @@
 import {
+  BadgeCheck,
   Building,
   Building2,
   DraftingCompass,
@@ -6,6 +7,7 @@ import {
   Handshake,
   Home,
   Landmark,
+  Leaf,
   PackageCheck,
   Scale,
   Workflow,
@@ -94,21 +96,69 @@ export const bentoServices = services
   }));
 
 export const bentoFeatured = {
+  icon: Leaf, // gradient IconChip on the dark tile (decorative)
   overline: 'Nachhaltigkeitsaudit', // NEW COPY: review (eyebrow)
   title: 'Nachhaltigkeitsaudit mit QNG-flow', // verbatim home.md
-  // verbatim nachhaltigkeitsaudit-qng-flow.md (intro, first sentence)
+  // verbatim nachhaltigkeitsaudit-qng-flow.md (intro, sentences 1 + 3 —
+  // each 1:1; sentence 2 omitted between them)
   description:
-    'Das Qualitätssiegel Nachhaltiges Gebäude (QNG) ist der staatliche Nachweis für nachhaltiges Bauen in Deutschland – und gleichzeitig der Schlüssel zur höchsten Förderstufe der KfW-Programme 297/298 „Klimafreundlicher Neubau".',
+    'Das Qualitätssiegel Nachhaltiges Gebäude (QNG) ist der staatliche Nachweis für nachhaltiges Bauen in Deutschland – und gleichzeitig der Schlüssel zur höchsten Förderstufe der KfW-Programme 297/298 „Klimafreundlicher Neubau". Ob Einfamilienhaus, Mehrfamilienhaus oder Quartiersentwicklung – mit unserer eigens entwickelten Plattform QNG-flow machen wir aus komplexen Anforderungen einen strukturierten, planbaren Prozess.',
+  // The spec'd embedded 150k stat (plan §6.1.4) lives INSIDE the featured
+  // tile — numbers verbatim nachhaltigkeitsaudit-qng-flow.md.
+  stat: {
+    value: 150000,
+    prefix: 'bis zu ',
+    suffix: ' €',
+    label: 'KfW-Förderkredit pro Wohneinheit',
+  },
   cta: { label: 'Mehr erfahren', to: '/leistungen/qng-flow' }, // verbatim home.md
 };
 
-/** Embedded stat tile — numbers verbatim nachhaltigkeitsaudit-qng-flow.md. */
+/** Standalone stat tile — the dena listing proof (company research §2,
+    verbatim quote: „ca. 5 % aller Energieberater, die Sie bei jedem Gebäude
+    unterstützen können."). The 150k stat moved into bentoFeatured. */
 export const bentoStat = {
-  value: 150000,
-  prefix: 'bis zu',
-  suffix: ' €',
-  label: 'KfW-Förderkredit pro Wohneinheit',
+  icon: BadgeCheck,
+  value: 5,
+  prefix: 'ca.',
+  suffix: ' %',
+  label: 'aller Energieberater: dena-gelistet für Wohngebäude, Nichtwohngebäude und Denkmal',
 };
+
+/**
+ * Bento grid composition (content-owned, plan §6.1.4): cell order and spans.
+ * `service` cells reference routes; HomePage resolves them via bentoServices.
+ * `wide` = 2-column span at the widths where the page grid allows it.
+ */
+export const bentoLayout = [
+  { kind: 'featured' },
+  { kind: 'service', to: '/leistungen/neubau-energieberatung' },
+  { kind: 'service', to: '/leistungen/bestandsgebaeude' },
+  { kind: 'service', to: '/leistungen/fordermittelservice' },
+  { kind: 'service', to: '/leistungen/lebenszyklusanalyse-lca' },
+  { kind: 'stat' },
+  { kind: 'service', to: '/leistungen/raumluftmessung-baubiologie' },
+  { kind: 'service', to: '/leistungen/blower-door-test', wide: true },
+];
+
+// Layout is keyed on service routes: a renamed/added service must fail
+// loudly here (same guard pattern as heroSlides), not silently drop a tile.
+if (import.meta.env.DEV) {
+  const placed = bentoLayout.filter((cell) => cell.kind === 'service').map((cell) => cell.to);
+  for (const service of bentoServices) {
+    if (!placed.includes(service.to)) {
+      throw new Error(`home content: service "${service.to}" is missing from bentoLayout`);
+    }
+  }
+  for (const to of placed) {
+    if (!bentoServices.some((service) => service.to === to)) {
+      throw new Error(`home content: bentoLayout references unknown service route "${to}"`);
+    }
+  }
+  if (new Set(placed).size !== placed.length) {
+    throw new Error('home content: bentoLayout places a service route twice');
+  }
+}
 
 /* ---------------------------------------------------------------- */
 /* §6.1.5 Zielgruppen „Für wen" — NEW COPY: review (whole section,    */
@@ -360,7 +410,7 @@ export const standorte = {
     email: 'strausberg@ea-plus.de', // verbatim kontakt.md
   },
   locations: [
-    { name: 'Strausberg - Zentrale', lat: 52.58, lon: 13.88 },
+    { name: 'Strausberg - Zentrale', lat: 52.58, lon: 13.88, zentrale: true },
     { name: 'Güstrow', lat: 53.79, lon: 12.17 },
     { name: 'Heiligengrabe bei Wittstock', lat: 53.14, lon: 12.37 },
     { name: 'Bad Langensalza', lat: 51.1, lon: 10.65 },
