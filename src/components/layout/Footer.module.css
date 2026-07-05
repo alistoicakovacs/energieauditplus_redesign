@@ -1,0 +1,196 @@
+/* Global footer — dark navy set piece with eco hairline + clipped wordmark. */
+
+.footer {
+  background: var(--blue-900);
+  color: var(--blue-100);
+}
+
+.hairline {
+  height: 3px;
+  background: var(--grad-eco);
+}
+
+/* ---- columns ---- */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-7);
+  padding-block: var(--space-8) var(--space-7);
+}
+
+@media (min-width: 700px) {
+  .grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (min-width: 1100px) {
+  .grid {
+    grid-template-columns: 1.3fr 1.2fr 0.9fr 1.1fr;
+    gap: var(--space-6);
+  }
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-4);
+  max-width: 36ch;
+}
+
+.claim {
+  font-size: var(--fs-small);
+  line-height: 1.6;
+  color: var(--blue-200);
+}
+
+.col {
+  min-width: 0;
+}
+
+.colTitle {
+  margin-bottom: var(--space-3);
+  font-family: var(--font-body);
+  font-size: var(--fs-overline);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--green-400);
+}
+
+.colTitle + .colTitle,
+.linkList + .colTitle,
+.contactList + .colTitle {
+  margin-top: var(--space-5);
+}
+
+.linkList {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Footer links reuse the Link primitive (onDark); this adds list ergonomics:
+   block hit-area, no default underline until hover. */
+.footerLink {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 40px;
+  font-size: var(--fs-small);
+  text-decoration: none;
+}
+
+.footerLink:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ---- contact block ---- */
+.address {
+  font-style: normal;
+  font-size: var(--fs-small);
+  line-height: 1.6;
+  color: var(--blue-200);
+  margin-bottom: var(--space-3);
+}
+
+.contactList {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.contactLink {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 40px;
+  font-size: var(--fs-small);
+  color: var(--blue-200);
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.contactLink:hover {
+  color: var(--white);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.contactLink:active {
+  color: var(--blue-100);
+}
+
+.contactIcon {
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+}
+
+.locations {
+  font-size: var(--fs-small);
+  line-height: 1.7;
+  color: var(--blue-200);
+  margin-bottom: var(--space-2);
+  /* proper nouns — no auto-hyphenation („Bad Lan-gensalza") */
+  hyphens: none;
+}
+
+/* ---- signature move (plan §13.5): oversized clipped wordmark row ---- */
+.wordmarkRow {
+  overflow: hidden;
+  margin-top: var(--space-6);
+  user-select: none;
+  pointer-events: none;
+}
+
+.bigWordmark {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(3.5rem, 12.5vw, 11rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  text-align: center;
+  /* decorative low-contrast tone on navy (aria-hidden, exempt from AA) */
+  color: color-mix(in srgb, var(--white) 7%, transparent);
+  /* clip the bottom half at the footer edge */
+  margin-bottom: -0.42em;
+  transform: translateY(0.02em);
+}
+
+/* ---- legal bar ---- */
+.legalBar {
+  border-top: 1px solid color-mix(in srgb, var(--white) 14%, transparent);
+}
+
+.legalInner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-5);
+  padding-block: var(--space-4);
+}
+
+.copyright {
+  font-size: var(--fs-small);
+  color: var(--blue-200);
+}
+
+.legalLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
