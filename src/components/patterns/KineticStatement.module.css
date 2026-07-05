@@ -1,0 +1,36 @@
+/* KineticStatement — oversized display type, scroll-linked word color-in. */
+
+.statement {
+  margin: 0;
+  max-width: 22ch;
+  font-family: var(--font-display);
+  font-size: var(--fs-display);
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.words {
+  display: inline;
+}
+
+.word {
+  position: relative;
+  display: inline-block;
+  white-space: pre-wrap;
+}
+
+/* Muted base layer — always present, keeps layout stable. */
+.base {
+  color: var(--ink-300);
+}
+
+/* Colored overlay — stacked exactly on the base, opacity scroll-driven.
+   Unarmed (prerender, reduced motion, mounted above fold) it sits at
+   opacity 1: the statement is simply fully colored and static. */
+.fill {
+  position: absolute;
+  inset: 0;
+  color: var(--color-heading);
+}

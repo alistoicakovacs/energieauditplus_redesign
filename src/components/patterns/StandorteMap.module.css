@@ -1,0 +1,24 @@
+.map {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.outline {
+  fill: var(--white);
+  stroke: var(--blue-200);
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+}
+
+.dot {
+  fill: var(--blue-700);
+  stroke: var(--white);
+  stroke-width: 3;
+}
+
+.dotPartner {
+  fill: var(--green-700);
+  stroke: var(--white);
+  stroke-width: 3;
+}

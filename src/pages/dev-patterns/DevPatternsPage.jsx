@@ -16,10 +16,13 @@ import {
   Breadcrumbs,
   CTABand,
   FeaturedCard,
+  IconCard,
+  KineticStatement,
   PraxistippCallout,
   ScrollProgress,
   ServiceCard,
   StandortCard,
+  StandorteMap,
   StatBand,
   StatCard,
   Stepper,
@@ -426,6 +429,72 @@ export default function DevPatternsPage() {
               Antragstellung für Sie. {/* DEMO copy */}
             </p>
           </PraxistippCallout>
+        </Container>
+      </Section>
+
+      {/* ---------- IconCard (Phase 3b: USP + Zielgruppen variants) ---------- */}
+      <Section>
+        <Container>
+          <div className={styles.sectionHead}>
+            <Overline>Karten-Familie</Overline>
+            <Heading level={2}>IconCard — ohne und mit Link-Liste</Heading>
+          </div>
+          <div className={styles.standortGrid}>
+            <IconCard
+              icon={Leaf}
+              title="Unabhängig beraten"
+              description="Anbieterneutral, ohne Herstellerbindung und ohne Provisionen. Maßgeblich ist allein Ihr Projekt."
+            />
+            <IconCard
+              icon={Users}
+              title="Private Bauherren"
+              description="Vom Erstgespräch bis zur Förderauszahlung — verständlich erklärt und persönlich begleitet." // DEMO
+              links={[
+                { label: 'Neubau & Energieberatung', to: '/leistungen/neubau-energieberatung' },
+                { label: 'Blower-Door-Test', to: '/leistungen/blower-door-test' },
+              ]}
+            />
+          </div>
+        </Container>
+      </Section>
+
+      {/* ---------- KineticStatement (Phase 3b) ---------- */}
+      <Section background="subtle">
+        <Container>
+          <div className={styles.sectionHead}>
+            <Overline color="green">Typografie</Overline>
+            <Heading level={2}>KineticStatement — Scroll-Farbverlauf Wort für Wort</Heading>
+            <p className={styles.note}>
+              Mit reduzierter Bewegung (oder ohne JavaScript) steht der Satz
+              statisch und voll eingefärbt. Screenreader hören den intakten
+              Satz.
+            </p>
+          </div>
+          <KineticStatement text="Energieeffizienz ist keine Kür mehr. Sie ist die Grundlage jedes förderfähigen Projekts." />
+        </Container>
+      </Section>
+
+      {/* ---------- StandorteMap (Phase 3b) ---------- */}
+      <Section>
+        <Container>
+          <div className={styles.sectionHead}>
+            <Overline>Standorte</Overline>
+            <Heading level={2}>StandorteMap — statisches Deutschland-SVG</Heading>
+            <p className={styles.note}>
+              Keine externen Requests (kein Google Maps). Blaue Punkte =
+              eigene Standorte, grüne Punkte = Partner.
+            </p>
+          </div>
+          <div style={{ maxWidth: 420 }}>
+            <StandorteMap
+              locations={[
+                { name: 'Strausberg - Zentrale', lat: 52.58, lon: 13.88 },
+                { name: 'Güstrow', lat: 53.79, lon: 12.17 },
+                { name: 'Berlin', lat: 52.52, lon: 13.4 },
+                { name: 'Schorndorf bei Stuttgart', lat: 48.81, lon: 9.53, partner: true },
+              ]}
+            />
+          </div>
         </Container>
       </Section>
 
