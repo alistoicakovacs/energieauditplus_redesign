@@ -100,18 +100,28 @@ for (const route of targets) {
     throw new Error(`Prerender produced no <title> in <head> for route "${route.path}" (${url})`);
   }
 
-  let outFile;
+  const outFiles = [];
   if (route.file) {
-    outFile = path.join(distDir, route.file);
+    outFiles.push(path.join(distDir, route.file));
   } else if (url === '/') {
-    outFile = path.join(distDir, 'index.html');
+    outFiles.push(path.join(distDir, 'index.html'));
   } else {
-    outFile = path.join(distDir, ...url.replace(/^\//, '').split('/'), 'index.html');
+    const segments = url.replace(/^\//, '').split('/');
+    // Directory-style file serves the canonical trailing-slash URL (/foo/).
+    outFiles.push(path.join(distDir, ...segments, 'index.html'));
+    // Extensionless twin (/foo.html) serves the slash-less URL (/foo).
+    // Vite-preview-shaped hosts resolve /foo → foo.html but NOT
+    // foo/index.html — without the twin they SPA-fall back to the homepage
+    // /index.html, and hydrating a non-home route against homepage markup
+    // throws React #418 on every prerendered page except /.
+    outFiles.push(path.join(distDir, ...segments.slice(0, -1), `${segments.at(-1)}.html`));
   }
 
-  await mkdir(path.dirname(outFile), { recursive: true });
-  await writeFile(outFile, html, 'utf-8');
-  written.push(path.relative(distDir, outFile).replaceAll(path.sep, '/'));
+  for (const outFile of outFiles) {
+    await mkdir(path.dirname(outFile), { recursive: true });
+    await writeFile(outFile, html, 'utf-8');
+    written.push(path.relative(distDir, outFile).replaceAll(path.sep, '/'));
+  }
 }
 
 // The server bundle is a build artifact only — not deployed.
