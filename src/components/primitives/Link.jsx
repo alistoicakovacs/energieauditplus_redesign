@@ -1,4 +1,5 @@
 import { Link as RouterLink } from 'react-router';
+import { relForHref } from '../../lib/linkUtils.js';
 import styles from './Link.module.css';
 
 /**
@@ -21,14 +22,8 @@ export default function Link({ to, href, variant = 'default', className = '', ch
     );
   }
 
-  const isExternal = href && /^https?:\/\//.test(href);
   return (
-    <a
-      href={href}
-      className={classes}
-      {...(isExternal ? { rel: 'noopener noreferrer' } : {})}
-      {...rest}
-    >
+    <a href={href} className={classes} {...relForHref(href)} {...rest}>
       {children}
     </a>
   );

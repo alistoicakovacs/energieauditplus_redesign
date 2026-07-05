@@ -4,6 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!--
+      Font preloads (deliberate minimum): only the two files actually used
+      cross-platform — Carlito 400 (body) + Caladea 700 (headings). On
+      Windows the system fonts Calibri/Cambria win the CI-mandated stacks,
+      so these preloads are unused there (a DevTools notice, ~50 KB); on
+      every other OS they prevent FOUT on first paint. The 400-italic /
+      700 / Caladea-400 files load on demand via @font-face.
+    -->
     <link
       rel="preload"
       href="/fonts/carlito-latin-400-normal.woff2"

@@ -116,13 +116,4 @@
   color: var(--color-text-muted);
 }
 
-.requiredMark {
-  color: var(--color-danger);
-}
-
-.error {
-  font-size: var(--fs-small);
-  font-weight: 600;
-  color: var(--color-danger);
-  line-height: 1.4;
-}
+/* error + required-mark styles come from formField.module.css */

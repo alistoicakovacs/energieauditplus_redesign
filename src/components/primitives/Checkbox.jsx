@@ -1,5 +1,6 @@
 import { forwardRef, useId } from 'react';
 import { Check } from 'lucide-react';
+import fieldStyles from './formField.module.css';
 import styles from './Checkbox.module.css';
 
 /**
@@ -39,7 +40,7 @@ const Checkbox = forwardRef(function Checkbox(
         <span className={styles.label}>
           {label}
           {required && (
-            <span className={styles.requiredMark} aria-hidden="true">
+            <span className={fieldStyles.required} aria-hidden="true">
               {' '}
               *
             </span>
@@ -47,7 +48,7 @@ const Checkbox = forwardRef(function Checkbox(
         </span>
       </label>
       {error && (
-        <p className={styles.error} id={errorId} role="alert">
+        <p className={fieldStyles.error} id={errorId} role="alert">
           {error}
         </p>
       )}

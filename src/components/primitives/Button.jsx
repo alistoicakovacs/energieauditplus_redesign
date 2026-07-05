@@ -2,6 +2,7 @@ import { forwardRef } from 'react';
 import { motion } from 'motion/react';
 import { Link as RouterLink } from 'react-router';
 import { Loader2 } from 'lucide-react';
+import { relForHref } from '../../lib/linkUtils.js';
 import styles from './Button.module.css';
 
 const MotionRouterLink = motion.create(RouterLink);
@@ -21,6 +22,13 @@ const iconNudge = {
 
 /**
  * The one button for every clickable action on the site.
+ *
+ * Notes:
+ * - A link Button (`to`/`href`) falls back to a real `<button disabled>`
+ *   while `loading` or `disabled` — links have no native inert state.
+ * - The hover icon-nudge is intentionally right-icon-only: it is the
+ *   "forward" arrow affordance („Mehr erfahren →"). Left icons are
+ *   decorative and stay put.
  *
  * @param {object} props
  * @param {'primary'|'accent'|'outline'|'ghost'|'onDark'} [props.variant]
@@ -105,13 +113,12 @@ const Button = forwardRef(function Button(
   }
 
   if (href && !isInert) {
-    const isExternal = /^https?:\/\//.test(href);
     return (
       <motion.a
         ref={ref}
         href={href}
         className={classes}
-        {...(isExternal ? { rel: 'noopener noreferrer' } : {})}
+        {...relForHref(href)}
         {...motionProps}
         {...rest}
       >

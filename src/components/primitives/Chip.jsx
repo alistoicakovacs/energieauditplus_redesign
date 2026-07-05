@@ -1,8 +1,9 @@
 import styles from './Chip.module.css';
 
 /**
- * Tag/filter chip. Interactive when `onClick` or `selected` is provided
- * (renders a toggle button), otherwise a static tag.
+ * Tag/filter chip. Interactive (renders a toggle `<button>` with
+ * `aria-pressed`) only when `onClick` is provided; otherwise a static
+ * tag — `selected` without `onClick` merely styles the static tag.
  * @param {object} props
  * @param {boolean} [props.selected]
  * @param {Function} [props.onClick]
