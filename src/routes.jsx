@@ -45,6 +45,16 @@ export const routes = [
     title: 'EnergieAudit Plus — Energieberatung aus einer Hand',
     Component: lazy(() => import('./pages/home/HomePage.jsx')),
     prerender: true,
+    // §9 LCP preload for the hero slide-1 image — injected into the static
+    // <head> by scripts/prerender.mjs (React 19 does not hoist responsive
+    // image preloads out of the lazy route's Suspense segment; rendering the
+    // <link> in the page would break hydration). Must mirror the slide-1
+    // <picture> webp source set.
+    preloadImage: {
+      imageSrcSet: '/images/hero/01-neubau-800.webp 800w, /images/hero/01-neubau-1600.webp 1600w',
+      imageSizes: '100vw',
+      type: 'image/webp',
+    },
   },
   {
     path: '/leistungen',

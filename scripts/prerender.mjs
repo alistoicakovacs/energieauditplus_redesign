@@ -31,7 +31,26 @@ function extractHeadTags(appHtml) {
     tags.push(match[0].trim());
     body = body.slice(match[0].length);
   }
+
   return { headTags: tags.join('\n    '), body };
+}
+
+/**
+ * Responsive image preload for a route's LCP (plan §9). Rendering the <link>
+ * in the page is not an option: React 19 only hoists `rel="preload"` links
+ * that carry an `href`, so an imageSrcSet-only preload stays inline in the
+ * lazy route's Suspense segment — and stripping it out of the body breaks
+ * hydration. Routes declare `preloadImage` in src/routes.jsx instead and the
+ * tag is injected into the static <head> here, like the Seo head tags.
+ */
+function buildPreloadTag(preloadImage) {
+  if (!preloadImage) return '';
+  const { imageSrcSet, imageSizes = '100vw', type } = preloadImage;
+  const typeAttr = type ? ` type="${escapeHtml(type)}"` : '';
+  return (
+    `<link rel="preload" as="image" imagesrcset="${escapeHtml(imageSrcSet)}" ` +
+    `imagesizes="${escapeHtml(imageSizes)}"${typeAttr} fetchpriority="high">`
+  );
 }
 
 const { render, routes } = await import(serverEntry);
@@ -60,8 +79,13 @@ for (const route of targets) {
     throw new Error(`Prerender produced empty HTML for route "${route.path}" (${url})`);
   }
 
-  // Move the React-hoisted <title>/<meta>/<link> prefix into <head>.
-  const { headTags, body } = extractHeadTags(appHtml);
+  // Move the React-hoisted <title>/<meta>/<link> prefix into <head>,
+  // plus the route's LCP image preload (route.preloadImage), if any.
+  const extracted = extractHeadTags(appHtml);
+  const { body } = extracted;
+  const headTags = [buildPreloadTag(route.preloadImage), extracted.headTags]
+    .filter(Boolean)
+    .join('\n    ');
 
   // Function replacements so "$&"-style patterns in the HTML are inert.
   let html = template.replace('<!--app-html-->', () => body);
