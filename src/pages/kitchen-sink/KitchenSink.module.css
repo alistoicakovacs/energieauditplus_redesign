@@ -118,6 +118,18 @@
   grid-column: 1 / -1;
 }
 
+/* ---- container width demo ---- */
+.containerBand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--space-8);
+  padding: var(--space-4);
+  background-color: var(--blue-100);
+  border: 1.5px dashed var(--blue-200);
+  border-radius: var(--radius-md);
+}
+
 /* ---- section demos ---- */
 .sectionDemo {
   border-top: 1px solid var(--color-border);

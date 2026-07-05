@@ -403,6 +403,30 @@ export default function KitchenSinkPage() {
         </Container>
       </Section>
 
+      {/* ---------- Container widths ---------- */}
+      <Section background="subtle">
+        <Container>
+          <Overline>Primitives</Overline>
+          <Heading level={2}>Container</Heading>
+          <p>
+            Beide Breiten-Varianten; die getönten Bänder markieren die jeweilige
+            Container-Kante (Seitenabstand: clamp(20px, 5vw, 64px)).
+          </p>
+        </Container>
+        <div className={styles.stack}>
+          <Container>
+            <div className={styles.containerBand}>
+              <code className={styles.swatchName}>width="default" — max. 1280px</code>
+            </div>
+          </Container>
+          <Container width="wide">
+            <div className={styles.containerBand}>
+              <code className={styles.swatchName}>width="wide" — max. 1440px</code>
+            </div>
+          </Container>
+        </div>
+      </Section>
+
       {/* ---------- Section backgrounds ---------- */}
       {['white', 'subtle', 'blue-tint', 'eco-tint'].map((bg) => (
         <Section key={bg} background={bg} className={styles.sectionDemo}>
