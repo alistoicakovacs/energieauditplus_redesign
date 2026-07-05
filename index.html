@@ -26,7 +26,8 @@
       type="font/woff2"
       crossorigin
     />
-    <title>EnergieAudit Plus</title>
+    <!-- No static <title>: per-route <title>/<meta> render in <Seo> (React 19
+         metadata hoisting); the prerender moves them into this <head>. -->
   </head>
   <body>
     <div id="root"><!--app-html--></div>
