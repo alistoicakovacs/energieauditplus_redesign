@@ -1,0 +1,45 @@
+/* ============================================================
+   Self-hosted web fonts (DSGVO: never load from Google Fonts CDN).
+   Carlito  = metric-compatible Calibri clone (SIL OFL)
+   Caladea  = metric-compatible Cambria clone (SIL OFL)
+   Files live in /public/fonts (copied from @fontsource packages).
+   ============================================================ */
+
+/* Carlito — body / UI */
+@font-face {
+  font-family: 'Carlito';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/carlito-latin-400-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Carlito';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/carlito-latin-400-italic.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Carlito';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/carlito-latin-700-normal.woff2') format('woff2');
+}
+
+/* Caladea — display / headings */
+@font-face {
+  font-family: 'Caladea';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/caladea-latin-400-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Caladea';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/caladea-latin-700-normal.woff2') format('woff2');
+}

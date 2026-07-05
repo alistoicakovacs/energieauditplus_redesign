@@ -1,0 +1,82 @@
+/* ============================================================
+   EnergieAudit Plus — Design Tokens
+   Source: handoff/02-style-guide.md §8 (verbatim) + §1.6/§1.7/§2.2/§3
+   Delta per handoff/04-agent-build-plan.md §4:
+     --ink-800: #1E1E1E (client CI text color)
+   THIS IS THE ONLY FILE ALLOWED TO CONTAIN COLOR VALUES.
+   ============================================================ */
+
+:root{
+  /* brand */
+  --brand-blue:#105388; --brand-green:#8DC63F; --brand-amber:#FFCD57;
+  /* blue */
+  --blue-950:#061E33; --blue-900:#082A45; --blue-800:#0C3A5E; --blue-700:#105388;
+  --blue-600:#1466A8; --blue-500:#1E87C9; --blue-200:#B9D6EA; --blue-100:#E2EEF6; --blue-50:#F0F6FB;
+  /* green */
+  --green-800:#3C6E16; --green-700:#4E8A1F; --green-600:#6BA82E; --green-500:#8DC63F;
+  --green-400:#A6D45F; --green-100:#EAF5D8; --green-50:#F4FAEA;
+  /* amber */
+  --amber-500:#FFCD57; --amber-700:#B4791A; --amber-100:#FFF4D6;
+  /* ink / neutral — --ink-800 adjusted to client CI text color (#1E1E1E) per build plan §4 */
+  --ink-900:#0F1B2D; --ink-800:#1E1E1E; --ink-700:#334155; --ink-600:#475569; --ink-500:#67768E;
+  --ink-300:#CBD5E1; --ink-200:#E2E8F0; --ink-100:#F2F5F7; --ink-50:#F8FAFC;
+  --surface-alt:#F9F6FE; --white:#FFFFFF;
+  /* semantic */
+  --color-bg:var(--white); --color-bg-subtle:var(--ink-100); --color-bg-dark:var(--blue-900);
+  --color-text:var(--ink-800); --color-text-muted:var(--ink-500); --color-heading:var(--ink-900);
+  --color-primary:var(--blue-700); --color-primary-hover:var(--blue-600);
+  --color-accent:var(--green-700); --color-accent-fill:var(--green-500);
+  --color-link:var(--blue-600); --color-border:var(--ink-200); --color-focus-ring:var(--blue-500);
+  /* radius */
+  --radius-sm:8px; --radius-md:14px; --radius-lg:20px; --radius-xl:28px; --radius-pill:999px;
+  /* motion */
+  --ease-out:cubic-bezier(.16,1,.3,1); --ease-in-out:cubic-bezier(.65,0,.35,1);
+  --dur-fast:150ms; --dur-base:300ms; --dur-slow:600ms; --dur-xslow:900ms;
+  /* type */
+  --font-body:"Calibri","Carlito",system-ui,"Segoe UI",sans-serif;
+  --font-display:"Cambria","Caladea",Georgia,serif;
+
+  /* ---- semantic extensions (style guide §1.6) ---- */
+  --color-bg-brand:var(--blue-50);
+  --color-bg-eco:var(--green-50);
+  --color-text-invert:var(--white);
+  --color-success:var(--green-700);
+  --color-warning:var(--amber-700);
+  --color-danger:#C2410C;
+
+  /* ---- gradients & overlays (style guide §1.7) ---- */
+  --grad-brand:linear-gradient(120deg, #105388 0%, #1E87C9 100%);
+  --grad-eco:linear-gradient(120deg, #105388 0%, #4E8A1F 100%);
+  --grad-hero-veil:linear-gradient(180deg, rgba(6,30,51,.15) 0%, rgba(6,30,51,.78) 100%);
+  --grad-dark:linear-gradient(160deg, #082A45 0%, #061E33 100%);
+  --grad-sheen:linear-gradient(100deg, transparent 0%, rgba(255,255,255,.18) 50%, transparent 100%);
+
+  /* ---- type scale (style guide §2.2, fluid clamp) ---- */
+  --fs-display:clamp(2.5rem, 1.6rem + 4.5vw, 4.5rem);
+  --fs-h1:clamp(2rem, 1.4rem + 3vw, 3.25rem);
+  --fs-h2:clamp(1.6rem, 1.2rem + 2vw, 2.5rem);
+  --fs-h3:clamp(1.3rem, 1.1rem + 1vw, 1.75rem);
+  --fs-h4:1.25rem;
+  --fs-lead:clamp(1.125rem, 1rem + .6vw, 1.375rem);
+  --fs-body:1.0625rem;
+  --fs-small:0.9375rem;
+  --fs-overline:0.8125rem;
+  --fs-stat:clamp(2.5rem, 1.5rem + 4vw, 4rem);
+
+  /* ---- spacing scale (style guide §3.1, 8-pt based) ---- */
+  --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-5:24px;
+  --space-6:32px; --space-7:48px; --space-8:64px; --space-9:96px; --space-10:128px; --space-11:160px;
+
+  /* ---- layout (style guide §3.2) ---- */
+  --container:1280px;
+  --container-wide:1440px;
+  --container-pad:clamp(20px, 5vw, 64px);
+
+  /* ---- elevation / shadows (style guide §3.4) ---- */
+  --shadow-xs:0 1px 2px rgba(15,27,45,.06);
+  --shadow-sm:0 2px 8px rgba(15,27,45,.06);
+  --shadow-md:0 8px 24px rgba(15,27,45,.08);
+  --shadow-lg:0 18px 48px rgba(15,27,45,.10);
+  --shadow-brand:0 16px 40px rgba(16,83,136,.18);
+  --ring-focus:0 0 0 3px rgba(30,135,201,.45);
+}
