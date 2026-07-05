@@ -5,8 +5,9 @@ import { Container, Heading, Section } from '../components/primitives/index.js';
  * verified now. Real page compositions arrive in Phases 3–6.
  */
 export default function PlaceholderPage({ title, children }) {
+  // <main> now lives in the global PageShell — plain <section> here.
   return (
-    <Section as="main">
+    <Section>
       <Container>
         <Heading level={1}>{title}</Heading>
         {children}

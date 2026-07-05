@@ -9,3 +9,12 @@ export function isExternalUrl(href) {
 export function relForHref(href) {
   return isExternalUrl(href) ? { rel: 'noopener noreferrer' } : {};
 }
+
+/**
+ * Trailing-slash-insensitive pathname. Static hosts serve /foo/ for /foo, so
+ * every route-equality check (active nav, transition keys) must normalize —
+ * otherwise SSR (rendered at /foo) and hydration (at /foo/) disagree.
+ */
+export function normalizePathname(pathname) {
+  return pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname;
+}

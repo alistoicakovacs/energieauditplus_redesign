@@ -1,0 +1,33 @@
+/* Page chrome: sticky-footer column layout + skip-link. */
+
+.shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.main {
+  flex: 1;
+  outline: none;
+}
+
+/* Skip-link: visually hidden until keyboard-focused. */
+.skipLink {
+  position: fixed;
+  top: var(--space-3);
+  left: var(--space-3);
+  z-index: 100;
+  padding: var(--space-3) var(--space-5);
+  background: var(--color-primary);
+  color: var(--color-text-invert);
+  font-weight: 700;
+  text-decoration: none;
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(calc(-100% - var(--space-5)));
+}
+
+.skipLink:focus-visible {
+  transform: none;
+}
