@@ -24,6 +24,12 @@ const devRoutes = import.meta.env.DEV
         Component: lazy(() => import('./pages/dev-motion/DevMotionPage.jsx')),
         prerender: false,
       },
+      {
+        path: '/dev/hero',
+        title: 'Hero-Slider (dev) — EnergieAudit Plus',
+        Component: lazy(() => import('./pages/dev-hero/DevHeroPage.jsx')),
+        prerender: false,
+      },
     ]
   : [];
 
