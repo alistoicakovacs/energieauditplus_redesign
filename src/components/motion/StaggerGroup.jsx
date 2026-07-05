@@ -1,30 +1,37 @@
-import { createContext, useContext } from 'react';
-import { motion } from 'motion/react';
+import { createContext, useContext, useRef } from 'react';
+import { motion, useInView } from 'motion/react';
 import usePrefersReducedMotion from '../../lib/usePrefersReducedMotion.js';
 import { STAGGER } from './motionTokens.js';
+import useBelowFold from './useBelowFold.js';
 
 /**
  * Orchestration context: `Reveal` children detect it and switch from
- * self-triggered `whileInView` to parent-driven variants, so the group
- * controls the 60–80ms stagger (plan §7.1).
+ * self-triggered reveals to parent-driven variants, so the group controls
+ * the 60–80ms stagger (plan §7.1). Reveal resets the context below itself,
+ * so only DIRECT Reveal children participate — deeper Reveals keep their
+ * own scroll trigger.
  */
 export const StaggerContext = createContext(false);
 
-/** @returns {boolean} true when rendered inside a <StaggerGroup>. */
+/** @returns {boolean} true when rendered as a direct child of <StaggerGroup>. */
 export function useStaggerContext() {
   return useContext(StaggerContext);
 }
 
 /**
- * StaggerGroup — parent that staggers the entrance of its `Reveal`-style
- * children by 60–80ms when scrolled into view (once).
+ * StaggerGroup — parent that staggers the entrance of its **direct**
+ * `Reveal` children by 60–80ms when scrolled into view (once).
  *
- * Children must be `Reveal` components (or any motion element that defines
- * `hidden`/`visible` variants) — the group propagates the variant names and
- * its `staggerChildren` transition to them.
+ * Children must be `Reveal` components (or any motion element defining
+ * `hidden`/`visible` variants) — the group propagates the variant labels
+ * and its `staggerChildren` transition to them.
  *
- * SSG/reduced motion: renders a plain element; children render statically too
- * (they consume the same hook).
+ * Hydration/flash safety: the group ALWAYS renders the motion element
+ * (element type never changes), mounts in the visible state
+ * (`initial={false}`), and only arms the hidden→staggered entrance when it
+ * mounted fully below the fold and the user does not prefer reduced motion.
+ * Content already on screen (prerendered HTML, above-fold sections) is never
+ * re-hidden. SSG output is always the final state.
  *
  * @param {object} props
  * @param {keyof JSX.IntrinsicElements} [props.as='div'] Rendered element/tag.
@@ -42,32 +49,30 @@ export default function StaggerGroup({
   children,
   ...rest
 }) {
+  const ref = useRef(null);
   const reduced = usePrefersReducedMotion();
-
-  if (reduced) {
-    const Tag = as;
-    return (
-      <Tag className={className} {...rest}>
-        {children}
-      </Tag>
-    );
-  }
+  const belowFold = useBelowFold(ref);
+  const inView = useInView(ref, { once: true, amount });
 
   const MotionTag = motion[as] ?? motion.div;
   const groupVariants = {
+    // Entered only pre-paint while off-screen; children snap hidden via
+    // their own duration-0 hidden transitions.
     hidden: {},
     visible: {
       transition: { staggerChildren: stagger, delayChildren: delay },
     },
   };
 
+  const armed = belowFold && !reduced;
+
   return (
     <MotionTag
+      ref={ref}
       className={className}
       variants={groupVariants}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, amount }}
+      initial={false}
+      animate={armed && !inView ? 'hidden' : 'visible'}
       {...rest}
     >
       <StaggerContext.Provider value={true}>{children}</StaggerContext.Provider>

@@ -1,6 +1,8 @@
-import { motion } from 'motion/react';
+import { useRef } from 'react';
+import { motion, useInView } from 'motion/react';
 import usePrefersReducedMotion from '../../lib/usePrefersReducedMotion.js';
 import { EASE_OUT, DUR_SLOW } from './motionTokens.js';
+import useBelowFold from './useBelowFold.js';
 import styles from './SplitTextReveal.module.css';
 
 /**
@@ -11,7 +13,16 @@ import styles from './SplitTextReveal.module.css';
  * readers never hear a word-by-word stutter; the intact sentence is provided
  * in a visually-hidden span. Splitting preserves whitespace exactly.
  *
- * SSG/reduced motion: renders the plain intact text — no spans, no animation.
+ * Hydration/flash safety: the split-span structure is ALWAYS rendered (SSG
+ * and reduced motion included — words simply sit fully visible), so the DOM
+ * shape never changes at hydration and an LCP headline is never remounted or
+ * re-hidden. The word entrance only arms when the element mounted fully
+ * below the fold with motion allowed; the Phase 3 hero first-load
+ * choreography (plan §7.4a) is a separate anime.js timeline, not this
+ * component's job.
+ *
+ * Intentionally ignores StaggerContext: a headline orchestrates its own
+ * words and must never become a staggered child of a StaggerGroup.
  *
  * @param {object} props
  * @param {string} props.text The headline text (must be a plain string).
@@ -33,16 +44,11 @@ export default function SplitTextReveal({
   className,
   ...rest
 }) {
+  const ref = useRef(null);
   const reduced = usePrefersReducedMotion();
+  const belowFold = useBelowFold(ref);
+  const inView = useInView(ref, { once: true, amount });
   const Tag = as;
-
-  if (reduced) {
-    return (
-      <Tag className={className} {...rest}>
-        {text}
-      </Tag>
-    );
-  }
 
   const containerVariants = {
     hidden: {},
@@ -51,7 +57,8 @@ export default function SplitTextReveal({
     },
   };
   const wordVariants = {
-    hidden: { opacity: 0, y: '0.5em' },
+    // hidden is only ever entered pre-paint while off-screen → snap.
+    hidden: { opacity: 0, y: '0.5em', transition: { duration: 0 } },
     visible: {
       opacity: 1,
       y: 0,
@@ -61,17 +68,17 @@ export default function SplitTextReveal({
 
   // Split on whitespace runs, keeping them, so the sentence re-assembles 1:1.
   const tokens = text.split(/(\s+)/);
+  const armed = belowFold && !reduced;
 
   return (
-    <Tag className={className} {...rest}>
+    <Tag ref={ref} className={className} {...rest}>
       <span className="visually-hidden">{text}</span>
       <motion.span
         aria-hidden="true"
         className={styles.words}
         variants={containerVariants}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount }}
+        initial={false}
+        animate={armed && !inView ? 'hidden' : 'visible'}
       >
         {tokens.map((token, i) =>
           /\S/.test(token) ? (

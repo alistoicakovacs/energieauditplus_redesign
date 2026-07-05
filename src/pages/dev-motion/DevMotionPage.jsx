@@ -50,6 +50,16 @@ export default function DevMotionPage() {
             statisch im Endzustand erscheinen — ohne Reveal, CountUp,
             Linienzeichnung oder Parallaxe.
           </p>
+          {/* Above-fold flash guard: this Reveal + CountUp are in the viewport
+              on load and must appear INSTANTLY in final state — never hidden,
+              never counting (the below-fold gate must not arm here). */}
+          <Reveal id="above-fold-demo">
+            <p className={`${styles.copy} prose`}>
+              Above-fold-Kontrolle: Dieser Block liegt beim Laden im Viewport
+              und darf nie erst versteckt und dann animiert werden. Seit{' '}
+              <CountUp value={25} suffix=" Jahren" /> sofort sichtbar.
+            </p>
+          </Reveal>
         </Container>
       </Section>
 
@@ -155,7 +165,7 @@ export default function DevMotionPage() {
           </div>
           <div className={styles.lineDemo}>
             <p className={styles.demoTitle}>Kurvig (Ablauf-Stepper)</p>
-            <EcoLineDraw viewBox="0 0 600 120" duration={1400}>
+            <EcoLineDraw viewBox="0 0 600 120" duration={1.4}>
               <path d="M10 100 C 120 100, 140 20, 250 20 S 380 100, 480 100 S 570 40, 590 30" />
             </EcoLineDraw>
           </div>
@@ -173,7 +183,7 @@ export default function DevMotionPage() {
               Aspect-Ratio, overflow hidden). Platzhalter: Eco-Gradient.
             </p>
           </Reveal>
-          <ParallaxMedia aspectRatio="21 / 9" amount={8}>
+          <ParallaxMedia aspectRatio="21 / 9" strength={8}>
             <div className={styles.parallaxPlaceholder}>
               <span className={styles.parallaxLabel}>Parallax-Media (Platzhalter)</span>
             </div>

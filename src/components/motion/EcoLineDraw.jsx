@@ -1,5 +1,6 @@
 import { Children, cloneElement, isValidElement, useEffect, useId, useRef } from 'react';
 import usePrefersReducedMotion from '../../lib/usePrefersReducedMotion.js';
+import { EASE_OUT, DUR_XSLOW } from './motionTokens.js';
 import styles from './EcoLineDraw.module.css';
 
 /**
@@ -13,17 +14,20 @@ import styles from './EcoLineDraw.module.css';
  * `stop-color: var(--…)` classes in the module — no hex outside tokens.css.
  *
  * anime.js is dynamically imported inside the effect, so it stays out of the
- * SSR bundle and out of chunks that never draw a line.
+ * SSR bundle and out of chunks that never draw a line — and it is not even
+ * fetched when the line is already on screen at mount.
  *
- * SSG/reduced motion: the plain SVG renders fully drawn (final state) —
- * nothing is hidden until the client decides to animate.
+ * Hydration/flash safety: the SVG renders fully drawn by default (SSG and
+ * reduced motion included). The hide-then-draw is only armed when the SVG
+ * mounted fully below the fold — a divider already visible when prerendered
+ * HTML hydrates is never blanked and redrawn.
  *
  * @param {object} props
  * @param {string} [props.d] Path data (alternative to children).
  * @param {string} [props.viewBox='0 0 600 60']
  * @param {number} [props.strokeWidth=3]
- * @param {number} [props.duration=900] Milliseconds (anime.js).
- * @param {number} [props.delay=0] Milliseconds before drawing starts.
+ * @param {number} [props.duration=0.9] Seconds (converted to ms for anime.js).
+ * @param {number} [props.delay=0] Seconds before drawing starts.
  * @param {number} [props.amount=0.3] IntersectionObserver threshold.
  * @param {string} [props.className]
  * @param {import('react').ReactNode} [props.children] `<path>` elements.
@@ -32,7 +36,7 @@ export default function EcoLineDraw({
   d,
   viewBox = '0 0 600 60',
   strokeWidth = 3,
-  duration = 900,
+  duration = DUR_XSLOW,
   delay = 0,
   amount = 0.3,
   className,
@@ -50,6 +54,11 @@ export default function EcoLineDraw({
     const svgEl = svgRef.current;
     if (!svgEl) return undefined;
 
+    // Never hide a line that's already on screen (or scrolled past): only
+    // arm the draw for SVGs mounted fully below the fold. Skipping here also
+    // avoids fetching anime.js at all for in-view dividers.
+    if (svgEl.getBoundingClientRect().top <= window.innerHeight) return undefined;
+
     let disposed = false;
     let observer;
     let animation;
@@ -65,7 +74,10 @@ export default function EcoLineDraw({
       if (paths.length === 0) return;
 
       drawables = svg.createDrawable(paths);
-      utils.set(drawables, { draw: '0 0' }); // hide until in view
+      utils.set(drawables, { draw: '0 0' }); // hide until in view (still off-screen)
+
+      const durationMs = duration * 1000;
+      const delayMs = delay * 1000;
 
       observer = new IntersectionObserver(
         (entries) => {
@@ -73,10 +85,10 @@ export default function EcoLineDraw({
           observer.disconnect();
           animation = animate(drawables, {
             draw: '0 1',
-            duration,
+            duration: durationMs,
             // --ease-out (tokens.css)
-            ease: cubicBezier(0.16, 1, 0.3, 1),
-            delay: paths.length > 1 ? stagger(120, { start: delay }) : delay,
+            ease: cubicBezier(...EASE_OUT),
+            delay: paths.length > 1 ? stagger(120, { start: delayMs }) : delayMs,
           });
         },
         { threshold: amount }
