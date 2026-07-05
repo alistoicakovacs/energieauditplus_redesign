@@ -1,0 +1,184 @@
+/* Homepage — layout composition ONLY (plan §3 reuse mandate): grid
+   templates/spans, gaps, spacing, alignment, max-widths. No colors, no
+   fonts, no shadows — all visual language lives in the component library. */
+
+.sectionHead {
+  max-width: 72ch;
+  margin-bottom: var(--space-7);
+}
+
+.sectionHeadCentered {
+  composes: sectionHead;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.ctaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+}
+
+/* ---- Positionierung: 5 USP cards ---- */
+
+.uspGrid {
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .uspGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .uspGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.uspSummary {
+  margin-top: var(--space-6);
+}
+
+/* ---- Leistungen: asymmetric bento (plan §6.1.4 — grid composition) ---- */
+
+.bento {
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: 1fr;
+}
+
+/* Cell wrappers (Reveal divs) render as single-cell grids so the card
+   inside stretches to the full cell height. */
+.bentoCell {
+  display: grid;
+  min-width: 0;
+}
+
+@media (min-width: 640px) {
+  .bento {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .bentoFeatured,
+  .bentoWide {
+    grid-column: span 2;
+  }
+}
+
+@media (min-width: 1024px) {
+  .bento {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .bentoFeatured {
+    grid-column: span 2;
+    grid-row: span 2;
+  }
+
+  .bentoWide {
+    grid-column: span 2;
+  }
+}
+
+/* ---- Zielgruppen ---- */
+
+.zielgruppenGrid {
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .zielgruppenGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .zielgruppenGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* ---- QNG-flow teaser (dark band): text | media ---- */
+
+.qngGrid {
+  display: grid;
+  gap: var(--space-7);
+  align-items: center;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 900px) {
+  .qngGrid {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  }
+}
+
+.qngText {
+  max-width: 60ch;
+}
+
+.qngText > p + p {
+  margin-top: var(--space-4);
+}
+
+.qngCta {
+  margin-top: var(--space-6);
+}
+
+/* ---- Ablauf ---- */
+
+.ablaufCta {
+  margin-top: var(--space-7);
+}
+
+/* ---- Standorte: map | details ---- */
+
+.standorteGrid {
+  display: grid;
+  gap: var(--space-7);
+  align-items: start;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 900px) {
+  .standorteGrid {
+    grid-template-columns: minmax(260px, 5fr) minmax(0, 7fr);
+  }
+}
+
+.standorteMap {
+  max-width: 420px;
+  margin-inline: auto;
+}
+
+.standorteList {
+  list-style: none;
+  margin: var(--space-6) 0 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-3) var(--space-5);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 480px) {
+  .standorteList {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.standorteList li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.standorteCta {
+  margin-top: var(--space-6);
+}
