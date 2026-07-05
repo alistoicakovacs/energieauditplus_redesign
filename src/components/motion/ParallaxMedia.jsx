@@ -23,12 +23,14 @@ import styles from './ParallaxMedia.module.css';
  * @param {object} props
  * @param {number} [props.strength=6] Max offset in % of frame height (clamped to 8).
  * @param {string} [props.aspectRatio='16 / 9'] CSS aspect-ratio of the frame.
+ * @param {boolean} [props.rounded=false] Card-radius frame (`--radius-lg`).
  * @param {string} [props.className] Extra class on the frame.
  * @param {import('react').ReactNode} props.children The media (img, video, div…).
  */
 export default function ParallaxMedia({
   strength = 6,
   aspectRatio = '16 / 9',
+  rounded = false,
   className,
   children,
   ...rest
@@ -44,7 +46,9 @@ export default function ParallaxMedia({
   });
   const y = useTransform(scrollYProgress, [0, 1], [`-${offset}%`, `${offset}%`]);
 
-  const classes = [styles.frame, className].filter(Boolean).join(' ');
+  const classes = [styles.frame, rounded ? styles.rounded : '', className]
+    .filter(Boolean)
+    .join(' ');
   // Static in both modes → no re-crop when reduced-motion state flips.
   const insets = { top: `-${offset}%`, bottom: `-${offset}%` };
 

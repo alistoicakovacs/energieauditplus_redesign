@@ -6,6 +6,11 @@
   overflow: hidden;
 }
 
+/* Opt-in card-radius frame (library variant — pages must not restyle). */
+.rounded {
+  border-radius: var(--radius-lg);
+}
+
 .media {
   position: absolute;
   top: 0;

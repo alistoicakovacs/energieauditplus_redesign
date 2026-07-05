@@ -83,6 +83,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  /* Wrap: with many slides the 44px indicator dots exceed narrow viewports
+     (8 dots + arrows > 375px) — dots move to a second row instead of
+     overflowing the page horizontally. */
+  flex-wrap: wrap;
   gap: var(--space-4);
   margin-top: var(--space-5);
 }
@@ -91,6 +95,8 @@
 
 .indicators {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 /* 44px touch target around a 10px visual dot. */
