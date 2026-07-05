@@ -1,12 +1,8 @@
 import { Mail, MapPin, Phone } from 'lucide-react';
 import { Heading, IconChip } from '../primitives/index.js';
+import { telHref } from '../../lib/linkUtils.js';
 import Card from './Card.jsx';
 import styles from './StandortCard.module.css';
-
-/** "03341 4272935" → tel:-safe href value. */
-function telHref(phone) {
-  return phone.replace(/[^+\d]/g, '');
-}
 
 /**
  * StandortCard — location name + address lines + optional phone/mail

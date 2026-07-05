@@ -87,42 +87,7 @@
   margin-top: var(--space-5);
 }
 
-.navButton {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--color-border);
-  background-color: var(--white);
-  color: var(--color-primary);
-  cursor: pointer;
-  transition:
-    background-color var(--dur-fast) var(--ease-out),
-    border-color var(--dur-fast) var(--ease-out),
-    box-shadow var(--dur-base) var(--ease-out);
-}
-
-.navButton:hover {
-  background-color: var(--blue-50);
-  border-color: var(--blue-200);
-  box-shadow: var(--shadow-sm);
-}
-
-.navButton:active {
-  background-color: var(--blue-100);
-}
-
-.navButton:focus-visible {
-  outline: none;
-  box-shadow: var(--ring-focus);
-}
-
-.navIcon {
-  width: 22px;
-  height: 22px;
-}
+/* Prev/next are the shared IconButton primitive (44px circle). */
 
 .indicators {
   display: flex;
@@ -133,7 +98,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
+  width: 44px;
   height: 44px;
   border: 0;
   background: none;

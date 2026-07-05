@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { motion } from 'motion/react';
 import { ArrowRight } from 'lucide-react';
 import { Heading, IconChip } from '../primitives/index.js';
@@ -5,6 +6,9 @@ import Card from './Card.jsx';
 import styles from './ServiceCard.module.css';
 
 const arrowSpring = { type: 'spring', stiffness: 400, damping: 24 };
+
+/** Contract: ONE-liner. Beyond this the card stops scanning as a tile. */
+const MAX_DESCRIPTION_CHARS = 120;
 
 /** Hooks into the Card's propagated `hover`/`press` variant labels. */
 const arrowVariants = {
@@ -38,6 +42,20 @@ export default function ServiceCard({
   className = '',
   ...rest
 }) {
+  const warnedRef = useRef(false);
+  if (
+    import.meta.env.DEV &&
+    description &&
+    description.length > MAX_DESCRIPTION_CHARS &&
+    !warnedRef.current
+  ) {
+    warnedRef.current = true;
+    // eslint-disable-next-line no-console
+    console.warn(
+      `[ServiceCard] Beschreibung von „${title}" hat ${description.length} Zeichen — der Kontrakt (Style Guide §5.3) verlangt einen Einzeiler (≤ ${MAX_DESCRIPTION_CHARS}).`
+    );
+  }
+
   const classes = [styles.service, className].filter(Boolean).join(' ');
   return (
     <Card to={to} className={classes} {...rest}>

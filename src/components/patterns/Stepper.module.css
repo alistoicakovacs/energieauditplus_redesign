@@ -98,8 +98,11 @@
     position: absolute;
     top: 21px; /* chip center (24px) minus half the 6px viewBox height */
     left: 24px;
-    /* End at the LAST chip's center: pull back one column width minus 24px. */
-    right: calc(100% / var(--step-count, 4) - 24px);
+    /* End at the LAST chip's center: pull back one gap-exact column width
+       (columns are flex:1 with (n-1) gaps of --space-5) minus 24px. */
+    right: calc(
+      (100% - (var(--step-count, 4) - 1) * var(--space-5)) / var(--step-count, 4) - 24px
+    );
     height: 6px;
   }
 }

@@ -19,7 +19,8 @@
   flex-shrink: 0;
   min-width: 100%;
   box-sizing: border-box;
-  animation: trust-marquee 36s linear infinite;
+  /* Duration set per item count from JS (--marquee-duration). */
+  animation: trust-marquee var(--marquee-duration, 36s) linear infinite;
 }
 
 @keyframes trust-marquee {

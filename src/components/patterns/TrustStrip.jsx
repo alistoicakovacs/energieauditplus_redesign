@@ -5,6 +5,8 @@ import styles from './TrustStrip.module.css';
  * TODO: replace these text-based wordmark placeholders with the real
  * partner/certifier SVG logos once licensing/assets are cleared.
  * Tones alternate blue/green purely as placeholder styling.
+ * NOTE: the CSS `:focus-within` pause is latent until the wordmarks become
+ * real (focusable) links — the logo-swap task must verify it then.
  */
 const DEFAULT_PARTNERS = [
   { name: 'dena', tone: 'blue' },
@@ -75,9 +77,13 @@ export default function TrustStrip({
       </li>
     ));
 
+  // Duration scales with item count so the px/s speed stays sane whether
+  // 4 or 12 partners are passed (and on ultrawide viewports).
+  const marqueeStyle = { '--marquee-duration': `${partners.length * 6}s` };
+
   return (
     <div ref={rootRef} className={classes} role="group" aria-label={label} {...rest}>
-      <div className={styles.viewport}>
+      <div className={styles.viewport} style={marqueeStyle}>
         <ul className={styles.track}>{renderItems()}</ul>
         <ul className={styles.track} aria-hidden="true">
           {renderItems()}

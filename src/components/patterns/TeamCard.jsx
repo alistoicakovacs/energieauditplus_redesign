@@ -1,5 +1,6 @@
 import { Mail, MapPin, Phone } from 'lucide-react';
-import { Heading, Overline } from '../primitives/index.js';
+import { Heading, IconButton, Overline } from '../primitives/index.js';
+import { telHref } from '../../lib/linkUtils.js';
 import Card from './Card.jsx';
 import styles from './TeamCard.module.css';
 
@@ -12,11 +13,6 @@ function initialsOf(name) {
     .slice(0, 2)
     .join('')
     .toUpperCase();
-}
-
-/** "03341 4272935" / "+49 1742 434739" → tel:-safe href value. */
-function telHref(phone) {
-  return phone.replace(/[^+\d]/g, '');
 }
 
 /**
@@ -91,22 +87,10 @@ export default function TeamCard({
         {(email || phone) && (
           <div className={styles.actions}>
             {email && (
-              <a
-                href={`mailto:${email}`}
-                className={styles.iconButton}
-                aria-label={`E-Mail an ${name} schreiben`}
-              >
-                <Mail className={styles.actionIcon} strokeWidth={1.85} aria-hidden="true" />
-              </a>
+              <IconButton icon={Mail} href={`mailto:${email}`} label={`E-Mail an ${name} schreiben`} />
             )}
             {phone && (
-              <a
-                href={`tel:${telHref(phone)}`}
-                className={styles.iconButton}
-                aria-label={`${name} anrufen`}
-              >
-                <Phone className={styles.actionIcon} strokeWidth={1.85} aria-hidden="true" />
-              </a>
+              <IconButton icon={Phone} href={`tel:${telHref(phone)}`} label={`${name} anrufen`} />
             )}
           </div>
         )}

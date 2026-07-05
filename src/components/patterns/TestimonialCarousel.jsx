@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { ChevronLeft, ChevronRight, Star } from 'lucide-react';
+import { IconButton } from '../primitives/index.js';
 import usePrefersReducedMotion from '../../lib/usePrefersReducedMotion.js';
 import { DUR_BASE, EASE_OUT } from '../motion/motionTokens.js';
 import styles from './TestimonialCarousel.module.css';
@@ -41,6 +42,18 @@ export default function TestimonialCarousel({
 }) {
   const reduced = usePrefersReducedMotion();
   const [[index, direction], setState] = useState([0, 0]);
+  const warnedRef = useRef(false);
+
+  // Empty guard (same convention as Stepper's contract warning).
+  if (!items || items.length === 0) {
+    if (import.meta.env.DEV && !warnedRef.current) {
+      warnedRef.current = true;
+      // eslint-disable-next-line no-console
+      console.warn('[TestimonialCarousel] keine Bewertungen übergeben — es wird nichts gerendert.');
+    }
+    return null;
+  }
+
   const count = items.length;
 
   const goTo = (next, dir) => {
@@ -116,14 +129,7 @@ export default function TestimonialCarousel({
       </div>
 
       <div className={styles.controls}>
-        <button
-          type="button"
-          className={styles.navButton}
-          onClick={prev}
-          aria-label="Vorherige Bewertung"
-        >
-          <ChevronLeft className={styles.navIcon} strokeWidth={2} aria-hidden="true" />
-        </button>
+        <IconButton icon={ChevronLeft} onClick={prev} label="Vorherige Bewertung" />
         <div className={styles.indicators}>
           {items.map((entry, i) => (
             <button
@@ -140,14 +146,7 @@ export default function TestimonialCarousel({
             </button>
           ))}
         </div>
-        <button
-          type="button"
-          className={styles.navButton}
-          onClick={next}
-          aria-label="Nächste Bewertung"
-        >
-          <ChevronRight className={styles.navIcon} strokeWidth={2} aria-hidden="true" />
-        </button>
+        <IconButton icon={ChevronRight} onClick={next} label="Nächste Bewertung" />
       </div>
     </div>
   );
