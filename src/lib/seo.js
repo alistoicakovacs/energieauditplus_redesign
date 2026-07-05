@@ -12,6 +12,11 @@
 export const SITE_NAME = 'EnergieAudit Plus';
 export const SITE_URL = import.meta.env.VITE_SITE_URL ?? 'https://ea-plus.de';
 
+// Site-wide og:image fallback (1200×630). public/og-default.png is a
+// generated branded PLACEHOLDER (wordmark on dark gradient) —
+// TODO: replace with a real brand image before launch.
+export const DEFAULT_OG_IMAGE = `${SITE_URL}/og-default.png`;
+
 const DEFAULT_DESCRIPTION =
   'EnergieAudit Plus — Energieberatung aus einer Hand: Neubau, Bestand, Fördermittel, LCA, Raumluftmessung, Blower-Door-Test und Nachhaltigkeitsaudit mit QNG-flow.'; // NEW COPY: review
 
@@ -47,16 +52,30 @@ const descriptions = {
 
 /**
  * Resolve the SEO metadata for a route.
+ * Per-page overrides (rendered by the page phases via
+ * <Seo description=… image=…>) win over the central path-keyed map, which
+ * in turn wins over the site defaults.
+ *
  * @param {string} path   route path from src/routes.jsx ('*' for the 404 route)
  * @param {string} [title] route title from src/routes.jsx
+ * @param {object} [overrides]
+ * @param {string} [overrides.description]  page-specific meta description
+ * @param {string} [overrides.image]        page-specific og:image (absolute
+ *                                          URL or site-root-relative path)
  */
-export function getSeoMeta(path, title) {
+export function getSeoMeta(path, title, overrides = {}) {
   const isNotFound = path === '*';
+  const image = overrides.image
+    ? overrides.image.startsWith('/')
+      ? `${SITE_URL}${overrides.image}`
+      : overrides.image
+    : DEFAULT_OG_IMAGE;
   return {
     title: title ?? SITE_NAME,
-    description: descriptions[path] ?? DEFAULT_DESCRIPTION,
+    description: overrides.description ?? descriptions[path] ?? DEFAULT_DESCRIPTION,
     // 404 has no canonical URL and must not be indexed.
     canonical: isNotFound ? null : `${SITE_URL}${path === '/' ? '/' : path}`,
     noindex: isNotFound,
+    image,
   };
 }
