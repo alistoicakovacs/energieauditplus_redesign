@@ -1,22 +1,24 @@
 import { useRef } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 
+// 160ms exit + 240ms enter = 400ms total, the plan §7.2 ceiling.
 const pageMotion = {
   initial: { opacity: 0, y: 16 },
   enter: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.3, ease: [0.16, 1, 0.3, 1] },
+    transition: { duration: 0.24, ease: [0.16, 1, 0.3, 1] },
   },
   exit: {
     opacity: 0,
     y: -8,
-    transition: { duration: 0.2, ease: [0.65, 0, 0.35, 1] },
+    transition: { duration: 0.16, ease: [0.65, 0, 0.35, 1] },
   },
 };
 
 /**
- * Route transition: exit-then-enter fade/slide (≤400ms total). After the
+ * Route transition: exit-then-enter fade/slide (160ms + 240ms = 400ms,
+ * plan §7.2 "≤400ms"). After the
  * enter animation of a client-side navigation, focus moves to the new page's
  * <h1> (a11y, plan §7.2). Transforms are dropped automatically under
  * prefers-reduced-motion via the app-level <MotionConfig reducedMotion="user">.

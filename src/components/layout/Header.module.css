@@ -3,7 +3,7 @@
 .header {
   position: sticky;
   top: 0;
-  z-index: 50;
+  z-index: var(--z-header);
   transition: box-shadow var(--dur-base) var(--ease-out);
 }
 

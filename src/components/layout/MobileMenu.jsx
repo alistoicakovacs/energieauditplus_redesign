@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import { X, ChevronDown, Phone, Mail } from 'lucide-react';
 import { Button } from '../primitives/index.js';
 import Wordmark from './Wordmark.jsx';
+import ContactLink from './ContactLink.jsx';
 import { services, mainNavLinks, contact } from '../../lib/navigation.js';
 import { normalizePathname } from '../../lib/linkUtils.js';
 import styles from './MobileMenu.module.css';
@@ -22,10 +23,23 @@ const accordionMotion = {
   transition: { duration: 0.25, ease: [0.16, 1, 0.3, 1] },
 };
 
+// Everything keyboard-focusable inside the dialog, for the focus trap. The
+// menu currently only contains links and buttons, but form controls and
+// explicit tabindexes are covered so future menu content stays trapped.
+const FOCUSABLE_SELECTOR = [
+  'a[href]',
+  'button:not([disabled])',
+  'input:not([disabled])',
+  'select:not([disabled])',
+  'textarea:not([disabled])',
+  '[tabindex]:not([tabindex="-1"])',
+].join(', ');
+
 /**
  * Full-screen mobile menu (slide-in dialog): accordion for Leistungen,
  * top-level links, contact shortcuts, CTA pinned to the bottom.
- * Focus is trapped while open; Esc, backdrop-close and route change close it.
+ * Focus is trapped while open; the close button, Esc and route changes
+ * close it (full-screen — there is no backdrop to click).
  *
  * @param {object} props
  * @param {boolean} props.open
@@ -75,7 +89,7 @@ export default function MobileMenu({ open, onClose }) {
     if (event.key !== 'Tab') return;
     // Focus trap: cycle within the dialog.
     const focusables = Array.from(
-      dialogRef.current?.querySelectorAll('a[href], button:not([disabled])') ?? []
+      dialogRef.current?.querySelectorAll(FOCUSABLE_SELECTOR) ?? []
     );
     if (focusables.length === 0) return;
     const first = focusables[0];
@@ -122,7 +136,7 @@ export default function MobileMenu({ open, onClose }) {
                   type="button"
                   className={styles.accordionTrigger}
                   aria-expanded={servicesOpen}
-                  aria-controls={accordionId}
+                  aria-controls={servicesOpen ? accordionId : undefined /* list only when mounted */}
                   onClick={() => setServicesOpen((v) => !v)}
                 >
                   Leistungen
@@ -171,14 +185,22 @@ export default function MobileMenu({ open, onClose }) {
           </nav>
 
           <div className={styles.contact}>
-            <a className={styles.contactLink} href={contact.phoneHref}>
-              <Phone className={styles.contactIcon} aria-hidden="true" />
+            <ContactLink
+              href={contact.phoneHref}
+              icon={Phone}
+              className={styles.contactLink}
+              iconClassName={styles.contactIcon}
+            >
               {contact.phoneDisplay}
-            </a>
-            <a className={styles.contactLink} href={contact.emailHref}>
-              <Mail className={styles.contactIcon} aria-hidden="true" />
+            </ContactLink>
+            <ContactLink
+              href={contact.emailHref}
+              icon={Mail}
+              className={styles.contactLink}
+              iconClassName={styles.contactIcon}
+            >
               {contact.emailDisplay}
-            </a>
+            </ContactLink>
           </div>
 
           <div className={styles.ctaBar}>

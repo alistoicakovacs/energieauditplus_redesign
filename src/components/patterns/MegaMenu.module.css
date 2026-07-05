@@ -55,7 +55,7 @@
   position: absolute;
   top: 100%;
   left: calc(-1 * var(--space-6));
-  z-index: 60;
+  z-index: var(--z-mega-menu);
   /* hover bridge between trigger and card */
   padding-top: var(--space-2);
   transform-origin: top left;

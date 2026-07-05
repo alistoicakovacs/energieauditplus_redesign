@@ -79,4 +79,12 @@
   --shadow-lg:0 18px 48px rgba(15,27,45,.10);
   --shadow-brand:0 16px 40px rgba(16,83,136,.18);
   --ring-focus:0 0 0 3px rgba(30,135,201,.45);
+
+  /* ---- z-index scale (global UI chrome layers, bottom → top) ----
+     header (sticky chrome) < mega-menu (panel inside header) <
+     overlay (full-screen menus/dialogs) < skip (skip-link must beat all). */
+  --z-header:50;
+  --z-mega-menu:60;
+  --z-overlay:90;
+  --z-skip:100;
 }

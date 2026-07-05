@@ -17,7 +17,7 @@
   position: fixed;
   top: var(--space-3);
   left: var(--space-3);
-  z-index: 100;
+  z-index: var(--z-skip);
   padding: var(--space-3) var(--space-5);
   background: var(--color-primary);
   color: var(--color-text-invert);

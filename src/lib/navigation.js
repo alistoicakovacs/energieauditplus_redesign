@@ -68,6 +68,12 @@ export const mainNavLinks = [
   { name: 'Kontakt', to: '/kontakt' },
 ];
 
+/** Legal links (footer "Rechtliches" column + legal bar). */
+export const legalLinks = [
+  { name: 'Impressum', to: '/impressum' },
+  { name: 'Datenschutzerklärung', to: '/datenschutzerklaerung' },
+];
+
 /** Zentrale contact data — verbatim from handoff/content/kontakt.md. */
 export const contact = {
   phoneDisplay: '03341 4272935',

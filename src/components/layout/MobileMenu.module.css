@@ -1,9 +1,18 @@
 /* Full-screen mobile menu — dark navy slide-in dialog. */
 
+/* STACKING CONSTRAINT: this fixed overlay is NOT portaled — it renders
+   inside <header>, i.e. inside the header's stacking context (--z-header).
+   That is safe as long as (a) no sibling stacking context of the header
+   uses a z-index above --z-header, and (b) the header never gains
+   transform/filter/perspective (those would create a containing block and
+   trap this position:fixed element). Kept un-portaled deliberately: a
+   portal renders nothing during SSG and complicates hydration and focus
+   handling for zero current benefit. Revisit if page content ever needs
+   to stack above the header. */
 .overlay {
   position: fixed;
   inset: 0;
-  z-index: 90;
+  z-index: var(--z-overlay);
   display: flex;
   flex-direction: column;
   background: var(--grad-dark);

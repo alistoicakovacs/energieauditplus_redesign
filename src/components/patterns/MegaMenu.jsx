@@ -28,6 +28,10 @@ export default function MegaMenu({ active = false, underline = null }) {
   const triggerRef = useRef(null);
   const panelRef = useRef(null);
   const hoverTimer = useRef(null);
+  // True while the current open state was initiated by hover: the first
+  // click after a hover-open must keep the menu open (the user's intent
+  // was "open", not "toggle").
+  const openedByHover = useRef(false);
   const panelId = useId();
   const { pathname } = useLocation();
 
@@ -38,8 +42,12 @@ export default function MegaMenu({ active = false, underline = null }) {
     }
   };
 
+  // Don't leave a pending hover-close timer behind on unmount.
+  useEffect(() => clearHoverTimer, []);
+
   const close = useCallback((focusTrigger = false) => {
     clearHoverTimer();
+    openedByHover.current = false;
     setOpen(false);
     if (focusTrigger) triggerRef.current?.focus();
   }, []);
@@ -47,6 +55,7 @@ export default function MegaMenu({ active = false, underline = null }) {
   // Close on route change (tile click navigates).
   useEffect(() => {
     clearHoverTimer();
+    openedByHover.current = false;
     setOpen(false);
   }, [pathname]);
 
@@ -73,9 +82,25 @@ export default function MegaMenu({ active = false, underline = null }) {
   const onTriggerKeyDown = (event) => {
     if (event.key === 'ArrowDown') {
       event.preventDefault();
+      openedByHover.current = false;
       setOpen(true);
       // Panel mounts on next frame; focus the first tile once it exists.
       requestAnimationFrame(() => focusTile(0));
+    }
+  };
+
+  const onTriggerClick = () => {
+    if (open && openedByHover.current) {
+      // Hover already opened it — treat this click as confirmation, not a
+      // toggle (closing here would fight the user's "open" intent).
+      openedByHover.current = false;
+      return;
+    }
+    if (open) {
+      close();
+    } else {
+      openedByHover.current = false;
+      setOpen(true);
     }
   };
 
@@ -121,6 +146,7 @@ export default function MegaMenu({ active = false, underline = null }) {
   const onPointerEnter = (event) => {
     if (event.pointerType !== 'mouse') return;
     clearHoverTimer();
+    if (!open) openedByHover.current = true;
     setOpen(true);
   };
 
@@ -147,8 +173,8 @@ export default function MegaMenu({ active = false, underline = null }) {
         className={styles.trigger}
         data-active={active || undefined}
         aria-expanded={open}
-        aria-controls={panelId}
-        onClick={() => (open ? close() : setOpen(true))}
+        aria-controls={open ? panelId : undefined /* panel only when mounted */}
+        onClick={onTriggerClick}
         onKeyDown={onTriggerKeyDown}
       >
         Leistungen

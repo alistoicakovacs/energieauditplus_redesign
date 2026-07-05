@@ -6,6 +6,7 @@ import { Button, Container } from '../primitives/index.js';
 import MegaMenu from '../patterns/MegaMenu.jsx';
 import MobileMenu from './MobileMenu.jsx';
 import Wordmark from './Wordmark.jsx';
+import ContactLink from './ContactLink.jsx';
 import { mainNavLinks, contact } from '../../lib/navigation.js';
 import { normalizePathname } from '../../lib/linkUtils.js';
 import styles from './Header.module.css';
@@ -46,14 +47,22 @@ export default function Header() {
       <div className={styles.utility}>
         <Container width="wide" className={styles.utilityInner}>
           <div className={styles.utilityGroup}>
-            <a className={styles.utilityLink} href={contact.phoneHref}>
-              <Phone className={styles.utilityIcon} aria-hidden="true" />
+            <ContactLink
+              href={contact.phoneHref}
+              icon={Phone}
+              className={styles.utilityLink}
+              iconClassName={styles.utilityIcon}
+            >
               {contact.phoneDisplay}
-            </a>
-            <a className={styles.utilityLink} href={contact.emailHref}>
-              <Mail className={styles.utilityIcon} aria-hidden="true" />
+            </ContactLink>
+            <ContactLink
+              href={contact.emailHref}
+              icon={Mail}
+              className={styles.utilityLink}
+              iconClassName={styles.utilityIcon}
+            >
               {contact.emailDisplay}
-            </a>
+            </ContactLink>
           </div>
           <div className={`${styles.utilityGroup} ${styles.utilityMeta}`}>
             <span className={styles.utilityHint}>

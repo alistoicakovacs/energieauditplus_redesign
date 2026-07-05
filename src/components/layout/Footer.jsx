@@ -1,19 +1,15 @@
 import { Phone, Mail, MapPin } from 'lucide-react';
 import { Container, Link } from '../primitives/index.js';
 import Wordmark from './Wordmark.jsx';
-import { services, contact, locationNames } from '../../lib/navigation.js';
+import ContactLink from './ContactLink.jsx';
+import {
+  services,
+  mainNavLinks,
+  legalLinks,
+  contact,
+  locationNames,
+} from '../../lib/navigation.js';
 import styles from './Footer.module.css';
-
-const unternehmenLinks = [
-  { name: 'Karriere', to: '/karriere' },
-  { name: 'Ansprechpartner', to: '/ansprechpartner' },
-  { name: 'Kontakt', to: '/kontakt' },
-];
-
-const legalLinks = [
-  { name: 'Impressum', to: '/impressum' },
-  { name: 'Datenschutzerklärung', to: '/datenschutzerklaerung' },
-];
 
 /**
  * Global footer on dark navy: eco-gradient hairline, brand column + link
@@ -56,7 +52,7 @@ export default function Footer() {
           <nav className={styles.col} aria-label="Unternehmen">
             <h2 className={styles.colTitle}>Unternehmen</h2>
             <ul className={styles.linkList}>
-              {unternehmenLinks.map(({ name, to }) => (
+              {mainNavLinks.map(({ name, to }) => (
                 <li key={to}>
                   <Link to={to} variant="onDark" className={styles.footerLink}>
                     {name}
@@ -88,16 +84,24 @@ export default function Footer() {
             </address>
             <ul className={styles.contactList}>
               <li>
-                <a className={styles.contactLink} href={contact.phoneHref}>
-                  <Phone className={styles.contactIcon} aria-hidden="true" />
+                <ContactLink
+                  href={contact.phoneHref}
+                  icon={Phone}
+                  className={styles.contactLink}
+                  iconClassName={styles.contactIcon}
+                >
                   {contact.phoneDisplay}
-                </a>
+                </ContactLink>
               </li>
               <li>
-                <a className={styles.contactLink} href={contact.emailHref}>
-                  <Mail className={styles.contactIcon} aria-hidden="true" />
+                <ContactLink
+                  href={contact.emailHref}
+                  icon={Mail}
+                  className={styles.contactLink}
+                  iconClassName={styles.contactIcon}
+                >
                   {contact.emailDisplay}
-                </a>
+                </ContactLink>
               </li>
             </ul>
             <h2 className={styles.colTitle}>Standorte</h2>
