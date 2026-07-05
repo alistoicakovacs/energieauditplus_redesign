@@ -102,30 +102,42 @@ for (const route of targets) {
 
   const outFiles = [];
   if (route.file) {
-    outFiles.push(path.join(distDir, route.file));
+    outFiles.push({ file: path.join(distDir, route.file), twin: false });
   } else if (url === '/') {
-    outFiles.push(path.join(distDir, 'index.html'));
+    outFiles.push({ file: path.join(distDir, 'index.html'), twin: false });
   } else {
     const segments = url.replace(/^\//, '').split('/');
     // Directory-style file serves the canonical trailing-slash URL (/foo/).
-    outFiles.push(path.join(distDir, ...segments, 'index.html'));
+    outFiles.push({ file: path.join(distDir, ...segments, 'index.html'), twin: false });
     // Extensionless twin (/foo.html) serves the slash-less URL (/foo).
     // Vite-preview-shaped hosts resolve /foo → foo.html but NOT
     // foo/index.html — without the twin they SPA-fall back to the homepage
     // /index.html, and hydrating a non-home route against homepage markup
     // throws React #418 on every prerendered page except /.
-    outFiles.push(path.join(distDir, ...segments.slice(0, -1), `${segments.at(-1)}.html`));
+    // NOTE (known, do not re-investigate): URLs that match NO prerendered
+    // route (e.g. /gibt-es-nicht) still SPA-fall back to /index.html under
+    // vite-preview-shaped hosts and will log the same #418 there — that is
+    // a preview-only artifact; production hosts serve the prerendered
+    // 404.html for unknown routes.
+    outFiles.push({
+      file: path.join(distDir, ...segments.slice(0, -1), `${segments.at(-1)}.html`),
+      twin: true,
+    });
   }
 
-  for (const outFile of outFiles) {
-    await mkdir(path.dirname(outFile), { recursive: true });
-    await writeFile(outFile, html, 'utf-8');
-    written.push(path.relative(distDir, outFile).replaceAll(path.sep, '/'));
+  for (const { file, twin } of outFiles) {
+    await mkdir(path.dirname(file), { recursive: true });
+    await writeFile(file, html, 'utf-8');
+    written.push({ file: path.relative(distDir, file).replaceAll(path.sep, '/'), twin });
   }
 }
 
 // The server bundle is a build artifact only — not deployed.
 await rm(path.join(root, 'dist-server'), { recursive: true, force: true });
 
-console.log(`Prerendered ${written.length} pages:`);
-for (const f of written) console.log(`  dist/${f}`);
+const pages = written.filter((w) => !w.twin);
+const twins = written.filter((w) => w.twin);
+console.log(`Prerendered ${pages.length} pages + ${twins.length} extensionless twins:`);
+for (const { file } of pages) console.log(`  dist/${file}`);
+console.log('  twins (slash-less URL fallback for vite-preview-shaped hosts):');
+for (const { file } of twins) console.log(`    dist/${file}`);
