@@ -1,0 +1,17 @@
+/* CountUp — stacked sizer + live text; width is reserved by the sizer so the
+   ticking number never shifts layout. */
+
+.root {
+  display: inline-grid;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.sizer {
+  grid-area: 1 / 1;
+  visibility: hidden;
+}
+
+.live {
+  grid-area: 1 / 1;
+}
