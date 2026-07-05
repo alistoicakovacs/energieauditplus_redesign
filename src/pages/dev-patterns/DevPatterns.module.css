@@ -1,0 +1,97 @@
+.lead {
+  font-size: var(--fs-lead);
+  color: var(--color-text-muted);
+  margin-top: var(--space-4);
+}
+
+.note {
+  font-size: var(--fs-small);
+  color: var(--color-text-muted);
+  margin-top: var(--space-3);
+}
+
+.sub {
+  margin-top: var(--space-7);
+  margin-bottom: var(--space-4);
+}
+
+.sectionHead {
+  margin-bottom: var(--space-6);
+  max-width: 70ch;
+}
+
+.sectionHeadCentered {
+  margin-bottom: var(--space-6);
+  text-align: center;
+}
+
+.sectionHeadCentered .note {
+  max-width: 60ch;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ---- bento grid (homepage §6.1.4 composition) ---- */
+.bento {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-5);
+}
+
+@media (min-width: 700px) {
+  .bento {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .bento {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .bentoFeatured {
+    grid-column: span 2;
+  }
+}
+
+/* ---- component grids ---- */
+.teamGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-5);
+}
+
+@media (min-width: 600px) {
+  .teamGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .teamGrid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.standortGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-5);
+}
+
+@media (min-width: 768px) {
+  .standortGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ---- trust strip framing ---- */
+.trustWrap {
+  padding: var(--space-8) 0 0;
+}
+
+.trustNote {
+  font-size: var(--fs-small);
+  color: var(--color-text-muted);
+  margin: 0 0 var(--space-4);
+}
