@@ -43,6 +43,10 @@
 
 .title {
   margin: 0;
+  /* Long verbatim step titles (Phase 4a: „Baukostenoptimierung",
+     „Zertifizierungsanmeldung") must wrap inside narrow 6–7-step columns. */
+  overflow-wrap: break-word;
+  hyphens: auto;
 }
 
 .text {
@@ -51,6 +55,10 @@
   font-size: var(--fs-body);
   line-height: 1.55;
   max-width: 38ch;
+  /* Long verbatim compounds („Fachunternehmererklärungen") must wrap
+     inside narrow 6–7-step columns instead of painting into neighbors. */
+  overflow-wrap: break-word;
+  hyphens: auto;
 }
 
 .lineSvg {
@@ -83,6 +91,15 @@
     flex: 1;
     flex-direction: column;
     gap: var(--space-4);
+    /* flex items default to min-width:auto (min-content floor): with 6–7
+       steps the long German titles pushed the row past the viewport
+       (Phase 4a overflow gate). 0 lets columns shrink; titles hyphenate. */
+    min-width: 0;
+    /* Override the base row layout's flex-start: in column direction the
+       cross axis is horizontal, and flex-start sized title/text to their
+       min-content (longest word) — wider than the column, painting into
+       the neighbor. stretch pins children to the column width. */
+    align-items: stretch;
   }
 
   .content {

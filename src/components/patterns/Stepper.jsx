@@ -16,17 +16,20 @@ import styles from './Stepper.module.css';
  * decorative duplicates (`aria-hidden`).
  *
  * @param {object} props
- * @param {{title: string, text?: string}[]} props.steps 3–6 process steps.
+ * @param {{title: string, text?: string}[]} props.steps 3–7 process steps.
  * @param {1|2|3|4|5|6} [props.headingLevel=3] Level of the step titles.
  * @param {string} [props.className]
  */
 export default function Stepper({ steps, headingLevel = 3, className = '', ...rest }) {
   const warnedRef = useRef(false);
-  if (import.meta.env.DEV && (steps.length < 3 || steps.length > 6) && !warnedRef.current) {
+  // Plan §5 originally said 3–6; extended to 7 in Phase 4a because the QNG
+  // page's verbatim process is „In 7 Schritten zur Förderung"
+  // (handoff/content/nachhaltigkeitsaudit-qng-flow.md — content mandate wins).
+  if (import.meta.env.DEV && (steps.length < 3 || steps.length > 7) && !warnedRef.current) {
     warnedRef.current = true;
     // eslint-disable-next-line no-console
     console.warn(
-      `[Stepper] ${steps.length} Schritte — der Kontrakt (Plan §5) verlangt 3–6.`
+      `[Stepper] ${steps.length} Schritte — der Kontrakt (Plan §5, erweitert Phase 4a) verlangt 3–7.`
     );
   }
 

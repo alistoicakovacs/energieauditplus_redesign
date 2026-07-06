@@ -19,6 +19,11 @@
   position: relative;
   display: inline-block;
   white-space: pre-wrap;
+  /* Long German compounds at display size (Phase 4a:
+     „Nachhaltigkeitszertifizierung") must break inside the viewport. */
+  max-width: 100%;
+  overflow-wrap: break-word;
+  hyphens: auto;
 }
 
 /* Muted base layer — always present, keeps layout stable. */
