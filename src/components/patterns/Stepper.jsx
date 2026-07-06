@@ -5,15 +5,20 @@ import styles from './Stepper.module.css';
 
 /**
  * Stepper — Ablauf process steps (plan §5 Tier 2 item 10; style guide §5.7):
- * horizontal on desktop, vertical timeline on mobile, 3–6 steps. The
+ * horizontal on desktop, vertical timeline on mobile, 3–7 steps. The
  * connecting line is an `EcoLineDraw` (signature blue→green gradient) that
  * draws in on scroll — under reduced motion it renders fully drawn
  * (final state), handled inside EcoLineDraw.
  *
+ * Layout threshold (Phase 4a review): with more than 5 steps the desktop
+ * row degrades into unreadably narrow columns, so >5 steps render the
+ * vertical timeline at ALL widths (`data-layout="vertical"`). ≤5 steps
+ * keep the reviewed horizontal desktop row. Derived from props only —
+ * no JS resize listeners, no hydration mismatch.
+ *
  * Two orientation-specific lines are rendered and toggled purely via CSS
- * media queries (no JS resize listeners, no hydration mismatch). Numbering
- * is conveyed semantically by the `<ol>`; the visible number chips are
- * decorative duplicates (`aria-hidden`).
+ * (media query + data-layout). Numbering is conveyed semantically by the
+ * `<ol>`; the visible number chips are decorative duplicates (`aria-hidden`).
  *
  * @param {object} props
  * @param {{title: string, text?: string}[]} props.steps 3–7 process steps.
@@ -34,8 +39,14 @@ export default function Stepper({ steps, headingLevel = 3, className = '', ...re
   }
 
   const classes = [styles.stepper, className].filter(Boolean).join(' ');
+  const layout = steps.length > 5 ? 'vertical' : 'horizontal';
   return (
-    <div className={classes} style={{ '--step-count': steps.length }} {...rest}>
+    <div
+      className={classes}
+      data-layout={layout}
+      style={{ '--step-count': steps.length }}
+      {...rest}
+    >
       {/* Horizontal line (desktop): first chip center → last chip center. */}
       <div className={styles.lineDesktop} aria-hidden="true">
         <EcoLineDraw

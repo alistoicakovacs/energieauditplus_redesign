@@ -9,6 +9,21 @@
 
 .title {
   margin: 0;
+  /* Long verbatim compounds („Zertifizierungsanforderungen") must wrap
+     inside narrow feature-grid columns. max-width pins the flex item to the
+     card (the column flex is align-items:flex-start, so without it the
+     heading sizes to the word's min-content and overflows 320px viewports). */
+  max-width: 100%;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+/* The card is a white surface even inside <Section background="dark">:
+   pin the heading color so the dark section's inverted-heading rule
+   (.dark :is(h1..h6), specificity 0,1,1) cannot render it white-on-white
+   (Phase 4a review: QNG platform feature cards). Two classes (0,2,0) win. */
+.iconCard .title {
+  color: var(--color-heading);
 }
 
 .description {

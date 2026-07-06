@@ -80,20 +80,22 @@
   display: none;
 }
 
-/* ---- desktop: horizontal stepper ---- */
+/* ---- desktop: horizontal stepper — ≤5 steps only. With more steps the
+   row degrades into unreadably narrow columns, so >5 steps keep the
+   vertical timeline at ALL widths (data-layout, Phase 4a review). ---- */
 @media (min-width: 768px) {
-  .list {
+  .stepper[data-layout='horizontal'] .list {
     flex-direction: row;
     gap: var(--space-5);
   }
 
-  .step {
+  .stepper[data-layout='horizontal'] .step {
     flex: 1;
     flex-direction: column;
     gap: var(--space-4);
-    /* flex items default to min-width:auto (min-content floor): with 6–7
-       steps the long German titles pushed the row past the viewport
-       (Phase 4a overflow gate). 0 lets columns shrink; titles hyphenate. */
+    /* flex items default to min-width:auto (min-content floor): long German
+       titles pushed the row past the viewport (Phase 4a overflow gate).
+       0 lets columns shrink; titles hyphenate. */
     min-width: 0;
     /* Override the base row layout's flex-start: in column direction the
        cross axis is horizontal, and flex-start sized title/text to their
@@ -102,15 +104,15 @@
     align-items: stretch;
   }
 
-  .content {
+  .stepper[data-layout='horizontal'] .content {
     padding-top: 0;
   }
 
-  .lineMobile {
+  .stepper[data-layout='horizontal'] .lineMobile {
     display: none;
   }
 
-  .lineDesktop {
+  .stepper[data-layout='horizontal'] .lineDesktop {
     display: block;
     position: absolute;
     top: 21px; /* chip center (24px) minus half the 6px viewBox height */
