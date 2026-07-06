@@ -1,0 +1,39 @@
+/* /ansprechpartner — layout composition ONLY (plan §3 reuse mandate):
+   grid templates, gaps, spacing, max-widths. No colors, no fonts, no
+   shadows — all visual language lives in the component library. */
+
+.breadcrumbBar {
+  padding-top: var(--space-4);
+}
+
+.sectionHead {
+  max-width: 72ch;
+  margin-bottom: var(--space-7);
+}
+
+/* ---- Team grid: 12 TeamCards (Direction B) ---- */
+
+.teamGrid {
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: 1fr;
+}
+
+/* Cell wrappers (Reveal divs) render as single-cell grids so the card
+   inside stretches to the full cell height (same recipe as the service grid). */
+.teamCell {
+  display: grid;
+  min-width: 0;
+}
+
+@media (min-width: 640px) {
+  .teamGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .teamGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
