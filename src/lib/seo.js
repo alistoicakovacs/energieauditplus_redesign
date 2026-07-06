@@ -7,7 +7,8 @@
  * Titles come from src/routes.jsx (single source); descriptions live here.
  * Descriptions are placeholder quality for the stub pages — real copy comes
  * with the page-content phases. Phase 4a delivered the real descriptions for
- * /leistungen, /leistungen/neubau-energieberatung and /leistungen/qng-flow.
+ * /leistungen, /leistungen/neubau-energieberatung and /leistungen/qng-flow;
+ * Phase 4b for the five remaining /leistungen/* service routes.
  *
  * JSON-LD builders: `buildServiceJsonLd` / `buildFaqJsonLd` live here (used
  * by the service detail template). `buildBreadcrumbJsonLd` predates them and
@@ -35,16 +36,21 @@ const descriptions = {
   // NEW COPY: review — real description (Phase 4a), facts verbatim neubau-energieberatung.md
   '/leistungen/neubau-energieberatung':
     'Neubau & Energieberatung: GEG-Nachweis, LCA, QNG-Begleitung und Blower-Door-Test aus einer Hand — bis zu 150.000 € zinsverbilligter KfW-Kredit pro Wohneinheit (KNN/KFN).',
+  // NEW COPY: review — real description (Phase 4b), facts verbatim bestandsgebaeude.md
   '/leistungen/bestandsgebaeude':
-    'Energieberatung für Bestandsgebäude: Sanierungsfahrplan (iSFP), Energieausweis und Modernisierungskonzepte mit maximaler Förderung.',
+    'Energieberatung für Bestandsgebäude: vom individuellen Sanierungsfahrplan (iSFP) bis zur Effizienzhaus-Komplettsanierung — dena-Experten für Wohngebäude, Nichtwohngebäude und Denkmäler.',
+  // NEW COPY: review — real description (Phase 4b), facts verbatim fordermittelservice.md
   '/leistungen/fordermittelservice':
-    'Fördermittelservice: KfW- und BAFA-Zuschüsse identifizieren, beantragen und sichern — wir übernehmen den kompletten Antragsprozess.',
+    'Fördermittelservice — skalierbar, schnell, rechtssicher: BzA in 24 Stunden, Einzelmaßnahmen-Plattform, QNG-Begleitung und Bauherrenvertretung gegenüber KfW und BAFA.',
+  // NEW COPY: review — real description (Phase 4b), facts verbatim lebenszyklusanalyse-lca.md
   '/leistungen/lebenszyklusanalyse-lca':
-    'Lebenszyklusanalyse (LCA): Ökobilanz für Gebäude transparent berechnet — Grundlage für QNG, BEG-Förderung und nachhaltiges Bauen.',
+    'Lebenszyklusanalyse (LCA): Ökobilanz nach DIN EN 15978 auf Basis der ÖKOBAUDAT — prüfsicher für KfW-Förderung, QNG-PLUS/PREMIUM und die LCA-Pflicht ab 2028.',
+  // NEW COPY: review — real description (Phase 4b), facts verbatim raumluftmessung-baubiologie.md
   '/leistungen/raumluftmessung-baubiologie':
-    'Raumluftmessung & Baubiologie: Schadstoffe messen, gesundes Raumklima nachweisen — für Wohn- und Gewerbegebäude.',
+    'Raumluftmessung & Baubiologie: VOC- und Formaldehydmessung nach DIN EN ISO 16000 — akkreditierter Prüfbericht für QNG, DGNB und öffentliche Gebäude.',
+  // NEW COPY: review — real description (Phase 4b), facts verbatim blower-door-test.md
   '/leistungen/blower-door-test':
-    'Blower-Door-Test: Luftdichtheitsmessung nach Norm — für Neubau, Sanierung und Fördernachweise.',
+    'Blower-Door-Test: Luftdichtheitsmessung nach DIN EN ISO 9972 — n50-Wert und rechtssichere Prüfprotokolle für KfW, GEG und QNG, vom Einfamilienhaus bis zur Logistikhalle.',
   // NEW COPY: review — real description (Phase 4a), facts verbatim nachhaltigkeitsaudit-qng-flow.md
   '/leistungen/qng-flow':
     'Nachhaltigkeitsaudit mit QNG-flow: mit unserer eigenen Plattform strukturiert zum QNG-Siegel und zur höchsten KfW-Förderstufe — bis zu 150.000 € Förderkredit pro Wohneinheit.',
