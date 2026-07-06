@@ -63,8 +63,12 @@ const descriptions = {
   // NEW COPY: review — real description (Phase 5a), facts verbatim kontakt.md
   '/kontakt':
     'Kontakt zu EnergieAudit Plus: Projekt-Anfrage in zwei Schritten, Telefon, E-Mail, WhatsApp und Terminbuchung — plus alle Standorte in Deutschland. Wir melden uns zeitnah bei Ihnen.',
-  '/datenschutzerklaerung': 'Datenschutzerklärung der EnergieAudit Plus GmbH & Co. KG.',
-  '/impressum': 'Impressum der EnergieAudit Plus GmbH & Co. KG.',
+  // NEW COPY: review (Phase 6A) — meta only, not binding legal text.
+  '/datenschutzerklaerung':
+    'Datenschutzerklärung der EnergieAudit Plus GmbH & Co. KG: Informationen zur Verarbeitung personenbezogener Daten – Hosting, Kontaktformular und Ihre Rechte nach DSGVO.',
+  // NEW COPY: review (Phase 6A) — facts verbatim impressum.md.
+  '/impressum':
+    'Impressum der EnergieAudit Plus GmbH & Co. KG, Strausberg: Anbieterkennzeichnung, Handelsregister, Umsatzsteuer-ID und Kontaktdaten.',
 };
 
 /**

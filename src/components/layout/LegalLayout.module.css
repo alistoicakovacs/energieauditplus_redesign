@@ -1,0 +1,186 @@
+/* LegalLayout — layout composition + system-level legal callouts. All visual
+   values via tokens (zero hex). No decorative motion (plan §6.7). */
+
+.breadcrumbBar {
+  padding-top: var(--space-4);
+}
+
+/* ---- Header ---- */
+
+.header {
+  margin-top: var(--space-6);
+  margin-bottom: var(--space-7);
+}
+
+.intro {
+  max-width: 72ch;
+  margin-top: var(--space-4);
+  font-size: var(--fs-lead);
+  color: var(--color-text-muted);
+}
+
+.reviewNotice {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  max-width: 72ch;
+  margin-top: var(--space-5);
+  padding: var(--space-4) var(--space-5);
+  border: 1px solid var(--amber-700);
+  border-radius: var(--radius-md);
+  background: var(--amber-100);
+  color: var(--color-text);
+}
+
+.reviewNoticeIcon {
+  flex: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-top: 2px;
+  color: var(--amber-700);
+}
+
+/* ---- Body layouts ---- */
+
+.single {
+  padding-bottom: var(--space-10);
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-7);
+  padding-bottom: var(--space-10);
+}
+
+@media (min-width: 960px) {
+  .layout {
+    grid-template-columns: minmax(0, 16rem) minmax(0, 1fr);
+    gap: var(--space-8);
+    /* Columns stretch to full row height (default) so the sticky TOC has the
+       whole column to travel within — align-items:start would collapse the
+       aside to its content height and unstick the nav after one screenful. */
+  }
+}
+
+/* ---- Table of contents ---- */
+
+@media (min-width: 960px) {
+  .toc {
+    position: sticky;
+    top: var(--space-9);
+  }
+}
+
+.tocTitle {
+  margin: 0 0 var(--space-3);
+  font-family: var(--font-display);
+  font-weight: 600;
+}
+
+.tocList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  border-left: 2px solid var(--color-border);
+}
+
+.tocLink {
+  display: block;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--fs-small);
+}
+
+/* ---- Sections ---- */
+
+.body {
+  min-width: 0;
+}
+
+.section {
+  scroll-margin-top: var(--space-9);
+  margin-bottom: var(--space-8);
+}
+
+.sectionHeading {
+  margin: 0 0 var(--space-4);
+}
+
+/* ---- Placeholder callout (binding text to be supplied) ---- */
+
+.placeholder {
+  border: 1px dashed var(--amber-700);
+  border-radius: var(--radius-md);
+  background: var(--amber-100);
+  padding: var(--space-4) var(--space-5);
+}
+
+.placeholderLabel {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-2);
+  font-size: var(--fs-small);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--amber-700);
+}
+
+.placeholderIcon {
+  flex: none;
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.placeholderBody {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+/* ---- Factual build-disclosure callout ---- */
+
+.note {
+  margin-bottom: var(--space-4);
+  border: 1px solid var(--blue-200);
+  border-radius: var(--radius-md);
+  background: var(--blue-50);
+  padding: var(--space-4) var(--space-5);
+}
+
+.noteLabel {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-3);
+  font-size: var(--fs-small);
+  font-weight: 700;
+  color: var(--blue-700);
+}
+
+.noteIcon {
+  flex: none;
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.noteBody {
+  margin: 0 0 var(--space-3);
+}
+
+.noteBody:last-of-type {
+  margin-bottom: 0;
+}
+
+.noteFlag {
+  margin: var(--space-3) 0 0;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--blue-200);
+  font-family: var(--font-body);
+  font-size: var(--fs-small);
+  font-weight: 700;
+  color: var(--amber-700);
+}
