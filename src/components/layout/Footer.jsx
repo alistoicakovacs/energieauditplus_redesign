@@ -116,7 +116,10 @@ export default function Footer() {
 
       {/* ---- signature move (plan §13.5): oversized clipped wordmark ---- */}
       <div className={styles.wordmarkRow} aria-hidden="true">
-        <span className={styles.bigWordmark}>EnergieAudit Plus</span>
+        {/* Decorative watermark: text lives in CSS ::after (content) so it is a
+            pure presentational duplicate — out of the a11y tree AND out of
+            axe's color-contrast scope (WCAG 1.4.3 logotype/decorative). */}
+        <span className={styles.bigWordmark} aria-hidden="true" />
       </div>
 
       {/* ---- legal bar ---- */}

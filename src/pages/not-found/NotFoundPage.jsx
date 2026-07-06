@@ -5,7 +5,7 @@ import styles from './NotFound.module.css';
 /** Branded 404 — links back to Leistungen + Kontakt per build plan §1. */
 export default function NotFoundPage() {
   return (
-    <Section as="main">
+    <Section as="section">
       <Container>
         <div className={styles.inner}>
           <Overline color="blue">Fehler 404</Overline>

@@ -13,11 +13,14 @@ export default function Wordmark({ tone = 'dark', className = '', ...rest }) {
     .filter(Boolean)
     .join(' ');
   return (
-    <RouterLink to="/" className={classes} aria-label="EnergieAudit Plus — zur Startseite" {...rest}>
+    <RouterLink to="/" className={classes} {...rest}>
       {/* TODO: replace with real logo */}
       <span className={styles.name}>
         EnergieAudit<span className={styles.plus}>Plus</span>
       </span>
+      {/* Accessible name starts with the visible label (SC 2.5.3); the
+          destination hint is appended visually-hidden, not via aria-label. */}
+      <span className="visually-hidden"> — zur Startseite</span>
       <span className={styles.kicker} aria-hidden="true">
         Gebäudeenergieberatung
       </span>

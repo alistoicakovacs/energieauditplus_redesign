@@ -12,13 +12,15 @@
   /* blue */
   --blue-950:#061E33; --blue-900:#082A45; --blue-800:#0C3A5E; --blue-700:#105388;
   --blue-600:#1466A8; --blue-500:#1E87C9; --blue-200:#B9D6EA; --blue-100:#E2EEF6; --blue-50:#F0F6FB;
-  /* green */
-  --green-800:#3C6E16; --green-700:#4E8A1F; --green-600:#6BA82E; --green-500:#8DC63F;
+  /* green — --green-900 (accessible dark green for accent-button press states, a11y audit) */
+  --green-900:#2F560F; --green-800:#3C6E16; --green-700:#4E8A1F; --green-600:#6BA82E; --green-500:#8DC63F;
   --green-400:#A6D45F; --green-100:#EAF5D8; --green-50:#F4FAEA;
   /* amber */
-  --amber-500:#FFCD57; --amber-700:#B4791A; --amber-100:#FFF4D6;
+  /* --amber-700 darkened #B4791A→#8A5A10 for ≥4.5:1 as text on amber-100 (a11y audit) */
+  --amber-500:#FFCD57; --amber-700:#8A5A10; --amber-100:#FFF4D6;
   /* ink / neutral — --ink-800 adjusted to client CI text color (#1E1E1E) per build plan §4 */
-  --ink-900:#0F1B2D; --ink-800:#1E1E1E; --ink-700:#334155; --ink-600:#475569; --ink-500:#67768E;
+  /* --ink-500 darkened #67768E→#5C6B82 so muted body text clears 4.5:1 on ink-100/tints (a11y audit) */
+  --ink-900:#0F1B2D; --ink-800:#1E1E1E; --ink-700:#334155; --ink-600:#475569; --ink-500:#5C6B82;
   --ink-300:#CBD5E1; --ink-200:#E2E8F0; --ink-100:#F2F5F7; --ink-50:#F8FAFC;
   --surface-alt:#F9F6FE; --white:#FFFFFF;
   /* semantic */
