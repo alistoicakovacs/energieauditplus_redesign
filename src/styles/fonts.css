@@ -1,11 +1,44 @@
 /* ============================================================
    Self-hosted web fonts (DSGVO: never load from Google Fonts CDN).
-   Carlito  = metric-compatible Calibri clone (SIL OFL)
-   Caladea  = metric-compatible Cambria clone (SIL OFL)
-   Files live in /public/fonts (copied from @fontsource packages).
+   Calibri  = brand body font (client-supplied). Proprietary Microsoft
+              typeface — self-hosting requires a valid web license
+              (Calibri Web via Monotype). Source TTFs live in
+              /public/fonts (CALIBRI_0 / CALIBRIB_0 / calibril); the
+              served WOFF2s were generated from them for performance.
+   Carlito  = metric-compatible Calibri clone (SIL OFL) — kept as the
+              open fallback while Calibri loads / for any missing weight.
+   Space Grotesk = display / headings (SIL OFL, self-hosted). Geometric
+              grotesque — structural contrast against humanist Calibri.
+              Only the 600 & 700 weights are shipped (the only display
+              weights the UI renders).
    ============================================================ */
 
-/* Carlito — body / UI */
+/* Calibri — body / UI (brand primary, self-hosted, all platforms) */
+@font-face {
+  font-family: 'Calibri';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url('/fonts/calibri-latin-300-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Calibri';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/calibri-latin-400-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Calibri';
+  font-style: normal;
+  /* 700 file also serves 500–700 requests (no dedicated semibold) via
+     CSS font-matching, keeping labels/buttons on-brand. */
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/calibri-latin-700-normal.woff2') format('woff2');
+}
+
+/* Carlito — open metric-compatible fallback for Calibri */
 @font-face {
   font-family: 'Carlito';
   font-style: normal;
@@ -28,18 +61,18 @@
   src: url('/fonts/carlito-latin-700-normal.woff2') format('woff2');
 }
 
-/* Caladea — display / headings */
+/* Space Grotesk — display / headings (600 SemiBold, 700 Bold) */
 @font-face {
-  font-family: 'Caladea';
+  font-family: 'Space Grotesk';
   font-style: normal;
-  font-weight: 400;
+  font-weight: 600;
   font-display: swap;
-  src: url('/fonts/caladea-latin-400-normal.woff2') format('woff2');
+  src: url('/fonts/space-grotesk-latin-600-normal.woff2') format('woff2');
 }
 @font-face {
-  font-family: 'Caladea';
+  font-family: 'Space Grotesk';
   font-style: normal;
   font-weight: 700;
   font-display: swap;
-  src: url('/fonts/caladea-latin-700-normal.woff2') format('woff2');
+  src: url('/fonts/space-grotesk-latin-700-normal.woff2') format('woff2');
 }

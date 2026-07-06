@@ -1,0 +1,164 @@
+/* Same strip slot the old marquee occupied (directly under the hero).
+   Transparent so it sits flush on the page background. */
+.strip {
+  background-color: transparent;
+  padding: var(--space-5) 0;
+}
+
+/* The whole band is one link → the reviews. Single tab stop, left-aligned row
+   (lines up with the container edge / hero content). */
+.proof {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: var(--space-4) var(--space-5);
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: var(--container-pad);
+  text-decoration: none;
+  color: var(--color-text);
+  border-radius: var(--radius-pill);
+}
+
+.proof:focus-visible {
+  outline: none;
+  box-shadow: var(--ring-focus);
+}
+
+/* ---- stacked avatar bubbles -------------------------------------------- */
+.bubbles {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+.bubble {
+  --size: 44px;
+  width: var(--size);
+  height: var(--size);
+  border-radius: var(--radius-pill);
+  display: grid;
+  place-items: center;
+  /* Overlap the previous bubble; the white ring + shadow separate the pile. */
+  margin-left: calc(var(--i) * 0px - 12px);
+  background: var(--white);
+  color: var(--blue-700);
+  box-shadow:
+    0 0 0 2px var(--white),
+    0 2px 6px rgba(15, 27, 45, 0.16);
+  /* Stack order: first bubble on top reads as the „front" of the pile. */
+  z-index: calc(10 - var(--i));
+  transition:
+    transform var(--dur-base) var(--ease-out),
+    box-shadow var(--dur-base) var(--ease-out);
+}
+
+.bubble:first-child {
+  margin-left: 0;
+}
+
+/* White bubbles; the initials carry the brand colour, alternating blue/green
+   across the pile (no photos → DSGVO-safe monograms). */
+.bubble[data-tone='1'] .initial,
+.bubble[data-tone='3'] .initial {
+  color: var(--green-700);
+}
+
+.more {
+  color: var(--blue-700);
+  font-weight: 700;
+}
+
+.initial {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.0625rem;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  color: var(--blue-700);
+}
+
+/* Hover: the pile fans apart slightly and lifts — playful but subtle. */
+.proof:hover .bubble,
+.proof:focus-visible .bubble {
+  transform: translateY(-2px);
+  box-shadow:
+    0 0 0 2px var(--white),
+    0 6px 14px rgba(15, 27, 45, 0.2);
+}
+
+/* ---- rating + count ---------------------------------------------------- */
+.meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.stars {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.star {
+  color: var(--ink-300);
+  fill: var(--ink-300);
+}
+
+.starFilled {
+  color: var(--amber-500);
+  fill: var(--amber-500);
+}
+
+.figures {
+  display: inline-flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0 var(--space-2);
+  font-size: var(--fs-body);
+  color: var(--color-text);
+}
+
+.rating {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.375rem;
+  color: var(--ink-900);
+}
+
+.count {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35ch;
+  color: var(--color-text-muted);
+}
+
+/* Underline the affordance only on the count text so the whole band reads
+   as a link without a heavy full-width underline. */
+.proof:hover .googleWord,
+.proof:focus-visible .googleWord {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.google {
+  width: 1.05em;
+  height: 1.05em;
+  transform: translateY(0.12em);
+}
+
+/* Respect reduced motion: no hover lift/fan, no transitions. */
+@media (prefers-reduced-motion: reduce) {
+  .bubble {
+    transition: none;
+  }
+  .proof:hover .bubble,
+  .proof:focus-visible .bubble {
+    transform: none;
+    box-shadow:
+      0 0 0 2px var(--white),
+      0 2px 6px rgba(15, 27, 45, 0.16);
+  }
+}

@@ -36,18 +36,30 @@ const DEFAULT_PARTNERS = [
  * @param {object} props
  * @param {{name: string, tone?: 'blue'|'green'}[]} [props.partners]
  * @param {string} [props.label='Partner und Zertifizierungen'] German group label.
+ * @param {'marquee'|'static'} [props.variant='marquee'] `static` renders a
+ *        quiet, centered, non-animated row (used for the relocated certifier
+ *        credentials above the final CTA) — no loop, no duplicate track, no
+ *        IntersectionObserver. `marquee` is the original scrolling band.
+ * @param {boolean} [props.showLabel=false] Render the group label as a visible
+ *        eyebrow (the `static` credential row wants a heading; the marquee
+ *        keeps it as an aria-only group label).
  * @param {string} [props.className]
  */
 export default function TrustStrip({
   partners = DEFAULT_PARTNERS,
   label = 'Partner und Zertifizierungen',
+  variant = 'marquee',
+  showLabel = false,
   className = '',
   ...rest
 }) {
+  const isStatic = variant === 'static';
   const rootRef = useRef(null);
   const [offscreen, setOffscreen] = useState(false);
 
   useEffect(() => {
+    // The static row never animates, so it never needs the off-screen pause.
+    if (isStatic) return undefined;
     const el = rootRef.current;
     if (!el || typeof IntersectionObserver === 'undefined') return undefined;
     const observer = new IntersectionObserver(([entry]) => {
@@ -55,9 +67,14 @@ export default function TrustStrip({
     });
     observer.observe(el);
     return () => observer.disconnect();
-  }, []);
+  }, [isStatic]);
 
-  const classes = [styles.strip, offscreen ? styles.offscreen : '', className]
+  const classes = [
+    styles.strip,
+    isStatic ? styles.static : '',
+    offscreen ? styles.offscreen : '',
+    className,
+  ]
     .filter(Boolean)
     .join(' ');
 
@@ -80,6 +97,17 @@ export default function TrustStrip({
   // Duration scales with item count so the px/s speed stays sane whether
   // 4 or 12 partners are passed (and on ultrawide viewports).
   const marqueeStyle = { '--marquee-duration': `${partners.length * 6}s` };
+
+  // Static credential row: one centered, non-animated track — no duplicate,
+  // no marquee timing. The label renders as a visible eyebrow when asked.
+  if (isStatic) {
+    return (
+      <div ref={rootRef} className={classes} role="group" aria-label={label} {...rest}>
+        {showLabel && <p className={styles.label}>{label}</p>}
+        <ul className={styles.track}>{renderItems()}</ul>
+      </div>
+    );
+  }
 
   return (
     <div ref={rootRef} className={classes} role="group" aria-label={label} {...rest}>

@@ -13,6 +13,7 @@ export { default as IconCard } from './IconCard.jsx';
 export { default as KineticStatement } from './KineticStatement.jsx';
 export { default as MegaMenu } from './MegaMenu.jsx';
 export { default as PraxistippCallout } from './PraxistippCallout.jsx';
+export { default as ReviewProof } from './ReviewProof.jsx';
 export { default as ScrollProgress } from './ScrollProgress.jsx';
 export { default as ServiceCard } from './ServiceCard.jsx';
 export { default as StandortCard } from './StandortCard.jsx';

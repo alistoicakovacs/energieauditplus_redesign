@@ -3,25 +3,25 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="/logos/favicon.png" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/logos/favicon.png" />
     <!--
-      Font preloads (deliberate minimum): only the two files actually used
-      cross-platform — Carlito 400 (body) + Caladea 700 (headings). On
-      Windows the system fonts Calibri/Cambria win the CI-mandated stacks,
-      so these preloads are unused there (a DevTools notice, ~50 KB); on
-      every other OS they prevent FOUT on first paint. The 400-italic /
-      700 / Caladea-400 files load on demand via @font-face.
+      Font preloads (deliberate minimum): the two faces on the critical
+      paint path — Calibri 400 (brand body, self-hosted so it renders on
+      every OS) + Space Grotesk 700 (display headings). Other weights (Calibri
+      300/700, Carlito fallback, Space Grotesk 600) load on demand via @font-face.
     -->
     <link
       rel="preload"
-      href="/fonts/carlito-latin-400-normal.woff2"
+      href="/fonts/calibri-latin-400-normal.woff2"
       as="font"
       type="font/woff2"
       crossorigin
     />
     <link
       rel="preload"
-      href="/fonts/caladea-latin-700-normal.woff2"
+      href="/fonts/space-grotesk-latin-700-normal.woff2"
       as="font"
       type="font/woff2"
       crossorigin

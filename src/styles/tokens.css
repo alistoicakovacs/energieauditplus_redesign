@@ -36,7 +36,7 @@
   --dur-fast:150ms; --dur-base:300ms; --dur-slow:600ms; --dur-xslow:900ms;
   /* type */
   --font-body:"Calibri","Carlito",system-ui,"Segoe UI",sans-serif;
-  --font-display:"Cambria","Caladea",Georgia,serif;
+  --font-display:"Space Grotesk",system-ui,"Segoe UI",sans-serif;
 
   /* ---- semantic extensions (style guide §1.6) ---- */
   --color-bg-brand:var(--blue-50);
@@ -71,8 +71,10 @@
   --space-6:32px; --space-7:48px; --space-8:64px; --space-9:96px; --space-10:128px; --space-11:160px;
 
   /* ---- layout (style guide §3.2) ---- */
-  --container:1280px;
-  --container-wide:1440px;
+  /* Unified content width: header (was 1440 „wide"), hero + page sections
+     (was 1280) now share one column so every content edge aligns. */
+  --container:1360px;
+  --container-wide:1360px;
   --container-pad:clamp(20px, 5vw, 64px);
 
   /* ---- elevation / shadows (style guide §3.4) ---- */

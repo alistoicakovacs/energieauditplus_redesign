@@ -3,6 +3,32 @@
   padding: var(--space-5) 0;
 }
 
+/* Static credential row (relocated certifiers above the final CTA): a quiet,
+   centered, non-animated row — no marquee, no clipping viewport. */
+.static {
+  background-color: transparent;
+  padding-block: var(--space-6);
+}
+
+.static .track {
+  animation: none;
+  min-width: 0;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-6) var(--space-8);
+}
+
+.label {
+  margin: 0 0 var(--space-4);
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: var(--fs-overline);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
 .viewport {
   display: flex;
   overflow: hidden;

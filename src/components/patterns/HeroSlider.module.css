@@ -94,7 +94,13 @@
 }
 
 .content {
-  max-width: 680px;
+  /* Full page content width (matches --container), so the hero block aligns
+     to the same right edge as the sections below. Grow to fill the flex row
+     (otherwise the box shrinks to the subtitle's ch-cap ≈ 680px). The
+     headline/subtitle keep their own ch-based caps for readability; only the
+     column box — and the button row that spans it — widens. */
+  flex: 1;
+  max-width: none;
   padding-top: var(--space-8);
   padding-bottom: calc(var(--space-9) + var(--space-8)); /* clears controls */
 }
@@ -131,7 +137,9 @@
   color: var(--blue-100);
   font-size: var(--fs-lead);
   line-height: 1.5;
-  max-width: 46ch;
+  /* Match the body's readable column (~620px, the 72ch .prose/.sectionHead
+     measure) so the hero subtitle lines up with the sections below. */
+  max-width: 39rem;
   margin: 0 0 var(--space-5);
 }
 
@@ -201,7 +209,11 @@
 
 @media (min-width: 1120px) {
   .content {
-    max-width: min(680px, 52vw);
+    /* Full page content width — right edge lines up with the sections below.
+       The right-side service-nav sits above this (z-index 2 > content's 1) and
+       the hero text/buttons are left-packed within their ch-caps, so the two
+       never collide visually or on click. */
+    max-width: 100%;
   }
 }
 
@@ -213,15 +225,19 @@
   right: 0;
   bottom: 0;
   z-index: 3;
-  padding: 0 var(--container-pad) var(--space-5);
+  padding-bottom: var(--space-5);
 }
 
 .controlsRow {
   display: flex;
   align-items: center;
   gap: var(--space-3);
+  /* Match the Container primitive exactly (max-width + auto margins + its own
+     inline padding) so the arrows/indicators align to the hero content column,
+     not the full container edge. */
   max-width: var(--container);
   margin: 0 auto;
+  padding-inline: var(--container-pad);
 }
 
 .controlButton {

@@ -6,6 +6,7 @@ import {
   FeaturedCard,
   IconCard,
   KineticStatement,
+  ReviewProof,
   ScrollProgress,
   ServiceCard,
   StandortCard,
@@ -50,6 +51,13 @@ import styles from './Home.module.css';
  */
 const serviceByRoute = new Map(bentoServices.map((service) => [service.to, service]));
 
+// Monogram avatars for the under-hero social-proof band: reviewers' initials
+// (DSGVO-safe — no photos), taken in order from the real Google reviews so the
+// bubbles mirror the carousel further down the page.
+const reviewAvatars = reviews.items.map((item) => ({
+  initial: (item.name.trim()[0] || '?').toUpperCase(),
+}));
+
 export default function HomePage() {
   return (
     <>
@@ -68,9 +76,12 @@ export default function HomePage() {
       {/* 1 — HeroSlider (first child of <main>, own choreography, no Reveal) */}
       <HeroSlider />
 
-      {/* 2 — TrustStrip directly under the hero */}
+      {/* 2 — Google-reviews social-proof band directly under the hero.
+          Links down to the full reviews carousel (§6.1 slot 10, #kundenstimmen);
+          swap `href` for the Google Business review URL when available. `count`
+          is a placeholder aggregate until the real total is wired in. */}
       <Reveal>
-        <TrustStrip />
+        <ReviewProof avatars={reviewAvatars} rating={5} count="50+" href="#kundenstimmen" />
       </Reveal>
 
       {/* 3 — Positionierung: welcome intro + 5 USP cards */}
@@ -240,7 +251,7 @@ export default function HomePage() {
       </Section>
 
       {/* 9 — Ablauf: 4 steps (Stepper draws the eco line internally) */}
-      <Section background="subtle">
+      <Section>
         <Container>
           <Reveal className={styles.sectionHead}>
             <Overline color="green">{ablauf.overline}</Overline>
@@ -258,8 +269,9 @@ export default function HomePage() {
         </Container>
       </Section>
 
-      {/* 10 — Google-Bewertungen (real reviews, verbatim home.md) */}
-      <Section>
+      {/* 10 — Google-Bewertungen (real reviews, verbatim home.md).
+          #kundenstimmen: anchor target for the under-hero ReviewProof band. */}
+      <Section id="kundenstimmen">
         <Container>
           <Reveal className={styles.sectionHeadCentered}>
             <Overline color="green">{reviews.overline}</Overline>
@@ -273,7 +285,7 @@ export default function HomePage() {
       </Section>
 
       {/* 11 — Standorte teaser: static Germany map + Zentrale + list */}
-      <Section background="blue-tint">
+      <Section background="subtle">
         <Container>
           <Reveal className={styles.sectionHead}>
             <Overline>{standorte.overline}</Overline>
@@ -308,6 +320,17 @@ export default function HomePage() {
               </div>
             </Reveal>
           </div>
+        </Container>
+      </Section>
+
+      {/* 11b — Partner/Zertifizierungen: the relocated certifier credentials
+          (formerly the under-hero marquee), now a quiet static row that lends
+          accreditation trust right before the closing CTA. */}
+      <Section background="subtle">
+        <Container>
+          <Reveal>
+            <TrustStrip variant="static" showLabel />
+          </Reveal>
         </Container>
       </Section>
 
