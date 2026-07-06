@@ -20,6 +20,10 @@ import { handleContactSubmission } from './contact.js';
 import { normalizeContactInput, parseBody, clientIp, wantsHtml, readRawBody } from './requestUtils.js';
 
 const PORT = Number(process.env.CONTACT_DEV_PORT ?? 8787);
+// The harness is directly connected (no reverse proxy), so by default it does
+// NOT trust X-Forwarded-For — the socket peer is the real client. Override with
+// TRUSTED_PROXY_HOPS to emulate a proxied deployment.
+const TRUSTED_PROXY_HOPS = Number(process.env.TRUSTED_PROXY_HOPS ?? 0);
 
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host ?? '127.0.0.1'}`);
@@ -37,7 +41,7 @@ const server = http.createServer(async (req, res) => {
   const result = await handleContactSubmission(normalizeContactInput(raw), {
     method: req.method,
     origin: req.headers.origin ?? null,
-    ip: clientIp(req.headers, req.socket?.remoteAddress),
+    ip: clientIp(req.headers, req.socket?.remoteAddress, TRUSTED_PROXY_HOPS),
     acceptsHtml: wantsHtml(req.headers.accept),
   });
 

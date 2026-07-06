@@ -36,7 +36,13 @@ export function createRateLimiter({ max = 5, windowMs = 60 * 60 * 1000, maxEntri
       const cutoff = now - windowMs;
 
       const recent = (hits.get(key) ?? []).filter((t) => t > cutoff);
-      recent.push(now);
+
+      // Allowed only while fewer than `max` hits fall inside the window. Store
+      // ONLY allowed hits, so a sustained flood from one IP cannot grow the
+      // array past `max` (previously every over-limit request was still
+      // pushed → unbounded array + O(n) filter per call → quadratic DoS).
+      const allowed = recent.length < max;
+      if (allowed) recent.push(now);
 
       // Refresh LRU recency: delete + re-set moves the key to the tail.
       hits.delete(key);
@@ -48,9 +54,13 @@ export function createRateLimiter({ max = 5, windowMs = 60 * 60 * 1000, maxEntri
         hits.delete(oldest);
       }
 
-      const allowed = recent.length <= max;
       const retryAfterMs = allowed ? 0 : Math.max(0, recent[0] + windowMs - now);
       return { allowed, remaining: Math.max(0, max - recent.length), retryAfterMs };
+    },
+
+    /** Test/introspection helper — number of timestamps currently stored for an IP. */
+    size(ip) {
+      return (hits.get(ip || 'unknown') ?? []).length;
     },
 
     /** Test helper — wipe all tracked state. */

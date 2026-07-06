@@ -183,7 +183,10 @@ export async function handleContactSubmission(input, meta = {}) {
 
   // 5 — Min-time-to-submit (JS submissions only). `renderedAt` is the epoch-ms
   // the form mounted, stamped client-side. No-JS posts carry no timestamp and
-  // skip this check.
+  // skip this check. INFO (accepted tradeoff): the timestamp is client-supplied
+  // and therefore forgeable — this is a soft anti-bot signal layered on top of
+  // the honeypot + rate limit, not a hard boundary. A signed/server-issued
+  // token would harden it but adds state we deliberately avoid in v1.
   const renderedAt = Number(body.renderedAt);
   if (Number.isFinite(renderedAt) && renderedAt > 0 && now - renderedAt < minSubmitMs) {
     return success(acceptsHtml, { reason: 'too-fast' });

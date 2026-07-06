@@ -3,9 +3,16 @@
  * server/dev-server.mjs). Kept tiny and dependency-free.
  */
 
-/** Coerce a consent value from JSON (boolean) or a form post ('on'/'true'). */
+/**
+ * Coerce a consent value into a strict boolean. Only two shapes count as
+ * consent, matching exactly how the two real submit paths encode it:
+ *   - JSON (enhanced fetch): boolean `true`
+ *   - urlencoded (native no-JS checkbox): the string `'on'`
+ * Nothing else (`'true'`, `'1'`, `'yes'`, …) is accepted, so the recorded
+ * DSGVO consent is never looser than the zod `literal(true)` schema claims.
+ */
 export function coerceConsent(value) {
-  return value === true || value === 'true' || value === 'on' || value === '1';
+  return value === true || value === 'on';
 }
 
 /**
@@ -40,13 +47,54 @@ export function parseBody(rawString, contentType = '') {
   }
 }
 
-/** First-hop client IP from proxy headers, falling back to the socket. */
-export function clientIp(headers = {}, fallback = 'unknown') {
-  const xff = headers['x-forwarded-for'];
-  if (typeof xff === 'string' && xff.length) return xff.split(',')[0].trim();
-  if (Array.isArray(xff) && xff.length) return String(xff[0]).split(',')[0].trim();
+/**
+ * Resolve the client IP for rate-limiting from a TRUSTED source only.
+ *
+ * `X-Forwarded-For` is `client, proxy1, proxy2, …` where each hop APPENDS the
+ * peer it saw. Everything a client sends is prepended and is therefore
+ * forgeable — so the naive "leftmost entry" is attacker-controlled and lets a
+ * bot rotate `X-Forwarded-For: 9.9.9.<i>` to dodge the per-IP cap. Instead we
+ * trust only entries our own infrastructure appended:
+ *
+ *   trustedProxyHops = N  ⇒ take the Nth entry FROM THE RIGHT (the address the
+ *     outermost of our N trusted reverse proxies observed = the real client).
+ *     Forged left-side entries are ignored.
+ *   trustedProxyHops = 0  ⇒ there is NO trusted proxy in front (direct socket,
+ *     e.g. the local dev harness): XFF / X-Real-IP are fully client-controlled,
+ *     so we ignore them entirely and key on the socket peer (`fallback`).
+ *
+ * DEPLOYMENT ASSUMPTION (must be configured, see .env.example TRUSTED_PROXY_HOPS):
+ * the hop count MUST match the number of reverse proxies between the public
+ * internet and this process, otherwise the app either trusts a forgeable entry
+ * (too high) or reads a proxy address (too low). When the platform exposes a
+ * non-forgeable client header (Vercel's `x-vercel-forwarded-for`, which the
+ * platform sets and strips any client copy of), we prefer it.
+ *
+ * @param {Record<string,string|string[]>} headers
+ * @param {string} fallback  socket peer address (trusted transport source)
+ * @param {number} [trustedProxyHops]  overrides env TRUSTED_PROXY_HOPS (default 1)
+ */
+export function clientIp(headers = {}, fallback = 'unknown', trustedProxyHops) {
+  const hops = Number.isFinite(trustedProxyHops)
+    ? trustedProxyHops
+    : Number(process.env.TRUSTED_PROXY_HOPS ?? 1);
+
+  // No trusted proxy ⇒ forwarded headers are client-controlled; use the socket.
+  if (!(hops > 0)) return fallback || 'unknown';
+
+  // Platform-trusted header wins (set by the platform, client copy stripped).
+  const vercel = headers['x-vercel-forwarded-for'];
+  if (typeof vercel === 'string' && vercel.trim()) return vercel.split(',')[0].trim();
+
+  const xffRaw = headers['x-forwarded-for'];
+  const xff = Array.isArray(xffRaw) ? xffRaw.join(',') : xffRaw;
+  if (typeof xff === 'string' && xff.trim()) {
+    const parts = xff.split(',').map((s) => s.trim()).filter(Boolean);
+    if (parts.length) return parts[Math.max(0, parts.length - hops)];
+  }
+
   const real = headers['x-real-ip'];
-  if (typeof real === 'string' && real.length) return real;
+  if (typeof real === 'string' && real.trim()) return real;
   return fallback || 'unknown';
 }
 

@@ -48,14 +48,30 @@ export const PROJEKTPHASE_OPTIONS = [
 
 export const PROJEKTPHASE_VALUES = PROJEKTPHASE_OPTIONS.map((o) => o.value);
 
-/** Optional free-text field: trims, allows empty, caps length. */
+/**
+ * Control-char scrubbing (email-body-injection defence, plan §8.1 output
+ * handling). Single-line fields strip ALL C0 controls + DEL, so raw CR/LF in
+ * name/company/phone cannot forge extra lines (fake „Bcc:"/fields) into the
+ * plain-text ops notification. (Not SMTP header injection — Resend isolates
+ * headers — but the body is still user-controlled text.) The message keeps
+ * newlines (\n) and tabs (\t); CRLF/CR is normalised to LF first.
+ * Regexes built via `new RegExp` from escaped strings so the source stays
+ * pure ASCII (no literal control bytes in the file).
+ */
+const SINGLE_LINE_CONTROLS = new RegExp('[\\u0000-\\u001F\\u007F]', 'g');
+const MULTILINE_CONTROLS = new RegExp('[\\u0000-\\u0008\\u000B\\u000C\\u000E-\\u001F\\u007F]', 'g');
+
+const stripControls = (v) =>
+  typeof v === 'string' ? v.replace(SINGLE_LINE_CONTROLS, '').trim() : v;
+
+const cleanMultiline = (v) =>
+  typeof v === 'string' ? v.replace(/\r\n?/g, '\n').replace(MULTILINE_CONTROLS, '').trim() : v;
+
+/** Optional free-text field: strips control chars, allows empty, caps length. */
 const optionalText = (max) =>
   z.preprocess(
-    (v) => (typeof v === 'string' ? v.trim() : v),
-    z
-      .string()
-      .max(max, `Bitte kürzen Sie diese Angabe (max. ${max} Zeichen).`)
-      .optional()
+    stripControls,
+    z.string().max(max, `Bitte kürzen Sie diese Angabe (max. ${max} Zeichen).`).optional()
   );
 
 /** Optional enum from a fixed value set: '' / null / undefined ⇒ undefined. */
@@ -68,32 +84,40 @@ const optionalEnum = (values) =>
  * before validation); the server validates against `.strict()` (see
  * parseContactStrict) so any unexpected field is rejected.
  *
- * Error messages verbatim handoff/content/kontakt.md „Status- und
- * Fehlermeldungen"; the Leistung message is NEW COPY (Step-1 selection).
+ * Single-line text fields strip control chars first (email-body-injection
+ * defence); the message keeps newlines. Error messages verbatim
+ * handoff/content/kontakt.md „Status- und Fehlermeldungen"; the Leistung
+ * message is NEW COPY (Step-1 selection).
  */
 export const contactSchema = z.object({
   leistung: z.enum(LEISTUNG_VALUES, {
     errorMap: () => ({ message: 'Bitte wählen Sie aus, worum es geht.' }), // NEW COPY: review
   }),
   projektphase: optionalEnum(PROJEKTPHASE_VALUES),
-  name: z
-    .string()
-    .trim()
-    .min(1, 'Bitte geben Sie Ihren Namen an.')
-    .max(120, 'Bitte kürzen Sie Ihren Namen (max. 120 Zeichen).'),
+  name: z.preprocess(
+    stripControls,
+    z
+      .string()
+      .min(1, 'Bitte geben Sie Ihren Namen an.')
+      .max(120, 'Bitte kürzen Sie Ihren Namen (max. 120 Zeichen).')
+  ),
   company: optionalText(160),
-  email: z
-    .string()
-    .trim()
-    .min(1, 'Bitte geben Sie eine gültige E-Mail-Adresse an.')
-    .max(200, 'Bitte geben Sie eine gültige E-Mail-Adresse an.')
-    .email('Bitte geben Sie eine gültige E-Mail-Adresse an.'),
+  email: z.preprocess(
+    stripControls,
+    z
+      .string()
+      .min(1, 'Bitte geben Sie eine gültige E-Mail-Adresse an.')
+      .max(200, 'Bitte geben Sie eine gültige E-Mail-Adresse an.')
+      .email('Bitte geben Sie eine gültige E-Mail-Adresse an.')
+  ),
   phone: optionalText(60),
-  message: z
-    .string()
-    .trim()
-    .min(1, 'Bitte geben Sie eine Nachricht ein.')
-    .max(MESSAGE_MAX, `Ihre Nachricht ist zu lang (max. ${MESSAGE_MAX} Zeichen).`),
+  message: z.preprocess(
+    cleanMultiline,
+    z
+      .string()
+      .min(1, 'Bitte geben Sie eine Nachricht ein.')
+      .max(MESSAGE_MAX, `Ihre Nachricht ist zu lang (max. ${MESSAGE_MAX} Zeichen).`)
+  ),
   // DSGVO consent (plan §8.3): must be literally `true` — an unchecked box
   // (false / missing) fails here, both client- and server-side.
   consent: z.literal(true, {
