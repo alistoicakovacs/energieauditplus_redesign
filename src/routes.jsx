@@ -1,5 +1,6 @@
 import { lazy } from 'react';
 import { matchRoutes } from 'react-router';
+import { heroPreload } from './lib/heroImage.js';
 
 /**
  * Single route table — consumed by the client app (App.jsx) and by the
@@ -60,13 +61,11 @@ export const routes = [
     // §9 LCP preload for the hero slide-1 image — injected into the static
     // <head> by scripts/prerender.mjs (React 19 does not hoist responsive
     // image preloads out of the lazy route's Suspense segment; rendering the
-    // <link> in the page would break hydration). Must mirror the slide-1
-    // <picture> webp source set.
-    preloadImage: {
-      imageSrcSet: '/images/hero/01-neubau-800.webp 800w, /images/hero/01-neubau-1600.webp 1600w',
-      imageSizes: '100vw',
-      type: 'image/webp',
-    },
+    // <link> in the page would break hydration). heroPreload() mirrors the
+    // slide-1 <picture> exactly (AVIF srcSet + phone-aware sizes) so the
+    // preload fetches the same small variant the browser paints — no wasted
+    // 1600w download on phones, no double-download.
+    preloadImage: heroPreload('/images/hero/01-neubau'),
   },
   {
     path: '/leistungen',
@@ -79,14 +78,10 @@ export const routes = [
     title: 'Neubau & Energieberatung — EnergieAudit Plus',
     ...page(() => import('./pages/neubau-energieberatung/NeubauEnergieberatungPage.jsx')),
     prerender: true,
-    // §9 LCP preload — must mirror the page hero's webp source set
+    // §9 LCP preload — mirrors the page hero <picture> via heroPreload
     // (hero.image.stem in src/content/services/neubau-energieberatung.js).
-    // Convention for every service detail page (Phase 4b: add per route).
-    preloadImage: {
-      imageSrcSet: '/images/hero/01-neubau-800.webp 800w, /images/hero/01-neubau-1600.webp 1600w',
-      imageSizes: '100vw',
-      type: 'image/webp',
-    },
+    // Convention for every service detail page.
+    preloadImage: heroPreload('/images/hero/01-neubau'),
   },
   {
     path: '/leistungen/bestandsgebaeude',
@@ -94,11 +89,7 @@ export const routes = [
     ...page(() => import('./pages/bestandsgebaeude/BestandsgebaeudePage.jsx')),
     prerender: true,
     // §9 LCP preload — mirrors hero.image.stem in src/content/services/bestandsgebaeude.js.
-    preloadImage: {
-      imageSrcSet: '/images/hero/02-bestand-800.webp 800w, /images/hero/02-bestand-1600.webp 1600w',
-      imageSizes: '100vw',
-      type: 'image/webp',
-    },
+    preloadImage: heroPreload('/images/hero/02-bestand'),
   },
   {
     path: '/leistungen/fordermittelservice',
@@ -106,12 +97,7 @@ export const routes = [
     ...page(() => import('./pages/fordermittelservice/FordermittelservicePage.jsx')),
     prerender: true,
     // §9 LCP preload — mirrors hero.image.stem in src/content/services/fordermittelservice.js.
-    preloadImage: {
-      imageSrcSet:
-        '/images/hero/03-foerdermittel-800.webp 800w, /images/hero/03-foerdermittel-1600.webp 1600w',
-      imageSizes: '100vw',
-      type: 'image/webp',
-    },
+    preloadImage: heroPreload('/images/hero/03-foerdermittel'),
   },
   {
     path: '/leistungen/lebenszyklusanalyse-lca',
@@ -119,11 +105,7 @@ export const routes = [
     ...page(() => import('./pages/lebenszyklusanalyse-lca/LebenszyklusanalysePage.jsx')),
     prerender: true,
     // §9 LCP preload — mirrors hero.image.stem in src/content/services/lebenszyklusanalyse-lca.js.
-    preloadImage: {
-      imageSrcSet: '/images/hero/04-lca-800.webp 800w, /images/hero/04-lca-1600.webp 1600w',
-      imageSizes: '100vw',
-      type: 'image/webp',
-    },
+    preloadImage: heroPreload('/images/hero/04-lca'),
   },
   {
     path: '/leistungen/raumluftmessung-baubiologie',
@@ -131,12 +113,7 @@ export const routes = [
     ...page(() => import('./pages/raumluftmessung-baubiologie/RaumluftmessungPage.jsx')),
     prerender: true,
     // §9 LCP preload — mirrors hero.image.stem in src/content/services/raumluftmessung-baubiologie.js.
-    preloadImage: {
-      imageSrcSet:
-        '/images/hero/05-raumluft-800.webp 800w, /images/hero/05-raumluft-1600.webp 1600w',
-      imageSizes: '100vw',
-      type: 'image/webp',
-    },
+    preloadImage: heroPreload('/images/hero/05-raumluft'),
   },
   {
     path: '/leistungen/blower-door-test',
@@ -144,12 +121,7 @@ export const routes = [
     ...page(() => import('./pages/blower-door-test/BlowerDoorTestPage.jsx')),
     prerender: true,
     // §9 LCP preload — mirrors hero.image.stem in src/content/services/blower-door-test.js.
-    preloadImage: {
-      imageSrcSet:
-        '/images/hero/06-blower-door-800.webp 800w, /images/hero/06-blower-door-1600.webp 1600w',
-      imageSizes: '100vw',
-      type: 'image/webp',
-    },
+    preloadImage: heroPreload('/images/hero/06-blower-door'),
   },
   {
     path: '/leistungen/qng-flow',
@@ -157,12 +129,7 @@ export const routes = [
     ...page(() => import('./pages/qng-flow/QngFlowPage.jsx')),
     prerender: true,
     // §9 LCP preload — mirrors hero.image.stem in src/content/services/qng-flow.js.
-    preloadImage: {
-      imageSrcSet:
-        '/images/hero/07-qng-flow-800.webp 800w, /images/hero/07-qng-flow-1600.webp 1600w',
-      imageSizes: '100vw',
-      type: 'image/webp',
-    },
+    preloadImage: heroPreload('/images/hero/07-qng-flow'),
   },
   {
     path: '/karriere',

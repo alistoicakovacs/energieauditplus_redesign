@@ -209,14 +209,30 @@ export default function HomePage() {
             </Reveal>
             <Reveal>
               <ParallaxMedia aspectRatio="4 / 3" rounded>
-                <img
-                  src={`${qngTeaser.image.stem}-1600.jpg`}
-                  srcSet={`${qngTeaser.image.stem}-800.webp 800w, ${qngTeaser.image.stem}-1600.webp 1600w`}
-                  sizes="(min-width: 900px) 40vw, 100vw"
-                  alt={qngTeaser.image.alt}
-                  loading="lazy"
-                  decoding="async"
-                />
+                {/* Below-fold teaser: lazy, AVIF > WebP > JPG. ParallaxMedia
+                    reserves the 4/3 box, so no CLS when it loads. */}
+                <picture>
+                  <source
+                    type="image/avif"
+                    srcSet={`${qngTeaser.image.stem}-800.avif 800w, ${qngTeaser.image.stem}-1600.avif 1600w`}
+                    sizes="(min-width: 900px) 40vw, 100vw"
+                  />
+                  <source
+                    type="image/webp"
+                    srcSet={`${qngTeaser.image.stem}-800.webp 800w, ${qngTeaser.image.stem}-1600.webp 1600w`}
+                    sizes="(min-width: 900px) 40vw, 100vw"
+                  />
+                  <img
+                    src={`${qngTeaser.image.stem}-1600.jpg`}
+                    srcSet={`${qngTeaser.image.stem}-800.jpg 800w, ${qngTeaser.image.stem}-1600.jpg 1600w`}
+                    sizes="(min-width: 900px) 40vw, 100vw"
+                    alt={qngTeaser.image.alt}
+                    width="1600"
+                    height="1200"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </picture>
               </ParallaxMedia>
             </Reveal>
           </div>

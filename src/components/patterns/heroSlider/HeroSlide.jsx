@@ -1,6 +1,7 @@
 import { ArrowRight } from 'lucide-react';
 import { Badge, Button, Container, Heading } from '../../primitives/index.js';
 import SplitTextReveal from '../../motion/SplitTextReveal.jsx';
+import { HERO_SIZES, heroSrcSet } from '../../../lib/heroImage.js';
 import styles from '../HeroSlider.module.css';
 
 /**
@@ -32,17 +33,21 @@ export default function HeroSlide({ slide, index, count, active, gen, showImage,
       <div className={styles.media}>
         {showImage && (
           <picture>
-            <source
-              type="image/webp"
-              srcSet={`${slide.image}-800.webp 800w, ${slide.image}-1600.webp 1600w`}
-              sizes="100vw"
-            />
+            {/* AVIF > WebP > JPG. `sizes` deliberately under-declares the slot on
+                phones (≤767px → 60vw) so the srcSet picker lands on the 800w (or
+                400w on tiny screens) variant instead of the 1600w one after DPR
+                multiplication — the hero sits behind the veil+scrim, so a ~2×
+                density source is indistinguishable while cutting the LCP image
+                from ~171KB (1600w webp) to ~15–28KB (800w avif). Desktop still
+                gets 1600w. Mirrors the preload in routes.jsx. */}
+            <source type="image/avif" srcSet={heroSrcSet(slide.image, 'avif')} sizes={HERO_SIZES} />
+            <source type="image/webp" srcSet={heroSrcSet(slide.image, 'webp')} sizes={HERO_SIZES} />
             {/* TODO: replace with real EA+ photo */}
             <img
               className={styles.image}
               src={`${slide.image}-1600.jpg`}
-              srcSet={`${slide.image}-800.jpg 800w, ${slide.image}-1600.jpg 1600w`}
-              sizes="100vw"
+              srcSet={heroSrcSet(slide.image, 'jpg')}
+              sizes={HERO_SIZES}
               alt={slide.alt}
               width="1600"
               height="900"

@@ -3,6 +3,17 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
+  build: {
+    // §9 CLS gate: ship ONE render-blocking stylesheet instead of per-route
+    // async CSS chunks. With code-split CSS, a prerendered route paints with
+    // only the base bundle in <head> and the route/component styles (e.g. the
+    // HeroSlider `.controls`, the kontakt `.channel` grid) arrive later with
+    // their JS chunk — over throttled 4G that late stylesheet reflows the whole
+    // page (measured CLS up to ~0.5 on /kontakt). One bundled stylesheet is
+    // ~60KB (≈12KB gzip), fully render-blocking, so component layout is correct
+    // at first paint and there is no style-driven layout shift.
+    cssCodeSplit: false,
+  },
   server: {
     watch: {
       // Agent worktrees and session files live under .claude/ — watching them

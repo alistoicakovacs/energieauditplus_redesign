@@ -13,6 +13,7 @@ import {
   Stepper,
 } from '../patterns/index.js';
 import { Reveal, StaggerGroup } from '../motion/index.js';
+import { HERO_SIZES, heroSrcSet } from '../../lib/heroImage.js';
 import { getRelatedServiceCards } from '../../content/leistungen.js';
 import { buildFaqJsonLd, buildServiceJsonLd, getSeoMeta } from '../../lib/seo.js';
 import styles from './ServiceDetailTemplate.module.css';
@@ -135,17 +136,17 @@ export default function ServiceDetailTemplate({ content }) {
       <div className={styles.hero}>
         <div className={styles.heroMedia}>
           <picture>
-            <source
-              type="image/webp"
-              srcSet={`${hero.image.stem}-800.webp 800w, ${hero.image.stem}-1600.webp 1600w`}
-              sizes="100vw"
-            />
+            {/* AVIF > WebP > JPG, shared responsive contract (lib/heroImage.js):
+                phones fetch the 800w/400w variant, desktop 1600w. Mirrors the
+                route's LCP preload in src/routes.jsx. */}
+            <source type="image/avif" srcSet={heroSrcSet(hero.image.stem, 'avif')} sizes={HERO_SIZES} />
+            <source type="image/webp" srcSet={heroSrcSet(hero.image.stem, 'webp')} sizes={HERO_SIZES} />
             {/* TODO: replace with real EA+ photo */}
             <img
               className={styles.heroImage}
               src={`${hero.image.stem}-1600.jpg`}
-              srcSet={`${hero.image.stem}-800.jpg 800w, ${hero.image.stem}-1600.jpg 1600w`}
-              sizes="100vw"
+              srcSet={heroSrcSet(hero.image.stem, 'jpg')}
+              sizes={HERO_SIZES}
               alt={hero.image.alt}
               width="1600"
               height="900"

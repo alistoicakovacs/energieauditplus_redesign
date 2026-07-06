@@ -51,6 +51,10 @@ export default function HeroSlider() {
   const [gens, setGens] = useState(() => heroSlides.map(() => 0));
   // Which slides have their image mounted (SSG: only slide 1 → lean LCP).
   const [imagesMounted, setImagesMounted] = useState(() => new Set([0]));
+  // Whether neighbour (prev/next) images may prefetch. Desktop arms immediately;
+  // on phones we hold off so the neighbours don't compete with the LCP image on
+  // first load — they arm on first idle/interaction (see effect below).
+  const [neighborsArmed, setNeighborsArmed] = useState(false);
   const [stopped, setStopped] = useState(false); // permanent (session) stop
   const [paused, setPaused] = useState(false); // pause button
   const [hovered, setHovered] = useState(false);
@@ -90,20 +94,55 @@ export default function HeroSlider() {
     advance(next);
   };
 
-  // Mount the active image and preload both neighbours (Prev/jump nav would
-  // otherwise show a bare scrim). Runs post-hydration only, so the static
-  // HTML stays slide-1-only.
+  // Arm neighbour prefetch. Desktop: immediately (unchanged behaviour). Phones
+  // (≤767px): only after the LCP image has had the field to itself — on the
+  // first idle callback (≤2.5s) or the first user interaction, whichever comes
+  // first — so the initial mobile load fetches just the active slide's small
+  // hero image. Runs post-hydration only. Does not touch autoplay/a11y state.
+  useEffect(() => {
+    const mobile = window.matchMedia('(max-width: 767px)').matches;
+    if (!mobile) {
+      setNeighborsArmed(true);
+      return undefined;
+    }
+    let armed = false;
+    const arm = () => {
+      if (armed) return;
+      armed = true;
+      setNeighborsArmed(true);
+      cleanup();
+    };
+    const idle =
+      'requestIdleCallback' in window
+        ? requestIdleCallback(arm, { timeout: 2500 })
+        : setTimeout(arm, 2000);
+    window.addEventListener('pointerdown', arm, { once: true, passive: true });
+    window.addEventListener('keydown', arm, { once: true });
+    function cleanup() {
+      if ('cancelIdleCallback' in window) cancelIdleCallback(idle);
+      else clearTimeout(idle);
+      window.removeEventListener('pointerdown', arm);
+      window.removeEventListener('keydown', arm);
+    }
+    return cleanup;
+  }, []);
+
+  // Mount the active image (always) and, once armed, both neighbours (Prev/jump
+  // nav would otherwise show a bare scrim). The active slide mounts as it
+  // becomes active regardless of arming, so autoplay is never starved. Runs
+  // post-hydration only, so the static HTML stays slide-1-only.
   useEffect(() => {
     setImagesMounted((prev) => {
-      const wanted = [index, (index + 1) % COUNT, (index - 1 + COUNT) % COUNT].filter(
-        (i) => !prev.has(i)
-      );
+      const targets = neighborsArmed
+        ? [index, (index + 1) % COUNT, (index - 1 + COUNT) % COUNT]
+        : [index];
+      const wanted = targets.filter((i) => !prev.has(i));
       if (wanted.length === 0) return prev;
       const nextSet = new Set(prev);
       wanted.forEach((i) => nextSet.add(i));
       return nextSet;
     });
-  }, [index]);
+  }, [index, neighborsArmed]);
 
   // Autoplay timer: rAF accumulator (freezes while not playing, resumes with
   // the remaining time). Delta is clamped so a backgrounded tab doesn't jump.
