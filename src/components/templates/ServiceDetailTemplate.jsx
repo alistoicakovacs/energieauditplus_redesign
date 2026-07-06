@@ -14,8 +14,28 @@ import {
 } from '../patterns/index.js';
 import { Reveal, StaggerGroup } from '../motion/index.js';
 import { getRelatedServiceCards } from '../../content/leistungen.js';
-import { buildFaqJsonLd, buildServiceJsonLd } from '../../lib/seo.js';
+import { buildFaqJsonLd, buildServiceJsonLd, getSeoMeta } from '../../lib/seo.js';
 import styles from './ServiceDetailTemplate.module.css';
+
+/** Escape `<` so JSON-LD can never close its own <script> tag. */
+const jsonLdString = (data) => JSON.stringify(data).replace(/</g, '\\u003c');
+
+/** Top-level serviceContent keys the template renders (README schema).
+    Unknown keys throw in DEV so a typo can't silently vanish a section. */
+const KNOWN_CONTENT_KEYS = new Set([
+  'route',
+  'name',
+  'hero',
+  'nutzen',
+  'platform',
+  'kinetic',
+  'ablauf',
+  'details',
+  'stats',
+  'praxistipp',
+  'faq',
+  'ctaBand',
+]);
 
 /**
  * ServiceDetailTemplate — the plan §6.3 service-detail skeleton, rendered
@@ -34,8 +54,14 @@ import styles from './ServiceDetailTemplate.module.css';
  *  10 CTABand                          — §6.3.8
  *
  * JSON-LD: BreadcrumbList (via Breadcrumbs), Service (always), FAQPage
- * (only when `faq` exists) — all as body scripts, which Google parses.
- * Copy is 100% content-owned; this file renders structure only.
+ * (only when `faq` has items) — all as body scripts, which Google parses.
+ *
+ * Copy is content-owned EXCEPT the template-owned fixed strings (identical
+ * on every service page, listed in templates/README.md): breadcrumb labels
+ * „Start"/„Leistungen", hero overline „Leistung", hero CTAs
+ * „Termin vereinbaren" / „Kostenloses Erstgespräch", Ablauf eyebrow
+ * „Ablauf" (NEW COPY: review) and cross-sell heading „Mehr erfahren"
+ * (verbatim content .md section heading).
  */
 export default function ServiceDetailTemplate({ content }) {
   const {
@@ -57,16 +83,30 @@ export default function ServiceDetailTemplate({ content }) {
     for (const [key, value] of Object.entries({ route, name, hero, nutzen, ablauf, ctaBand })) {
       if (!value) throw new Error(`ServiceDetailTemplate: serviceContent.${key} is required`);
     }
+    for (const key of Object.keys(content)) {
+      if (!KNOWN_CONTENT_KEYS.has(key)) {
+        throw new Error(
+          `ServiceDetailTemplate: unknown serviceContent key "${key}" — ` +
+            'the template would silently ignore it (schema: templates/README.md)'
+        );
+      }
+    }
   }
 
+  const hasFaq = (faq?.items?.length ?? 0) > 0;
   const related = getRelatedServiceCards(route);
   const breadcrumbs = [
     { label: 'Start', to: '/' },
     { label: 'Leistungen', to: '/leistungen' },
     { label: name },
   ];
-  // JSON-LD Service name = the plain service name (no site suffix).
-  const serviceJsonLd = buildServiceJsonLd({ name, path: route });
+  // JSON-LD Service name = the plain service name (no site suffix); the
+  // description reuses the route's meta description (lib/seo.js map).
+  const serviceJsonLd = buildServiceJsonLd({
+    name,
+    path: route,
+    description: getSeoMeta(route).description,
+  });
 
   return (
     <>
@@ -75,13 +115,13 @@ export default function ServiceDetailTemplate({ content }) {
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdString(serviceJsonLd) }}
       />
-      {faq && (
+      {hasFaq && (
         <script
           type="application/ld+json"
           // eslint-disable-next-line react/no-danger
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(buildFaqJsonLd(faq.items)) }}
+          dangerouslySetInnerHTML={{ __html: jsonLdString(buildFaqJsonLd(faq.items)) }}
         />
       )}
 
@@ -126,8 +166,9 @@ export default function ServiceDetailTemplate({ content }) {
               {hero.title}
             </Heading>
             {hero.subline && <p className={styles.heroSubline}>{hero.subline}</p>}
-            {hero.lead.map((paragraph) => (
-              <p key={paragraph.slice(0, 32)} className={styles.heroLead}>
+            {hero.lead.map((paragraph, i) => (
+              // eslint-disable-next-line react/no-array-index-key -- static verbatim list
+              <p key={i} className={styles.heroLead}>
                 {paragraph}
               </p>
             ))}
@@ -159,8 +200,9 @@ export default function ServiceDetailTemplate({ content }) {
           <Reveal className={styles.sectionHead}>
             {nutzen.overline && <Overline color="green">{nutzen.overline}</Overline>}
             <Heading level={2}>{nutzen.heading}</Heading>
-            {nutzen.intro?.map((paragraph) => (
-              <p key={paragraph.slice(0, 32)} className="prose">
+            {nutzen.intro?.map((paragraph, i) => (
+              // eslint-disable-next-line react/no-array-index-key -- static verbatim list
+              <p key={i} className="prose">
                 {paragraph}
               </p>
             ))}
@@ -199,8 +241,9 @@ export default function ServiceDetailTemplate({ content }) {
                     <strong>{platform.tagline}</strong>
                   </p>
                 )}
-                {platform.body.map((paragraph) => (
-                  <p key={paragraph.slice(0, 32)}>{paragraph}</p>
+                {platform.body.map((paragraph, i) => (
+                  // eslint-disable-next-line react/no-array-index-key -- static verbatim list
+                  <p key={i}>{paragraph}</p>
                 ))}
               </Reveal>
               <Reveal>
@@ -254,8 +297,9 @@ export default function ServiceDetailTemplate({ content }) {
             <Reveal className={styles.sectionHead}>
               {details.overline && <Overline>{details.overline}</Overline>}
               <Heading level={2}>{details.heading}</Heading>
-              {details.intro?.map((paragraph) => (
-                <p key={paragraph.slice(0, 32)} className="prose">
+              {details.intro?.map((paragraph, i) => (
+                // eslint-disable-next-line react/no-array-index-key -- static verbatim list
+                <p key={i} className="prose">
                   {paragraph}
                 </p>
               ))}
@@ -276,7 +320,7 @@ export default function ServiceDetailTemplate({ content }) {
       {stats && <StatBand overline={stats.overline} title={stats.title} stats={stats.items} />}
 
       {/* 8 — Praxistipp + FAQ (§6.3.6) */}
-      {(faq || praxistipp) && (
+      {(hasFaq || praxistipp) && (
         <Section>
           <Container>
             {praxistipp && (
@@ -284,7 +328,7 @@ export default function ServiceDetailTemplate({ content }) {
                 <PraxistippCallout>{praxistipp}</PraxistippCallout>
               </Reveal>
             )}
-            {faq && (
+            {hasFaq && (
               <>
                 <Reveal className={styles.sectionHead}>
                   {faq.overline && <Overline color="green">{faq.overline}</Overline>}
@@ -350,8 +394,9 @@ function toParagraphs(content) {
   const paragraphs = Array.isArray(content) ? content : [content];
   return (
     <>
-      {paragraphs.map((paragraph) => (
-        <p key={paragraph.slice(0, 32)}>{paragraph}</p>
+      {paragraphs.map((paragraph, i) => (
+        // eslint-disable-next-line react/no-array-index-key -- static verbatim list
+        <p key={i}>{paragraph}</p>
       ))}
     </>
   );

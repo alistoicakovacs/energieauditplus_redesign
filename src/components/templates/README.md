@@ -72,4 +72,21 @@ a minimal service page needs only `route`, `name`, `hero`, `nutzen`,
 
 Cross-sell (§6.3.7) is not part of the object: the template resolves it from
 `relatedServices[route]` in `src/content/leistungen.js`. Breadcrumb,
-`Service` and `FAQPage` JSON-LD are emitted automatically.
+`Service` and `FAQPage` JSON-LD are emitted automatically (the Service
+description reuses the route's meta description from `lib/seo.js`).
+Unknown top-level keys throw in DEV — extend the schema (and this README)
+instead of adding ad-hoc fields. Every service route also declares a
+`preloadImage` in `src/routes.jsx` mirroring its `hero.image.stem` webp set
+(§9 LCP convention).
+
+### Template-owned fixed copy
+
+These strings are rendered by the template itself, identically on every
+service page (NOT content-owned):
+
+- Breadcrumb labels „Start" / „Leistungen"
+- Hero overline „Leistung"
+- Hero CTAs „Termin vereinbaren" (primary) / „Kostenloses Erstgespräch"
+  (secondary) — labels verbatim from the site-wide CTA set
+- Ablauf eyebrow „Ablauf" (NEW COPY: review)
+- Cross-sell heading „Mehr erfahren" (verbatim content .md section heading)

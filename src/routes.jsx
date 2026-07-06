@@ -67,6 +67,14 @@ export const routes = [
     title: 'Neubau & Energieberatung — EnergieAudit Plus',
     Component: lazy(() => import('./pages/neubau-energieberatung/NeubauEnergieberatungPage.jsx')),
     prerender: true,
+    // §9 LCP preload — must mirror the page hero's webp source set
+    // (hero.image.stem in src/content/services/neubau-energieberatung.js).
+    // Convention for every service detail page (Phase 4b: add per route).
+    preloadImage: {
+      imageSrcSet: '/images/hero/01-neubau-800.webp 800w, /images/hero/01-neubau-1600.webp 1600w',
+      imageSizes: '100vw',
+      type: 'image/webp',
+    },
   },
   {
     path: '/leistungen/bestandsgebaeude',
@@ -103,6 +111,13 @@ export const routes = [
     title: 'Nachhaltigkeitsaudit mit QNG-flow — EnergieAudit Plus',
     Component: lazy(() => import('./pages/qng-flow/QngFlowPage.jsx')),
     prerender: true,
+    // §9 LCP preload — mirrors hero.image.stem in src/content/services/qng-flow.js.
+    preloadImage: {
+      imageSrcSet:
+        '/images/hero/07-qng-flow-800.webp 800w, /images/hero/07-qng-flow-1600.webp 1600w',
+      imageSizes: '100vw',
+      type: 'image/webp',
+    },
   },
   {
     path: '/karriere',

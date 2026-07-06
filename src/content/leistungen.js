@@ -111,6 +111,14 @@ export function getRelatedServiceCards(route) {
 // Same guard pattern as heroSlides/bentoLayout: a renamed or added service
 // must fail loudly here, not silently drop a cross-sell card.
 if (import.meta.env.DEV) {
+  for (const card of serviceCards) {
+    if (!card.description) {
+      throw new Error(
+        `leistungen content: service "${card.to}" has no hero one-liner — ` +
+          'update the heroCopy map in src/content/heroSlides.js'
+      );
+    }
+  }
   for (const service of services) {
     if (!relatedServices[service.to]) {
       throw new Error(`leistungen content: no relatedServices entry for "${service.to}"`);
