@@ -56,10 +56,10 @@ const descriptions = {
     'Nachhaltigkeitsaudit mit QNG-flow: mit unserer eigenen Plattform strukturiert zum QNG-Siegel und zur höchsten KfW-Förderstufe — bis zu 150.000 € Förderkredit pro Wohneinheit.',
   // NEW COPY: review (Phase 5B), facts verbatim karriere.md — Anrede „du"
   '/karriere':
-    'Karriere bei EnergieAudit Plus: Werde Teil unseres interdisziplinären Teams für Energieberatung und nachhaltiges Bauen — offene Stelle als Ingenieur / Technischer Mitarbeiter (m/w/d) und Ausbildung zur Kauffrau für Büromanagement in Strausberg bei Berlin.',
+    'Karriere bei EnergieAudit Plus: interdisziplinäres Team für Energieberatung und nachhaltiges Bauen — offene Ingenieur-Stelle (m/w/d) und Ausbildung in Strausberg bei Berlin.',
   // NEW COPY: review (Phase 5B), facts verbatim team.md
   '/ansprechpartner':
-    'Ihre Ansprechpartner bei EnergieAudit Plus: Geschäftsführung, Energieberater, Auditoren und Nachhaltigkeitsexperten an den Standorten Strausberg, Berlin, Güstrow, Bad Belzig und Wittstock — direkt per E-Mail und Telefon erreichbar.',
+    'Ihre Ansprechpartner bei EnergieAudit Plus: Geschäftsführung, Energieberater und Nachhaltigkeitsexperten an unseren Standorten — direkt per E-Mail und Telefon erreichbar.',
   '/kontakt':
     'Kontakt zu EnergieAudit Plus: Kontaktformular, Telefon, E-Mail und alle Standorte — wir melden uns zeitnah bei Ihnen.',
   '/datenschutzerklaerung': 'Datenschutzerklärung der EnergieAudit Plus GmbH & Co. KG.',
