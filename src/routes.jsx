@@ -81,30 +81,63 @@ export const routes = [
     title: 'Energieberatung für Bestandsgebäude — EnergieAudit Plus',
     Component: lazy(() => import('./pages/bestandsgebaeude/BestandsgebaeudePage.jsx')),
     prerender: true,
+    // §9 LCP preload — mirrors hero.image.stem in src/content/services/bestandsgebaeude.js.
+    preloadImage: {
+      imageSrcSet: '/images/hero/02-bestand-800.webp 800w, /images/hero/02-bestand-1600.webp 1600w',
+      imageSizes: '100vw',
+      type: 'image/webp',
+    },
   },
   {
     path: '/leistungen/fordermittelservice',
     title: 'Fördermittelservice — EnergieAudit Plus',
     Component: lazy(() => import('./pages/fordermittelservice/FordermittelservicePage.jsx')),
     prerender: true,
+    // §9 LCP preload — mirrors hero.image.stem in src/content/services/fordermittelservice.js.
+    preloadImage: {
+      imageSrcSet:
+        '/images/hero/03-foerdermittel-800.webp 800w, /images/hero/03-foerdermittel-1600.webp 1600w',
+      imageSizes: '100vw',
+      type: 'image/webp',
+    },
   },
   {
     path: '/leistungen/lebenszyklusanalyse-lca',
     title: 'Lebenszyklusanalyse (LCA) — EnergieAudit Plus',
     Component: lazy(() => import('./pages/lebenszyklusanalyse-lca/LebenszyklusanalysePage.jsx')),
     prerender: true,
+    // §9 LCP preload — mirrors hero.image.stem in src/content/services/lebenszyklusanalyse-lca.js.
+    preloadImage: {
+      imageSrcSet: '/images/hero/04-lca-800.webp 800w, /images/hero/04-lca-1600.webp 1600w',
+      imageSizes: '100vw',
+      type: 'image/webp',
+    },
   },
   {
     path: '/leistungen/raumluftmessung-baubiologie',
     title: 'Raumluftmessung & Baubiologie — EnergieAudit Plus',
     Component: lazy(() => import('./pages/raumluftmessung-baubiologie/RaumluftmessungPage.jsx')),
     prerender: true,
+    // §9 LCP preload — mirrors hero.image.stem in src/content/services/raumluftmessung-baubiologie.js.
+    preloadImage: {
+      imageSrcSet:
+        '/images/hero/05-raumluft-800.webp 800w, /images/hero/05-raumluft-1600.webp 1600w',
+      imageSizes: '100vw',
+      type: 'image/webp',
+    },
   },
   {
     path: '/leistungen/blower-door-test',
     title: 'Blower-Door-Test — EnergieAudit Plus',
     Component: lazy(() => import('./pages/blower-door-test/BlowerDoorTestPage.jsx')),
     prerender: true,
+    // §9 LCP preload — mirrors hero.image.stem in src/content/services/blower-door-test.js.
+    preloadImage: {
+      imageSrcSet:
+        '/images/hero/06-blower-door-800.webp 800w, /images/hero/06-blower-door-1600.webp 1600w',
+      imageSizes: '100vw',
+      type: 'image/webp',
+    },
   },
   {
     path: '/leistungen/qng-flow',
