@@ -1,0 +1,96 @@
+/* /karriere — layout composition ONLY (plan §3 reuse mandate): grid
+   templates, gaps, spacing, max-widths, list layout. No colors, no fonts,
+   no shadows — all visual language lives in the component library. */
+
+.breadcrumbBar {
+  padding-top: var(--space-4);
+}
+
+.sectionHead {
+  max-width: 72ch;
+  margin-bottom: var(--space-7);
+}
+
+.ctaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+}
+
+/* ---- Werte grid: 4 value cards ---- */
+
+.werteGrid {
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .werteGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ---- Vorteile grid: 4 compact benefit tiles ---- */
+
+.vorteileGrid {
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 560px) {
+  .vorteileGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .vorteileGrid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* ---- Position panel (inside the Accordion) ---- */
+
+.position {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.positionMeta {
+  margin: 0;
+}
+
+.positionGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.positionGroupHeading {
+  margin: 0;
+}
+
+.positionList {
+  margin: 0;
+  padding-left: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.positionApply {
+  align-self: flex-start;
+  margin-top: var(--space-2);
+}
+
+/* ---- Bewerbungs-Ablauf ---- */
+
+.ablaufCta {
+  margin-top: var(--space-7);
+  display: flex;
+  justify-content: center;
+}
