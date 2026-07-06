@@ -6,7 +6,12 @@
  *
  * Titles come from src/routes.jsx (single source); descriptions live here.
  * Descriptions are placeholder quality for the stub pages — real copy comes
- * with the page-content phases.
+ * with the page-content phases. Phase 4a delivered the real descriptions for
+ * /leistungen, /leistungen/neubau-energieberatung and /leistungen/qng-flow.
+ *
+ * JSON-LD builders: `buildServiceJsonLd` / `buildFaqJsonLd` live here (used
+ * by the service detail template). `buildBreadcrumbJsonLd` predates them and
+ * stays local to components/patterns/Breadcrumbs.jsx (its only consumer).
  */
 
 export const SITE_NAME = 'EnergieAudit Plus';
@@ -24,10 +29,12 @@ const DEFAULT_DESCRIPTION =
 const descriptions = {
   '/':
     'Energieberatung aus einer Hand: von der Bestandsaufnahme bis zur Baubegleitung. EnergieAudit Plus begleitet Neubau und Sanierung — förderfähig, effizient, persönlich.',
+  // NEW COPY: review — real description (Phase 4a), facts from leistungen-uebersicht.md
   '/leistungen':
-    'Alle Leistungen im Überblick: Neubau- und Bestandsberatung, Fördermittelservice, Lebenszyklusanalyse, Raumluftmessung, Blower-Door-Test und QNG-Nachhaltigkeitsaudit.',
+    'Sieben Leistungen, ein Partner: Energieberatung für Neubau und Bestand, Fördermittelservice, Lebenszyklusanalyse (LCA), Raumluftmessung, Blower-Door-Test und Nachhaltigkeitsaudit mit QNG-flow.',
+  // NEW COPY: review — real description (Phase 4a), facts verbatim neubau-energieberatung.md
   '/leistungen/neubau-energieberatung':
-    'Energieberatung für den Neubau: Effizienzhaus-Planung, Nachweise und Baubegleitung — von Anfang an förderfähig geplant.',
+    'Neubau & Energieberatung: GEG-Nachweis, LCA, QNG-Begleitung und Blower-Door-Test aus einer Hand — bis zu 150.000 € zinsverbilligter KfW-Kredit pro Wohneinheit (KNN/KFN).',
   '/leistungen/bestandsgebaeude':
     'Energieberatung für Bestandsgebäude: Sanierungsfahrplan (iSFP), Energieausweis und Modernisierungskonzepte mit maximaler Förderung.',
   '/leistungen/fordermittelservice':
@@ -38,8 +45,9 @@ const descriptions = {
     'Raumluftmessung & Baubiologie: Schadstoffe messen, gesundes Raumklima nachweisen — für Wohn- und Gewerbegebäude.',
   '/leistungen/blower-door-test':
     'Blower-Door-Test: Luftdichtheitsmessung nach Norm — für Neubau, Sanierung und Fördernachweise.',
+  // NEW COPY: review — real description (Phase 4a), facts verbatim nachhaltigkeitsaudit-qng-flow.md
   '/leistungen/qng-flow':
-    'Nachhaltigkeitsaudit mit QNG-flow: digital gesteuert zum QNG-Siegel — Voraussetzung für klimafreundliche Neubauförderung.',
+    'Nachhaltigkeitsaudit mit QNG-flow: mit unserer eigenen Plattform strukturiert zum QNG-Siegel und zur höchsten KfW-Förderstufe — bis zu 150.000 € Förderkredit pro Wohneinheit.',
   '/karriere':
     'Karriere bei EnergieAudit Plus: Werde Teil unseres Teams für Energieberatung und nachhaltiges Bauen — offene Stellen und Kultur.',
   '/ansprechpartner':
@@ -77,5 +85,53 @@ export function getSeoMeta(path, title, overrides = {}) {
     canonical: isNotFound ? null : `${SITE_URL}${path === '/' ? '/' : path}`,
     noindex: isNotFound,
     image,
+  };
+}
+
+/**
+ * schema.org `Service` for a Leistung detail page (dev brief §9). Minimal
+ * correct shape: name + url + provider Organization + areaServed. The
+ * provider name is the legal entity (verbatim kontakt.md).
+ *
+ * @param {object} args
+ * @param {string} args.name        service name (verbatim)
+ * @param {string} [args.description] meta-description-length summary
+ * @param {string} args.path        route path (e.g. '/leistungen/qng-flow')
+ */
+export function buildServiceJsonLd({ name, description, path }) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name,
+    ...(description ? { description } : {}),
+    url: `${SITE_URL}${path}`,
+    provider: {
+      '@type': 'Organization',
+      name: 'EnergieAudit Plus GmbH & Co. KG',
+      url: SITE_URL,
+    },
+    areaServed: { '@type': 'Country', name: 'Deutschland' },
+  };
+}
+
+/**
+ * schema.org `FAQPage` for service-page FAQ accordions (dev brief §9).
+ * Only emit when the page renders the same Q/A text visibly (Google policy).
+ *
+ * @param {{question: string, answer: string|string[]}[]} items verbatim Q/A;
+ *   multi-paragraph answers may be passed as an array of paragraphs.
+ */
+export function buildFaqJsonLd(items) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: items.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: Array.isArray(item.answer) ? item.answer.join('\n\n') : item.answer,
+      },
+    })),
   };
 }
