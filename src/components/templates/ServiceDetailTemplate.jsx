@@ -304,14 +304,16 @@ export default function ServiceDetailTemplate({ content }) {
                 </p>
               ))}
             </Reveal>
-            <Reveal className={styles.accordionWrap}>
-              <Accordion
-                items={details.items.map((item) => ({
-                  title: item.title,
-                  content: toParagraphs(item.content),
-                }))}
-              />
-            </Reveal>
+            {details.items?.length > 0 && (
+              <Reveal className={styles.accordionWrap}>
+                <Accordion
+                  items={details.items.map((item) => ({
+                    title: item.title,
+                    content: toParagraphs(item.content),
+                  }))}
+                />
+              </Reveal>
+            )}
           </Container>
         </Section>
       )}

@@ -85,7 +85,7 @@ export const fordermittelservice = {
         text: 'In einem kurzen Erstgespräch erfassen wir Ihr Vorhaben, die Rahmendaten und Ihre Ziele. Dabei klären wir, ob und in welchem Umfang eine Förderung grundsätzlich infrage kommt.', // verbatim
       },
       {
-        title: '2. Förderstrategie & Programmkombination', // verbatim (incl. source's stray „2. " numeral — only this step is numbered)
+        title: 'Förderstrategie & Programmkombination', // verbatim; source's stray leading „2. " list-ordinal dropped — the Stepper renders its own step number (would double as „② 2.")
         text: 'Wir gleichen Ihr Vorhaben mit den aktuellen Programmen ab – BAFA, KfW, BEG, KFN, QNG – und ermitteln die Konstellation mit der größten Wirkung. Sie erhalten eine klare Empfehlung mit Förderhöhen, Voraussetzungen und Fristen.', // verbatim
       },
       {
