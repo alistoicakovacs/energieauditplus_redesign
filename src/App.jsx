@@ -18,7 +18,7 @@ import './styles/base.css';
  * `location` is passed to <Routes> so AnimatePresence can keep rendering
  * the outgoing page during its exit animation.
  */
-function AnimatedRoutes() {
+function AnimatedRoutes({ routes: routeList }) {
   const location = useLocation();
   const navigationType = useNavigationType();
 
@@ -40,7 +40,7 @@ function AnimatedRoutes() {
         onExitComplete={resetScroll}
       >
         <Routes location={location}>
-          {routes.map(({ path, title, Component }) => (
+          {routeList.map(({ path, title, Component }) => (
             <Route
               key={path}
               path={path}
@@ -58,11 +58,11 @@ function AnimatedRoutes() {
   );
 }
 
-export default function App() {
+export default function App({ routes: routeList = routes }) {
   return (
     <MotionConfig reducedMotion="user">
       <PageShell>
-        <AnimatedRoutes />
+        <AnimatedRoutes routes={routeList} />
       </PageShell>
     </MotionConfig>
   );

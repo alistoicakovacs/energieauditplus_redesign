@@ -24,16 +24,19 @@ const escapeHtml = (s) =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 /**
- * CSP drift guard (§8.2). React 19's react-dom/static emits a small, fixed set
- * of executable inline reveal-timing scripts ($RB/$RC/$RT/$RV) on pages with a
- * Suspense boundary. Our CSP `script-src` allowlists their exact sha256 hashes
- * (no 'unsafe-inline'). This guard re-hashes every inline script in the built
- * HTML and FAILS the build if one is NOT already in the CSP allowlist — so a
- * React version bump that changes a reveal script cannot silently ship a page
- * whose inline script the production CSP would refuse. Single source of truth:
- * the hashes are read straight out of vercel.json, so the CSP and the guard
- * can never drift apart. `type="application/ld+json"` blocks are skipped: they
- * are non-executable data blocks, exempt from `script-src`.
+ * CSP guard (§8.2). The SSR path renders each route's ALREADY-RESOLVED
+ * component (src/entry-server.jsx) and prerenders with an effectively infinite
+ * progressiveChunkSize, so NOTHING suspends and Fizz never flushes an
+ * out-of-order Suspense segment — meaning react-dom/static emits ZERO
+ * executable inline scripts (no $RB/$RC/$RT/$RV reveal scripts). The production
+ * CSP `script-src` is therefore just `'self'` (no hashes). This guard re-hashes
+ * every inline script in the built HTML and FAILS the build if one is NOT in
+ * the CSP allowlist. Because the allowlist is now empty, ANY inline executable
+ * script that reappears (e.g. a regression that lets a boundary defer again)
+ * fails the build loudly rather than shipping content the production CSP would
+ * refuse. Single source of truth: the allowlist is read straight out of
+ * vercel.json. `type="application/ld+json"` blocks are skipped — non-executable
+ * data blocks, exempt from `script-src`.
  */
 function extractInlineScriptHashes(html) {
   const hashes = [];
@@ -94,6 +97,40 @@ function buildPreloadTag(preloadImage) {
   );
 }
 
+/**
+ * Regression guard for the SHELL-ONLY prerender defect. Every prerendered
+ * route MUST render its content INLINE in <main>: no pending Suspense boundary
+ * (`<!--$?-->`), a real <h1> present, and that route's <h1> text actually
+ * inside <main> (not banished to a trailing `<div hidden>` reveal block). If
+ * the SSR path ever regresses to draining only the shell prelude, this fails
+ * the build instead of silently shipping empty <main>s.
+ */
+function assertMainHasInlineContent(html, routePath) {
+  const mainMatch = html.match(/<main\b[^>]*>([\s\S]*?)<\/main>/);
+  if (!mainMatch) throw new Error(`SSR guard: no <main> element in "${routePath}".`);
+  const mainInner = mainMatch[1];
+  if (mainInner.includes('<!--$?-->')) {
+    throw new Error(
+      `SSR guard: <main> for "${routePath}" contains a PENDING Suspense boundary ` +
+        `(<!--$?-->) — the route content did not render inline (shell-only prerender).`
+    );
+  }
+  const h1Match = html.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/);
+  if (!h1Match) throw new Error(`SSR guard: no <h1> found for "${routePath}".`);
+  const stripTags = (s) => s.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+  const h1Text = stripTags(h1Match[1]);
+  const mainText = stripTags(mainInner);
+  if (!mainText.includes('<h1') && !/<h1\b/.test(mainInner)) {
+    throw new Error(`SSR guard: <main> for "${routePath}" has no <h1> inline.`);
+  }
+  if (h1Text && !mainText.includes(h1Text)) {
+    throw new Error(
+      `SSR guard: <main> for "${routePath}" does not contain its <h1> text ` +
+        `("${h1Text.slice(0, 60)}") — shell-only prerender regression.`
+    );
+  }
+}
+
 const { render, routes } = await import(serverEntry);
 const template = await readFile(path.join(distDir, 'index.html'), 'utf-8');
 
@@ -146,6 +183,8 @@ for (const route of targets) {
     throw new Error(`Prerender produced no <title> in <head> for route "${route.path}" (${url})`);
   }
 
+  assertMainHasInlineContent(html, route.path);
+
   for (const hash of extractInlineScriptHashes(html)) {
     if (!emittedScriptHashes.has(hash)) emittedScriptHashes.set(hash, route.path);
   }
@@ -189,10 +228,12 @@ const unlistedScripts = [...emittedScriptHashes].filter(([h]) => !allowedScriptH
 if (unlistedScripts.length > 0) {
   const lines = unlistedScripts.map(([h, route]) => `  ${h}  (first seen on ${route})`).join('\n');
   throw new Error(
-    `CSP guard: ${unlistedScripts.length} inline script hash(es) are NOT in vercel.json ` +
-      `script-src (and public/_headers). The production CSP would refuse them.\n${lines}\n` +
-      `If this is an intended React reveal-script change, add the hash(es) to script-src in ` +
-      `BOTH vercel.json and public/_headers, then rebuild.`
+    `CSP guard: ${unlistedScripts.length} executable inline script(s) appeared in the build ` +
+      `but are NOT allowlisted in vercel.json script-src. The production CSP would refuse them.\n${lines}\n` +
+      `The SSR path is expected to emit ZERO inline scripts — if one reappeared, a Suspense ` +
+      `boundary is deferring content again (check entry-server.jsx progressiveChunkSize and that ` +
+      `the matched route renders a resolved, non-lazy component). Fix the SSR path rather than ` +
+      `allowlisting the hash.`
   );
 }
 console.log(

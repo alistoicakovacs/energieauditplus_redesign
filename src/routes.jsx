@@ -1,4 +1,5 @@
 import { lazy } from 'react';
+import { matchRoutes } from 'react-router';
 
 /**
  * Single route table — consumed by the client app (App.jsx) and by the
@@ -8,6 +9,17 @@ import { lazy } from 'react';
  * `file` overrides the output filename (404 host convention).
  */
 
+/**
+ * page(load) → { load, Component }. `load` is the raw dynamic import (used by
+ * SSR and by the client's initial hydration to render the ALREADY-RESOLVED
+ * component, so no Suspense boundary is created and the page content renders
+ * INLINE in <main>). `Component` is the React.lazy wrapper (used for every
+ * OTHER route, preserving code-splitting for client-side navigations).
+ */
+function page(load) {
+  return { load, Component: lazy(load) };
+}
+
 // Dev-only verification surface — registered only in dev so it never ships
 // in the prod client/SSR bundles (and is excluded from sitemap & robots).
 const devRoutes = import.meta.env.DEV
@@ -15,25 +27,25 @@ const devRoutes = import.meta.env.DEV
       {
         path: '/dev/kitchen-sink',
         title: 'Kitchen Sink (dev) — EnergieAudit Plus',
-        Component: lazy(() => import('./pages/kitchen-sink/KitchenSinkPage.jsx')),
+        ...page(() => import('./pages/kitchen-sink/KitchenSinkPage.jsx')),
         prerender: false,
       },
       {
         path: '/dev/motion',
         title: 'Motion-Wrapper (dev) — EnergieAudit Plus',
-        Component: lazy(() => import('./pages/dev-motion/DevMotionPage.jsx')),
+        ...page(() => import('./pages/dev-motion/DevMotionPage.jsx')),
         prerender: false,
       },
       {
         path: '/dev/hero',
         title: 'Hero-Slider (dev) — EnergieAudit Plus',
-        Component: lazy(() => import('./pages/dev-hero/DevHeroPage.jsx')),
+        ...page(() => import('./pages/dev-hero/DevHeroPage.jsx')),
         prerender: false,
       },
       {
         path: '/dev/patterns',
         title: 'Pattern-Bibliothek (dev) — EnergieAudit Plus',
-        Component: lazy(() => import('./pages/dev-patterns/DevPatternsPage.jsx')),
+        ...page(() => import('./pages/dev-patterns/DevPatternsPage.jsx')),
         prerender: false,
       },
     ]
@@ -43,7 +55,7 @@ export const routes = [
   {
     path: '/',
     title: 'EnergieAudit Plus — Energieberatung aus einer Hand',
-    Component: lazy(() => import('./pages/home/HomePage.jsx')),
+    ...page(() => import('./pages/home/HomePage.jsx')),
     prerender: true,
     // §9 LCP preload for the hero slide-1 image — injected into the static
     // <head> by scripts/prerender.mjs (React 19 does not hoist responsive
@@ -59,13 +71,13 @@ export const routes = [
   {
     path: '/leistungen',
     title: 'Leistungen — EnergieAudit Plus',
-    Component: lazy(() => import('./pages/leistungen/LeistungenPage.jsx')),
+    ...page(() => import('./pages/leistungen/LeistungenPage.jsx')),
     prerender: true,
   },
   {
     path: '/leistungen/neubau-energieberatung',
     title: 'Neubau & Energieberatung — EnergieAudit Plus',
-    Component: lazy(() => import('./pages/neubau-energieberatung/NeubauEnergieberatungPage.jsx')),
+    ...page(() => import('./pages/neubau-energieberatung/NeubauEnergieberatungPage.jsx')),
     prerender: true,
     // §9 LCP preload — must mirror the page hero's webp source set
     // (hero.image.stem in src/content/services/neubau-energieberatung.js).
@@ -79,7 +91,7 @@ export const routes = [
   {
     path: '/leistungen/bestandsgebaeude',
     title: 'Energieberatung für Bestandsgebäude — EnergieAudit Plus',
-    Component: lazy(() => import('./pages/bestandsgebaeude/BestandsgebaeudePage.jsx')),
+    ...page(() => import('./pages/bestandsgebaeude/BestandsgebaeudePage.jsx')),
     prerender: true,
     // §9 LCP preload — mirrors hero.image.stem in src/content/services/bestandsgebaeude.js.
     preloadImage: {
@@ -91,7 +103,7 @@ export const routes = [
   {
     path: '/leistungen/fordermittelservice',
     title: 'Fördermittelservice — EnergieAudit Plus',
-    Component: lazy(() => import('./pages/fordermittelservice/FordermittelservicePage.jsx')),
+    ...page(() => import('./pages/fordermittelservice/FordermittelservicePage.jsx')),
     prerender: true,
     // §9 LCP preload — mirrors hero.image.stem in src/content/services/fordermittelservice.js.
     preloadImage: {
@@ -104,7 +116,7 @@ export const routes = [
   {
     path: '/leistungen/lebenszyklusanalyse-lca',
     title: 'Lebenszyklusanalyse (LCA) — EnergieAudit Plus',
-    Component: lazy(() => import('./pages/lebenszyklusanalyse-lca/LebenszyklusanalysePage.jsx')),
+    ...page(() => import('./pages/lebenszyklusanalyse-lca/LebenszyklusanalysePage.jsx')),
     prerender: true,
     // §9 LCP preload — mirrors hero.image.stem in src/content/services/lebenszyklusanalyse-lca.js.
     preloadImage: {
@@ -116,7 +128,7 @@ export const routes = [
   {
     path: '/leistungen/raumluftmessung-baubiologie',
     title: 'Raumluftmessung & Baubiologie — EnergieAudit Plus',
-    Component: lazy(() => import('./pages/raumluftmessung-baubiologie/RaumluftmessungPage.jsx')),
+    ...page(() => import('./pages/raumluftmessung-baubiologie/RaumluftmessungPage.jsx')),
     prerender: true,
     // §9 LCP preload — mirrors hero.image.stem in src/content/services/raumluftmessung-baubiologie.js.
     preloadImage: {
@@ -129,7 +141,7 @@ export const routes = [
   {
     path: '/leistungen/blower-door-test',
     title: 'Blower-Door-Test — EnergieAudit Plus',
-    Component: lazy(() => import('./pages/blower-door-test/BlowerDoorTestPage.jsx')),
+    ...page(() => import('./pages/blower-door-test/BlowerDoorTestPage.jsx')),
     prerender: true,
     // §9 LCP preload — mirrors hero.image.stem in src/content/services/blower-door-test.js.
     preloadImage: {
@@ -142,7 +154,7 @@ export const routes = [
   {
     path: '/leistungen/qng-flow',
     title: 'Nachhaltigkeitsaudit mit QNG-flow — EnergieAudit Plus',
-    Component: lazy(() => import('./pages/qng-flow/QngFlowPage.jsx')),
+    ...page(() => import('./pages/qng-flow/QngFlowPage.jsx')),
     prerender: true,
     // §9 LCP preload — mirrors hero.image.stem in src/content/services/qng-flow.js.
     preloadImage: {
@@ -155,40 +167,64 @@ export const routes = [
   {
     path: '/karriere',
     title: 'Karriere — EnergieAudit Plus',
-    Component: lazy(() => import('./pages/karriere/KarrierePage.jsx')),
+    ...page(() => import('./pages/karriere/KarrierePage.jsx')),
     prerender: true,
   },
   {
     path: '/ansprechpartner',
     title: 'Ansprechpartner — EnergieAudit Plus',
-    Component: lazy(() => import('./pages/ansprechpartner/AnsprechpartnerPage.jsx')),
+    ...page(() => import('./pages/ansprechpartner/AnsprechpartnerPage.jsx')),
     prerender: true,
   },
   {
     path: '/kontakt',
     title: 'Kontakt — EnergieAudit Plus',
-    Component: lazy(() => import('./pages/kontakt/KontaktPage.jsx')),
+    ...page(() => import('./pages/kontakt/KontaktPage.jsx')),
     prerender: true,
   },
   {
     path: '/datenschutzerklaerung',
     title: 'Datenschutzerklärung — EnergieAudit Plus',
-    Component: lazy(() => import('./pages/datenschutzerklaerung/DatenschutzerklaerungPage.jsx')),
+    ...page(() => import('./pages/datenschutzerklaerung/DatenschutzerklaerungPage.jsx')),
     prerender: true,
   },
   {
     path: '/impressum',
     title: 'Impressum — EnergieAudit Plus',
-    Component: lazy(() => import('./pages/impressum/ImpressumPage.jsx')),
+    ...page(() => import('./pages/impressum/ImpressumPage.jsx')),
     prerender: true,
   },
   ...devRoutes,
   {
     path: '*',
     title: 'Seite nicht gefunden — EnergieAudit Plus',
-    Component: lazy(() => import('./pages/not-found/NotFoundPage.jsx')),
+    ...page(() => import('./pages/not-found/NotFoundPage.jsx')),
     prerender: true,
     prerenderPath: '/404',
     file: '404.html',
   },
 ];
+
+/**
+ * The route object react-router will match for `url` (deepest match, or the
+ * `*` catch-all). Used to resolve the initial route's chunk up front.
+ */
+export function matchRoute(url) {
+  const matches = matchRoutes(routes, url) ?? [];
+  return matches.at(-1)?.route ?? routes.find((r) => r.path === '*');
+}
+
+/**
+ * Build a routes list where the matched route renders its ALREADY-RESOLVED
+ * component (the raw import, not React.lazy) — so <Suspense fallback={null}>
+ * is a no-op passthrough and the page content renders INLINE. SSR uses this so
+ * the crawlable HTML contains the real <main>; the client uses it for the
+ * initial hydration so its first render matches the server (no #418 mismatch).
+ * Every OTHER route stays lazy → client navigations still code-split.
+ */
+export async function routesWithResolved(url) {
+  const matched = matchRoute(url);
+  const mod = await matched.load();
+  const Resolved = mod.default;
+  return routes.map((r) => (r === matched ? { ...r, Component: Resolved } : r));
+}

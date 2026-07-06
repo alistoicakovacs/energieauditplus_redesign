@@ -48,7 +48,7 @@ base-uri 'self';
 object-src 'none';
 frame-ancestors 'none';
 form-action 'self';
-script-src 'self' 'sha256-7mu4H06fwDCjmnxxr/xNHyuQC6pLTHr4M2E4jXw5WZs=' 'sha256-QAlSewaQLi/NPCznjAZSyvQ72heD0VdxmNDDkZeCxgc=';
+script-src 'self';
 style-src 'self' 'unsafe-inline';
 img-src 'self' data:;
 font-src 'self';
@@ -62,7 +62,7 @@ connect-src 'self'
 | `object-src` | `'none'` | No `<object>`/`<embed>`/plugins anywhere on the site. |
 | `frame-ancestors` | `'none'` | Site is never framed (anti-clickjacking; modern `X-Frame-Options`). |
 | `form-action` | `'self'` | The contact form POSTs same-origin `/api/contact` only. |
-| `script-src` | `'self'` + 2 sha256 hashes | All bundled JS loads from the origin (`'self'`). **No `'unsafe-inline'`.** React 19's `react-dom/static` prerender emits a small, fixed set of **executable inline reveal-timing scripts** (`$RB`/`$RC`/`$RT`/`$RV`) on every page that contains a Suspense boundary — the app wraps its routes in one (`App.jsx`). These are *not* exempt from `script-src` (unlike `ld+json`, which is a non-executable data block and *is* exempt), so the two exact script bodies are allowlisted by **sha256 hash** rather than opening `'unsafe-inline'`. The hashes are stable across pages (2 distinct total across all 23 HTML files). A **build-time guard** (`scripts/prerender.mjs`, `extractInlineScriptHashes` + `loadCspScriptHashes`) re-hashes every emitted inline script and **fails the build** if any hash is missing from this allowlist — so a React version bump that changes a reveal script cannot silently ship a page the production CSP would refuse. The guard reads the hashes straight from `vercel.json`, so the CSP and the guard cannot drift. Zero third-party scripts (DSGVO §8.3). |
+| `script-src` | `'self'` (no hashes) | All bundled JS loads from the origin (`'self'`). **No `'unsafe-inline'`, no hashes.** The SSR path renders each route's already-resolved component and prerenders with an effectively infinite `progressiveChunkSize` (`src/entry-server.jsx`), so nothing suspends and Fizz never flushes an out-of-order Suspense segment — meaning `react-dom/static` emits **zero** executable inline scripts (no `$RB`/`$RC`/`$RT`/`$RV` reveal scripts). The only inline blocks left are `type="application/ld+json"` data blocks, which are exempt from `script-src`. A **build-time guard** (`scripts/prerender.mjs`, `extractInlineScriptHashes` + `loadCspScriptHashes`) re-hashes every emitted executable inline script and **fails the build** if any is not in the (now empty) allowlist — so if a regression ever lets a Suspense boundary defer content again and reintroduces a reveal script, the build fails loudly rather than shipping a page the production CSP would refuse. Zero third-party scripts (DSGVO §8.3). |
 | `style-src` | `'self' 'unsafe-inline'` | CSS Modules compile to external stylesheets (covered by `'self'`), **but** `'unsafe-inline'` is **required**: the Motion animation library writes inline `style=` attributes for transform/opacity on every animated element, and the app also sets dynamic inline styles — `ParallaxMedia` (`aspectRatio`, `y`), `ScrollProgress` (`scaleX`), `KineticStatement` (`opacity`), `TrustStrip` (`--marquee-duration`), `Stepper` (`--step-count`). Dropping it breaks all scroll/hover motion. CSP `style-src` governs both `<style>` blocks and `style=` attributes; there is no nonce path for library-injected inline styles, so `'unsafe-inline'` stays, documented. |
 | `img-src` | `'self' data:` | Local AVIF/WebP/PNG assets (`'self'`) plus `data:` URIs for tiny inline SVG/raster used by some UI. No hotlinked/remote images (DSGVO: Unsplash placeholders are downloaded at build time, never hotlinked). |
 | `font-src` | `'self'` | Carlito/Caladea WOFF2 are self-hosted (`public/fonts/`). **Never** Google Fonts CDN (DSGVO — LG München ruling). |
@@ -73,39 +73,43 @@ requests (§8.3), so the CSP needs no CDN/analytics/font/host exceptions.
 
 ### CSP reality check
 
-**First pass (defect found).** An initial `script-src 'self'` with no hashes
-was **wrong**: `react-dom/static` emits 2 executable inline reveal scripts per
-Suspense page, which the CSP refused (`Refused to execute inline script`),
-throwing React #419 and leaving revealed content stuck in its hidden
-`<template>`. (An early check missed this because the browser-extension console
-bridge used at the time did not surface CSP-violation messages.)
+**History (why hashes were once needed).** An earlier build wrapped its lazy
+routes in a `<Suspense>` boundary and prerendered them without resolving the
+route first, so `react-dom/static` deferred the page content out of `<main>`
+into a trailing `<div hidden>` and emitted 2 executable inline **reveal
+scripts** (`$RC`/`$RT`) per page. Those required either `'unsafe-inline'` or an
+sha256 allowlist. That whole mechanism has since been removed at the source (see
+`src/entry-server.jsx`): the SSR path renders each route's **already-resolved**
+component and prerenders with an effectively infinite `progressiveChunkSize`, so
+nothing suspends, content renders **inline** in `<main>`, and **zero** inline
+reveal scripts are emitted. `script-src` is therefore back to a plain `'self'`
+(no hashes), and the build guard now fails if *any* executable inline script
+reappears.
 
 **Verification method (repeatable).** `dist/` is served by a throwaway static
-server (`scratchpad/csp-server.mjs`) that applies the **exact production
-headers read from `vercel.json`**, then a **headless Chrome** run
-(`scratchpad/csp-verify.mjs`, playwright-core driving installed Chrome) loads
-`/`, `/kontakt`, and `/leistungen/qng-flow`. It captures `securitypolicyviolation`
+server that applies the **exact production headers read from `vercel.json`**
+(clean URLs, no SPA fallback, no inline injection), then a **headless Chrome**
+run (playwright-core driving installed Chrome) loads `/`, `/kontakt`, and
+`/leistungen/neubau-energieberatung`. It captures `securitypolicyviolation`
 events (via an init-script listener, isolated from the page CSP), console
-errors, and page errors, and on `/kontakt` fires a real `POST /api/contact`
-fetch to exercise `connect-src`/`form-action`.
+errors, and page errors.
 
-**Result after the hash fix — zero CSP violations on all three pages:**
+**Result with `script-src 'self'` (no hashes) — zero CSP violations, zero
+inline scripts, clean hydration on all three pages:**
 
 ```
-/                    cspViolations: 0  refusedConsole: 0  #419: 0  templates left: 0  h1: yes
-/kontakt             cspViolations: 0  refusedConsole: 0  #419: 0  templates left: 0  h1: yes
-                     fetch /api/contact: reached server (connect-src allowed)
-/leistungen/qng-flow cspViolations: 0  refusedConsole: 0  #419: 0  templates left: 0  h1: yes
-SUMMARY: CSP violations 0 · React #419 0 · PASS
+/                                     cspViolations: 0  consoleErrors: 0  #418/#419: 0  templates left: 0  h1: yes
+/kontakt                              cspViolations: 0  consoleErrors: 0  #418/#419: 0  templates left: 0  h1: yes
+/leistungen/neubau-energieberatung    cspViolations: 0  consoleErrors: 0  #418/#419: 0  templates left: 0  h1: yes
+SUMMARY: CSP violations 0 · inline exec scripts 0 · React #418/#419 0 · PASS
 ```
 
-Fonts, images, styles, and scroll/hover motion all function; no content is left
-hidden in a `<template>`. The reveal scripts now execute (hash-allowlisted) and
-the `ld+json` blocks were never at issue (data blocks, exempt). The one
-remaining console entry is a pre-existing React **#418** hydration notice on the
-homepage — not a CSP violation, unrelated to this work, and *not* caused by the
-`ld+json` (the service page uses the identical `ld+json`-in-body pattern and is
-#418-clean).
+Fonts, images, styles, and scroll/hover motion all function; `<main>` carries
+the real content inline (no `<div hidden>`/`<template>` reveal). The `ld+json`
+blocks were never at issue (data blocks, exempt from `script-src`). The React
+**#418** hydration notice that the old build logged on the homepage is now
+**gone** — the client resolves the initial route's chunk before `hydrateRoot`
+(`src/main.jsx`), so its first render matches the server's inline markup.
 
 **Deliberately NOT added:** `upgrade-insecure-requests` (would force https on
 the local http test server, making the shipped CSP un-verifiable locally — and
