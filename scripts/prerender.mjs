@@ -5,6 +5,7 @@
  * Writes one crawlable HTML file per route into dist/.
  */
 import { readFile, writeFile, mkdir, rm } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
@@ -21,6 +22,39 @@ const SITEMAP_LASTMOD = '2026-07-06';
 
 const escapeHtml = (s) =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+/**
+ * CSP drift guard (§8.2). React 19's react-dom/static emits a small, fixed set
+ * of executable inline reveal-timing scripts ($RB/$RC/$RT/$RV) on pages with a
+ * Suspense boundary. Our CSP `script-src` allowlists their exact sha256 hashes
+ * (no 'unsafe-inline'). This guard re-hashes every inline script in the built
+ * HTML and FAILS the build if one is NOT already in the CSP allowlist — so a
+ * React version bump that changes a reveal script cannot silently ship a page
+ * whose inline script the production CSP would refuse. Single source of truth:
+ * the hashes are read straight out of vercel.json, so the CSP and the guard
+ * can never drift apart. `type="application/ld+json"` blocks are skipped: they
+ * are non-executable data blocks, exempt from `script-src`.
+ */
+function extractInlineScriptHashes(html) {
+  const hashes = [];
+  for (const [, attrs, body] of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/g)) {
+    if (/\bsrc\s*=/.test(attrs)) continue; // external script → covered by 'self'
+    if (/type\s*=\s*["']application\/ld\+json["']/.test(attrs)) continue; // data block
+    if (body.trim() === '') continue;
+    hashes.push(`sha256-${createHash('sha256').update(body, 'utf8').digest('base64')}`);
+  }
+  return hashes;
+}
+
+async function loadCspScriptHashes() {
+  const vercel = JSON.parse(await readFile(path.join(root, 'vercel.json'), 'utf-8'));
+  const csp = vercel.headers
+    ?.flatMap((h) => h.headers ?? [])
+    .find((h) => h.key.toLowerCase() === 'content-security-policy')?.value;
+  if (!csp) throw new Error('CSP guard: no Content-Security-Policy header found in vercel.json');
+  const scriptSrc = csp.split(';').find((d) => d.trim().startsWith('script-src')) ?? '';
+  return new Set(scriptSrc.match(/sha256-[A-Za-z0-9+/=]+/g)?.map((h) => h) ?? []);
+}
 
 /**
  * React 19 hoists metadata rendered by <Seo> (<title>/<meta>/<link>) to the
@@ -70,6 +104,11 @@ if (!template.includes('<!--app-html-->')) {
 const targets = routes.filter((r) => r.prerender !== false);
 const written = [];
 
+// CSP drift guard state: hashes the CSP allows, and every inline-script hash
+// actually emitted (→ which route emitted it, for a useful failure message).
+const allowedScriptHashes = await loadCspScriptHashes();
+const emittedScriptHashes = new Map();
+
 for (const route of targets) {
   const url = route.prerenderPath ?? route.path;
 
@@ -107,6 +146,10 @@ for (const route of targets) {
     throw new Error(`Prerender produced no <title> in <head> for route "${route.path}" (${url})`);
   }
 
+  for (const hash of extractInlineScriptHashes(html)) {
+    if (!emittedScriptHashes.has(hash)) emittedScriptHashes.set(hash, route.path);
+  }
+
   const outFiles = [];
   if (route.file) {
     outFiles.push({ file: path.join(distDir, route.file), twin: false });
@@ -138,6 +181,23 @@ for (const route of targets) {
     written.push({ file: path.relative(distDir, file).replaceAll(path.sep, '/'), twin });
   }
 }
+
+// CSP drift guard: every emitted inline script must be allowlisted in the
+// production CSP (vercel.json). A mismatch means the CSP would refuse that
+// script in the browser (React #419, hidden content) — fail the build loudly.
+const unlistedScripts = [...emittedScriptHashes].filter(([h]) => !allowedScriptHashes.has(h));
+if (unlistedScripts.length > 0) {
+  const lines = unlistedScripts.map(([h, route]) => `  ${h}  (first seen on ${route})`).join('\n');
+  throw new Error(
+    `CSP guard: ${unlistedScripts.length} inline script hash(es) are NOT in vercel.json ` +
+      `script-src (and public/_headers). The production CSP would refuse them.\n${lines}\n` +
+      `If this is an intended React reveal-script change, add the hash(es) to script-src in ` +
+      `BOTH vercel.json and public/_headers, then rebuild.`
+  );
+}
+console.log(
+  `CSP guard: ${emittedScriptHashes.size} distinct inline script hash(es), all allowlisted.`
+);
 
 // sitemap.xml (§9): canonical URLs only — one entry per PUBLIC route.
 // Excludes dev routes (prerender === false, not in the prod route table

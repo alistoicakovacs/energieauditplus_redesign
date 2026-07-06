@@ -48,7 +48,7 @@ base-uri 'self';
 object-src 'none';
 frame-ancestors 'none';
 form-action 'self';
-script-src 'self';
+script-src 'self' 'sha256-7mu4H06fwDCjmnxxr/xNHyuQC6pLTHr4M2E4jXw5WZs=' 'sha256-QAlSewaQLi/NPCznjAZSyvQ72heD0VdxmNDDkZeCxgc=';
 style-src 'self' 'unsafe-inline';
 img-src 'self' data:;
 font-src 'self';
@@ -62,7 +62,7 @@ connect-src 'self'
 | `object-src` | `'none'` | No `<object>`/`<embed>`/plugins anywhere on the site. |
 | `frame-ancestors` | `'none'` | Site is never framed (anti-clickjacking; modern `X-Frame-Options`). |
 | `form-action` | `'self'` | The contact form POSTs same-origin `/api/contact` only. |
-| `script-src` | `'self'` | All JS is bundled from the origin. **No `'unsafe-inline'`** — the only inline `<script>`s are `type="application/ld+json"` JSON-LD, which are *data blocks*, not executable script, and are therefore not subject to `script-src` (confirmed in the reality check: zero violations). Zero third-party scripts (DSGVO §8.3: no analytics/tag-manager). |
+| `script-src` | `'self'` + 2 sha256 hashes | All bundled JS loads from the origin (`'self'`). **No `'unsafe-inline'`.** React 19's `react-dom/static` prerender emits a small, fixed set of **executable inline reveal-timing scripts** (`$RB`/`$RC`/`$RT`/`$RV`) on every page that contains a Suspense boundary — the app wraps its routes in one (`App.jsx`). These are *not* exempt from `script-src` (unlike `ld+json`, which is a non-executable data block and *is* exempt), so the two exact script bodies are allowlisted by **sha256 hash** rather than opening `'unsafe-inline'`. The hashes are stable across pages (2 distinct total across all 23 HTML files). A **build-time guard** (`scripts/prerender.mjs`, `extractInlineScriptHashes` + `loadCspScriptHashes`) re-hashes every emitted inline script and **fails the build** if any hash is missing from this allowlist — so a React version bump that changes a reveal script cannot silently ship a page the production CSP would refuse. The guard reads the hashes straight from `vercel.json`, so the CSP and the guard cannot drift. Zero third-party scripts (DSGVO §8.3). |
 | `style-src` | `'self' 'unsafe-inline'` | CSS Modules compile to external stylesheets (covered by `'self'`), **but** `'unsafe-inline'` is **required**: the Motion animation library writes inline `style=` attributes for transform/opacity on every animated element, and the app also sets dynamic inline styles — `ParallaxMedia` (`aspectRatio`, `y`), `ScrollProgress` (`scaleX`), `KineticStatement` (`opacity`), `TrustStrip` (`--marquee-duration`), `Stepper` (`--step-count`). Dropping it breaks all scroll/hover motion. CSP `style-src` governs both `<style>` blocks and `style=` attributes; there is no nonce path for library-injected inline styles, so `'unsafe-inline'` stays, documented. |
 | `img-src` | `'self' data:` | Local AVIF/WebP/PNG assets (`'self'`) plus `data:` URIs for tiny inline SVG/raster used by some UI. No hotlinked/remote images (DSGVO: Unsplash placeholders are downloaded at build time, never hotlinked). |
 | `font-src` | `'self'` | Carlito/Caladea WOFF2 are self-hosted (`public/fonts/`). **Never** Google Fonts CDN (DSGVO — LG München ruling). |
@@ -73,14 +73,45 @@ requests (§8.3), so the CSP needs no CDN/analytics/font/host exceptions.
 
 ### CSP reality check
 
-The built site was served locally with the **exact production CSP applied as a
-real response header** and loaded in a headless browser. Pages checked:
-homepage `/`, `/kontakt` (the form page), and a service detail page
-(`/leistungen/qng-flow`). Result: **zero CSP violations** in the console; fonts,
-images, styles, scroll/hover motion, and the contact form all function. The
-JSON-LD `<script type="application/ld+json">` blocks did **not** trip
-`script-src 'self'` (data blocks are exempt). See the Phase 6B report for the
-captured console output.
+**First pass (defect found).** An initial `script-src 'self'` with no hashes
+was **wrong**: `react-dom/static` emits 2 executable inline reveal scripts per
+Suspense page, which the CSP refused (`Refused to execute inline script`),
+throwing React #419 and leaving revealed content stuck in its hidden
+`<template>`. (An early check missed this because the browser-extension console
+bridge used at the time did not surface CSP-violation messages.)
+
+**Verification method (repeatable).** `dist/` is served by a throwaway static
+server (`scratchpad/csp-server.mjs`) that applies the **exact production
+headers read from `vercel.json`**, then a **headless Chrome** run
+(`scratchpad/csp-verify.mjs`, playwright-core driving installed Chrome) loads
+`/`, `/kontakt`, and `/leistungen/qng-flow`. It captures `securitypolicyviolation`
+events (via an init-script listener, isolated from the page CSP), console
+errors, and page errors, and on `/kontakt` fires a real `POST /api/contact`
+fetch to exercise `connect-src`/`form-action`.
+
+**Result after the hash fix — zero CSP violations on all three pages:**
+
+```
+/                    cspViolations: 0  refusedConsole: 0  #419: 0  templates left: 0  h1: yes
+/kontakt             cspViolations: 0  refusedConsole: 0  #419: 0  templates left: 0  h1: yes
+                     fetch /api/contact: reached server (connect-src allowed)
+/leistungen/qng-flow cspViolations: 0  refusedConsole: 0  #419: 0  templates left: 0  h1: yes
+SUMMARY: CSP violations 0 · React #419 0 · PASS
+```
+
+Fonts, images, styles, and scroll/hover motion all function; no content is left
+hidden in a `<template>`. The reveal scripts now execute (hash-allowlisted) and
+the `ld+json` blocks were never at issue (data blocks, exempt). The one
+remaining console entry is a pre-existing React **#418** hydration notice on the
+homepage — not a CSP violation, unrelated to this work, and *not* caused by the
+`ld+json` (the service page uses the identical `ld+json`-in-body pattern and is
+#418-clean).
+
+**Deliberately NOT added:** `upgrade-insecure-requests` (would force https on
+the local http test server, making the shipped CSP un-verifiable locally — and
+all production subresources are already same-origin https) and `report-to`/
+`report-uri` (no reporting endpoint is provisioned in v1). Both can be added
+later once a reporting endpoint exists and against an https staging host.
 
 ---
 
