@@ -8,6 +8,7 @@ import test from 'node:test';
 import { handleContactSubmission } from './contact.js';
 import { createRateLimiter } from './rateLimit.js';
 import { clientIp, coerceConsent } from './requestUtils.js';
+import { ERROR_MESSAGE, RATE_LIMIT_MESSAGE } from '../src/content/contactMessages.js';
 
 const NOW = 1_800_000_000_000;
 const OLD = NOW - 10_000; // 10s before "now" ⇒ passes the 3s min-time floor.
@@ -218,4 +219,59 @@ test('SEC: CR/LF in single-line fields is stripped (email-body-injection defence
   assert.ok(text.split('\n').every((l) => !l.startsWith('Bcc:')), 'no forged Bcc: line');
   const nameLine = text.split('\n').find((l) => l.startsWith('Name:'));
   assert.ok(nameLine.includes('MaxBcc: evil@x.com'), 'injected content stays inline on the Name line');
+});
+
+test('polish: mailer throw ⇒ 502 with clean ERROR_MESSAGE, reason mail-error, no leak', async () => {
+  const { meta } = makeMeta({
+    sendMail: async () => {
+      throw new Error('SMTP secret-leak 587 boom');
+    },
+  });
+  const res = await handleContactSubmission(validInput(), meta);
+  assert.equal(res.status, 502);
+  assert.equal(res.reason, 'mail-error');
+  assert.equal(res.payload.error, ERROR_MESSAGE);
+  // The internal error text must not leak into the response.
+  assert.doesNotMatch(JSON.stringify(res.payload), /SMTP|secret-leak|boom/);
+});
+
+test('polish: sliding window recovers — allowed again after the window elapses', async () => {
+  const windowMs = 60 * 60 * 1000;
+  const shared = createRateLimiter({ max: 5, windowMs });
+  const at = async (now) => {
+    const { meta } = makeMeta({ rateLimiter: shared, now });
+    return (await handleContactSubmission(validInput(), meta)).status;
+  };
+  for (let i = 0; i < 5; i += 1) assert.equal(await at(NOW + i), 200); // 5 allowed
+  assert.equal(await at(NOW + 5), 429); // 6th blocked within the window
+  // Advance past the window: the old timestamps age out and a request is allowed.
+  assert.equal(await at(NOW + windowMs + 1), 200);
+});
+
+test('polish: fail-path content negotiation — 400 (invalid) renders HTML for no-JS', async () => {
+  const { meta } = makeMeta({ acceptsHtml: true });
+  const res = await handleContactSubmission(validInput({ email: 'nope' }), meta);
+  assert.equal(res.status, 400);
+  assert.equal(res.contentType, 'text/html');
+  assert.match(res.payload, /Fehler/);
+});
+
+test('polish: fail-path content negotiation — 429 (rate limit) renders HTML for no-JS', async () => {
+  const shared = createRateLimiter({ max: 5, windowMs: 60 * 60 * 1000 });
+  let res;
+  for (let i = 0; i < 6; i += 1) {
+    const { meta } = makeMeta({ rateLimiter: shared, acceptsHtml: true, now: NOW + i });
+    // eslint-disable-next-line no-await-in-loop
+    res = await handleContactSubmission(validInput(), meta);
+  }
+  assert.equal(res.status, 429);
+  assert.equal(res.contentType, 'text/html');
+  assert.match(res.payload, /Fehler/);
+});
+
+test('polish: shared status copy is byte-identical across client + server modules', async () => {
+  // The server pulls its copy from the same module the client imports.
+  const shared = await import('../src/content/contactMessages.js');
+  assert.equal(shared.RATE_LIMIT_MESSAGE, RATE_LIMIT_MESSAGE);
+  assert.ok(shared.SUCCESS_MESSAGE.startsWith('Vielen Dank!'));
 });

@@ -173,6 +173,11 @@ export const standorte = {
     { name: 'Bad Langensalza', lat: 51.1, lon: 10.65 },
     { name: 'Berlin', lat: 52.52, lon: 13.4 },
     { name: 'Bad Belzig', lat: 52.14, lon: 12.59 },
+    // KNOWN SOURCE-DATA QUIRK (client reconcile item): the „Erkelenz" entry's
+    // verbatim address in kontakt.md reads „26446 Friedeburg" (the shared EBE
+    // GmbH office), but the dot is plotted at real Erkelenz (lon 6.31, near
+    // Aachen) to match the location NAME. Address/coordinate mismatch is
+    // intentional here and flagged for the client — no coordinate change.
     { name: 'Erkelenz', lat: 51.08, lon: 6.31, partner: true },
     { name: 'Friedeburg', lat: 53.45, lon: 7.84, partner: true },
     { name: 'Schorndorf bei Stuttgart', lat: 48.81, lon: 9.53, partner: true },

@@ -18,6 +18,7 @@
 import http from 'node:http';
 import { handleContactSubmission } from './contact.js';
 import { normalizeContactInput, parseBody, clientIp, wantsHtml, readRawBody } from './requestUtils.js';
+import { ERROR_MESSAGE } from '../src/content/contactMessages.js';
 
 const PORT = Number(process.env.CONTACT_DEV_PORT ?? 8787);
 // The harness is directly connected (no reverse proxy), so by default it does
@@ -26,32 +27,41 @@ const PORT = Number(process.env.CONTACT_DEV_PORT ?? 8787);
 const TRUSTED_PROXY_HOPS = Number(process.env.TRUSTED_PROXY_HOPS ?? 0);
 
 const server = http.createServer(async (req, res) => {
-  const url = new URL(req.url, `http://${req.headers.host ?? '127.0.0.1'}`);
+  try {
+    const url = new URL(req.url, `http://${req.headers.host ?? '127.0.0.1'}`);
 
-  if (url.pathname !== '/api/contact') {
-    res.statusCode = 404;
+    if (url.pathname !== '/api/contact') {
+      res.statusCode = 404;
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({ ok: false, error: 'Not found' }));
+      return;
+    }
+
+    const bodyString = await readRawBody(req).catch(() => '');
+    const raw = parseBody(bodyString, req.headers['content-type']);
+
+    const result = await handleContactSubmission(normalizeContactInput(raw), {
+      method: req.method,
+      origin: req.headers.origin ?? null,
+      ip: clientIp(req.headers, req.socket?.remoteAddress, TRUSTED_PROXY_HOPS),
+      acceptsHtml: wantsHtml(req.headers.accept),
+    });
+
+    res.statusCode = result.status;
+    res.setHeader('Content-Type', result.contentType);
+    res.setHeader('Cache-Control', 'no-store');
+    if (result.status === 405) res.setHeader('Allow', 'POST');
+    res.end(
+      result.contentType === 'application/json' ? JSON.stringify(result.payload) : result.payload
+    );
+  } catch {
+    // Defense in depth: mirror the production adapter — a surprise throw yields
+    // the clean German error copy, not a raw 500.
+    res.statusCode = 500;
     res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify({ ok: false, error: 'Not found' }));
-    return;
+    res.setHeader('Cache-Control', 'no-store');
+    res.end(JSON.stringify({ ok: false, error: ERROR_MESSAGE }));
   }
-
-  const bodyString = await readRawBody(req).catch(() => '');
-  const raw = parseBody(bodyString, req.headers['content-type']);
-
-  const result = await handleContactSubmission(normalizeContactInput(raw), {
-    method: req.method,
-    origin: req.headers.origin ?? null,
-    ip: clientIp(req.headers, req.socket?.remoteAddress, TRUSTED_PROXY_HOPS),
-    acceptsHtml: wantsHtml(req.headers.accept),
-  });
-
-  res.statusCode = result.status;
-  res.setHeader('Content-Type', result.contentType);
-  res.setHeader('Cache-Control', 'no-store');
-  if (result.status === 405) res.setHeader('Allow', 'POST');
-  res.end(
-    result.contentType === 'application/json' ? JSON.stringify(result.payload) : result.payload
-  );
 });
 
 server.listen(PORT, '127.0.0.1', () => {

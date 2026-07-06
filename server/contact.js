@@ -28,16 +28,13 @@
  * be exercised in isolation without any network or environment.
  */
 import { parseContactStrict, leistungLabel, projektphaseLabel } from '../src/lib/validation.js';
+import {
+  SUCCESS_MESSAGE,
+  ERROR_MESSAGE,
+  RATE_LIMIT_MESSAGE,
+} from '../src/content/contactMessages.js';
 import { sendMail as defaultSendMail } from './mailer.js';
 import { createRateLimiter } from './rateLimit.js';
-
-/** Success/error copy — verbatim handoff/content/kontakt.md „Status- und Fehlermeldungen". */
-const SUCCESS_MESSAGE =
-  'Vielen Dank! Ihre Anfrage wurde übermittelt. Wir melden uns zeitnah bei Ihnen.';
-const ERROR_MESSAGE =
-  'Beim Senden ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut oder schreiben Sie uns direkt per E-Mail.';
-const RATE_LIMIT_MESSAGE =
-  'Zu viele Anfragen in kurzer Zeit. Bitte versuchen Sie es später erneut oder schreiben Sie uns direkt per E-Mail.';
 
 /** Minimum time (ms) a real user needs to fill the form (plan §8.1). */
 const MIN_SUBMIT_MS = 3000;

@@ -10,7 +10,16 @@ import {
   MessageSquare,
   Send,
 } from 'lucide-react';
-import { Button, Input, Textarea, Select, Checkbox, Heading, IconChip } from '../../primitives/index.js';
+import {
+  Button,
+  Input,
+  Textarea,
+  Select,
+  Checkbox,
+  Heading,
+  IconChip,
+  Link,
+} from '../../primitives/index.js';
 import { services, contact } from '../../../lib/navigation.js';
 import {
   contactSchema,
@@ -19,6 +28,7 @@ import {
   PROJEKTPHASE_OPTIONS,
   MESSAGE_MAX,
 } from '../../../lib/validation.js';
+import { SUCCESS_MESSAGE, ERROR_MESSAGE } from '../../../content/contactMessages.js';
 import styles from './ContactForm.module.css';
 
 /**
@@ -59,11 +69,6 @@ const PHASE_OPTIONS = [
   ...PROJEKTPHASE_OPTIONS,
 ];
 
-const SUCCESS_MESSAGE =
-  'Vielen Dank! Ihre Anfrage wurde übermittelt. Wir melden uns zeitnah bei Ihnen.';
-const ERROR_MESSAGE =
-  'Beim Senden ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut oder schreiben Sie uns direkt per E-Mail.';
-
 /**
  * Local zod → react-hook-form resolver (no `@hookform/resolvers` dependency).
  * Strips client-only meta (honeypot/timestamp) before validation, and — when
@@ -98,6 +103,7 @@ export default function ContactForm({
   const [enhanced, setEnhanced] = useState(false);
   const [step, setStep] = useState(1);
   const [status, setStatus] = useState('idle'); // idle | submitting | success | error
+  const [errorMessage, setErrorMessage] = useState(ERROR_MESSAGE);
   const [announce, setAnnounce] = useState('');
 
   const renderedAtRef = useRef(0);
@@ -194,10 +200,20 @@ export default function ContactForm({
           renderedAt: renderedAtRef.current,
         }),
       });
-      if (!res.ok) throw new Error(`status ${res.status}`);
+      if (!res.ok) {
+        // Surface the server's specific German copy (e.g. the rate-limit
+        // message on 429) instead of the generic fallback when available.
+        const body = await res.json().catch(() => null);
+        const msg = (body && (body.error || body.message)) || ERROR_MESSAGE;
+        setErrorMessage(msg);
+        setStatus('error');
+        setAnnounce(msg);
+        return;
+      }
       setStatus('success');
       setAnnounce(SUCCESS_MESSAGE);
     } catch {
+      setErrorMessage(ERROR_MESSAGE);
       setStatus('error');
       setAnnounce(ERROR_MESSAGE);
     }
@@ -365,11 +381,9 @@ export default function ContactForm({
       >
         {status === 'error' && (
           <div className={styles.errorBanner} role="alert">
-            <p>{ERROR_MESSAGE}</p>
+            <p>{errorMessage}</p>
             <p>
-              <a className={styles.inlineLink} href={mailtoHref}>
-                {contact.emailDisplay}
-              </a>
+              <Link href={mailtoHref}>{contact.emailDisplay}</Link>
             </p>
           </div>
         )}
