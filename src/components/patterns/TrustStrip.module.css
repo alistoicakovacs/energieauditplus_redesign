@@ -48,7 +48,13 @@
   align-items: center;
 }
 
-/* Text-based wordmark placeholders — grayscale→color on hover. */
+/* Text-based wordmark placeholders — grayscale→color on hover.
+   INTERIM a11y: these stand-ins are read as TEXT (real SVG logos are exempt),
+   so they must clear 4.5:1 now. The prior opacity:0.55 dim blended each tone
+   toward the strip bg (green-700 → 1.98:1) and failed; full opacity + darker
+   tones (blue-700 7.33:1, green-800 5.59:1 on ink-100) pass. Grayscale still
+   mutes them at rest and preserves luminance, so the rendered grey passes too.
+   The logo-swap task can restore any dimming once real images land. */
 .wordmark {
   font-family: var(--font-body);
   font-weight: 700;
@@ -56,15 +62,11 @@
   letter-spacing: 0.04em;
   white-space: nowrap;
   filter: grayscale(1);
-  opacity: 0.55;
-  transition:
-    filter var(--dur-base) var(--ease-out),
-    opacity var(--dur-base) var(--ease-out);
+  transition: filter var(--dur-base) var(--ease-out);
 }
 
 .wordmark:hover {
   filter: grayscale(0);
-  opacity: 1;
 }
 
 .blue {
@@ -72,7 +74,7 @@
 }
 
 .green {
-  color: var(--green-700);
+  color: var(--green-800);
 }
 
 /* Reduced motion: static row, no loop, no duplicate (pure CSS — SSG-safe). */

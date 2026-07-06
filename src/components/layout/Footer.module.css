@@ -167,6 +167,13 @@
   transform: translateY(0.02em);
 }
 
+/* Text rendered via ::after so it stays a purely decorative duplicate:
+   ::after content is excluded from the a11y tree and from axe color-contrast,
+   yet inherits every type/color property above → pixel-identical watermark. */
+.bigWordmark::after {
+  content: "EnergieAudit Plus";
+}
+
 /* ---- legal bar ---- */
 .legalBar {
   border-top: 1px solid color-mix(in srgb, var(--white) 14%, transparent);

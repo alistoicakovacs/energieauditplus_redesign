@@ -12,6 +12,9 @@
   color: var(--overline-blue, var(--blue-700));
 }
 
+/* green eyebrows use --green-800 on light bgs (6.12:1 white / 5.59:1 ink-100);
+   green-700 failed (4.22 / 3.85). Dark sections override --overline-green to
+   --green-400 (8.55:1 on navy) — see Section/FeaturedCard. (a11y audit) */
 .green {
-  color: var(--overline-green, var(--green-700));
+  color: var(--overline-green, var(--green-800));
 }

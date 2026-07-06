@@ -66,18 +66,21 @@
   background-color: var(--blue-800);
 }
 
+/* accent fill darkened to --green-800 (6.12:1 white) — green-700 failed at 4.21:1 (a11y audit).
+   Hover/active use --green-900 (7.80:1) with a shadow-lift → press delta. */
 .accent {
-  background-color: var(--color-accent);
+  background-color: var(--green-800);
   color: var(--color-text-invert);
 }
 
 .accent:hover:not(:disabled) {
-  background-color: var(--green-600);
+  background-color: var(--green-900);
   box-shadow: var(--shadow-brand);
 }
 
 .accent:active:not(:disabled) {
-  background-color: var(--green-800);
+  background-color: var(--green-900);
+  box-shadow: none;
 }
 
 .outline {
