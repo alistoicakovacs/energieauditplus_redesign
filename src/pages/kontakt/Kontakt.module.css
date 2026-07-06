@@ -1,0 +1,161 @@
+/* Kontakt page — layout composition ONLY (plan §3 reuse mandate):
+   grid templates, gaps, spacing, max-widths. No colors/fonts/shadows. */
+
+.breadcrumbBar {
+  padding-top: var(--space-4);
+}
+
+/* ---- Hero + direct channels ---- */
+
+.heroHead {
+  max-width: 72ch;
+  margin-bottom: var(--space-7);
+}
+
+.heroHead p {
+  margin-top: var(--space-4);
+}
+
+.channelGrid {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 560px) {
+  .channelGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .channelGrid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.channelCell {
+  display: grid;
+  min-width: 0;
+}
+
+.channel {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  height: 100%;
+  text-decoration: none;
+}
+
+.channelText {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.channelLabel {
+  font-size: var(--fs-small);
+  font-weight: 700;
+  color: var(--color-text-muted);
+}
+
+.channelValue {
+  font-weight: 700;
+  color: var(--color-heading);
+  overflow-wrap: break-word;
+}
+
+.channelNote {
+  font-size: var(--fs-small);
+  color: var(--color-text-muted);
+}
+
+/* ---- Form section ---- */
+
+.formLayout {
+  display: grid;
+  gap: var(--space-7);
+  align-items: start;
+}
+
+@media (min-width: 1024px) {
+  .formLayout {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: var(--space-8);
+  }
+}
+
+.formIntro {
+  max-width: 46ch;
+}
+
+.formIntro p {
+  margin-top: var(--space-4);
+}
+
+.formCol {
+  min-width: 0;
+}
+
+/* ---- Standorte ---- */
+
+.sectionHead {
+  max-width: 72ch;
+  margin-bottom: var(--space-6);
+}
+
+.sectionHead p {
+  margin-top: var(--space-4);
+}
+
+/* The Germany outline is portrait (taller than wide); the wrapper caps its
+   width so it never towers over the section. The SVG fills the wrapper and
+   keeps its aspect ratio via its viewBox. */
+.mapWrap {
+  width: 100%;
+  max-width: 300px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: var(--space-8);
+}
+
+@media (min-width: 640px) {
+  .mapWrap {
+    max-width: 340px;
+  }
+}
+
+.standortGrid {
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .standortGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .standortGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.standortCell {
+  display: grid;
+  min-width: 0;
+}
+
+.partnerHead {
+  max-width: 72ch;
+  margin-top: var(--space-8);
+  margin-bottom: var(--space-6);
+}
+
+.partnerHead p {
+  margin-top: var(--space-3);
+}

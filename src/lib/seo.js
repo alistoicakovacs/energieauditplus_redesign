@@ -58,8 +58,9 @@ const descriptions = {
     'Karriere bei EnergieAudit Plus: Werde Teil unseres Teams für Energieberatung und nachhaltiges Bauen — offene Stellen und Kultur.',
   '/ansprechpartner':
     'Ihre Ansprechpartner bei EnergieAudit Plus: unser Team für Energieberatung, Fördermittel und Nachhaltigkeit — direkt erreichbar.',
+  // NEW COPY: review — real description (Phase 5a), facts verbatim kontakt.md
   '/kontakt':
-    'Kontakt zu EnergieAudit Plus: Kontaktformular, Telefon, E-Mail und alle Standorte — wir melden uns zeitnah bei Ihnen.',
+    'Kontakt zu EnergieAudit Plus: Projekt-Anfrage in zwei Schritten, Telefon, E-Mail, WhatsApp und Terminbuchung — plus alle Standorte in Deutschland. Wir melden uns zeitnah bei Ihnen.',
   '/datenschutzerklaerung': 'Datenschutzerklärung der EnergieAudit Plus GmbH & Co. KG.',
   '/impressum': 'Impressum der EnergieAudit Plus GmbH & Co. KG.',
 };
