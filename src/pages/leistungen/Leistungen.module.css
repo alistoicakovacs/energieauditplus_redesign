@@ -1,0 +1,78 @@
+/* Leistungen overview — layout composition ONLY (plan §3 reuse mandate):
+   grid templates/spans, gaps, spacing, max-widths. No colors, no fonts,
+   no shadows — all visual language lives in the component library. */
+
+.breadcrumbBar {
+  padding-top: var(--space-4);
+}
+
+.sectionHead {
+  max-width: 72ch;
+  margin-bottom: var(--space-7);
+}
+
+/* ---- Service grid: 7 cards, QNG-flow featured (§6.2) ---- */
+
+.serviceGrid {
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: 1fr;
+}
+
+/* Cell wrappers (Reveal divs) render as single-cell grids so the card
+   inside stretches to the full cell height (same recipe as home's bento). */
+.serviceCell {
+  display: grid;
+  min-width: 0;
+}
+
+@media (min-width: 640px) {
+  .serviceGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .featuredCell {
+    grid-column: span 2;
+  }
+}
+
+@media (min-width: 1024px) {
+  .serviceGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  /* Featured QNG tile leads the grid across the full first row. */
+  .featuredCell {
+    grid-column: span 3;
+  }
+}
+
+/* ---- USP reminder strip ---- */
+
+.uspGrid {
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .uspGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .uspGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.uspSummary {
+  margin-top: var(--space-6);
+}
+
+/* ---- Ablauf ---- */
+
+.ablaufCta {
+  margin-top: var(--space-7);
+}

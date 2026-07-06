@@ -1,0 +1,243 @@
+/* ServiceDetailTemplate — section layout + the template-owned page hero.
+   All values via tokens (plan §3): no hex, no ad-hoc font sizes, no local
+   shadows. The hero recipe (photo + veil + left scrim, light text) mirrors
+   HeroSlider.module.css (§7.2 readability contract), static version. */
+
+.breadcrumbBar {
+  padding-top: var(--space-4);
+  padding-bottom: var(--space-4);
+}
+
+/* ---- Page hero ---- */
+
+.hero {
+  position: relative;
+  background-color: var(--blue-950);
+  overflow: hidden;
+}
+
+.heroMedia {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.heroImage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.heroVeil {
+  position: absolute;
+  inset: 0;
+  background: var(--grad-hero-veil);
+}
+
+.heroScrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--blue-950) 78%, transparent) 0%,
+    color-mix(in srgb, var(--blue-950) 46%, transparent) 50%,
+    color-mix(in srgb, var(--blue-950) 12%, transparent) 100%
+  );
+}
+
+.heroContainer {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: clamp(440px, 62vh, 640px);
+}
+
+.heroContent {
+  max-width: 720px;
+  padding-top: var(--space-8);
+  padding-bottom: var(--space-8);
+  /* Flex item in the row-flex .heroContainer: without this the display-size
+     H1's longest compound sets a min-content floor wider than small
+     viewports and the hero clips the text (overflow:hidden). */
+  min-width: 0;
+}
+
+.heroOverline {
+  margin-bottom: var(--space-4);
+}
+
+.heroTitle {
+  color: var(--white);
+  max-width: 20ch;
+  margin: 0 0 var(--space-4);
+  text-wrap: balance;
+  /* Long German compounds at display size („Nachhaltigkeitsaudit") must
+     wrap inside narrow viewports. */
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+.heroSubline {
+  color: var(--blue-100);
+  font-size: var(--fs-lead);
+  font-weight: 600;
+  line-height: 1.4;
+  max-width: 40ch;
+  margin: 0 0 var(--space-4);
+  text-wrap: balance;
+}
+
+.heroLead {
+  color: var(--blue-100);
+  max-width: 62ch;
+  margin: 0 0 var(--space-4);
+}
+
+.heroProof {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-4);
+  margin: var(--space-2) 0 0;
+}
+
+.heroStat {
+  color: var(--blue-100);
+}
+
+.heroStat strong {
+  color: var(--green-400);
+  font-size: var(--fs-lead);
+}
+
+.heroActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+}
+
+/* ---- Sections (layout composition only) ---- */
+
+.sectionHead {
+  max-width: 72ch;
+  margin-bottom: var(--space-7);
+}
+
+.sectionHead p + p {
+  margin-top: var(--space-4);
+}
+
+.nutzenGrid {
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .nutzenGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .nutzenGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* ---- Platform (QNG flagship): text | screenshot, then feature grid ---- */
+
+.platformGrid {
+  display: grid;
+  gap: var(--space-7);
+  align-items: center;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 900px) {
+  .platformGrid {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  }
+}
+
+.platformText {
+  max-width: 60ch;
+}
+
+.platformText > p + p {
+  margin-top: var(--space-4);
+}
+
+.platformTagline {
+  font-size: var(--fs-lead);
+  margin-top: var(--space-4);
+}
+
+/* Screenshot placeholder (data-placeholder="screenshot", TODO: real asset) —
+   tokens only: dashed on-dark outline, translucent panel. */
+.screenshot {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 16 / 10;
+  border: 2px dashed color-mix(in srgb, var(--white) 35%, transparent);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--white) 6%, transparent);
+  color: var(--blue-100);
+  padding: var(--space-5);
+  text-align: center;
+}
+
+.featureGrid {
+  display: grid;
+  gap: var(--space-5);
+  margin-top: var(--space-7);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .featureGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .featureGrid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+/* ---- Praxistipp + FAQ ---- */
+
+.praxistipp {
+  max-width: 80ch;
+  margin-bottom: var(--space-7);
+}
+
+.accordionWrap {
+  max-width: 80ch;
+}
+
+/* ---- Cross-sell ---- */
+
+.relatedGrid {
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .relatedGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .relatedGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
