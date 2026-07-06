@@ -12,6 +12,13 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const distDir = path.join(root, 'dist');
 const serverEntry = pathToFileURL(path.join(root, 'dist-server', 'entry-server.js')).href;
 
+// sitemap.xml config (§9). Canonical origin must match the <Seo> canonical in
+// src/lib/seo.js (SITE_URL). SITEMAP_LASTMOD is a build-time constant, not
+// Date.now() — the sandbox may restrict the clock, and a stable date keeps the
+// sitemap deterministic across rebuilds. Bump it when route content changes.
+const SITE_URL = 'https://ea-plus.de';
+const SITEMAP_LASTMOD = '2026-07-06';
+
 const escapeHtml = (s) =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
@@ -132,6 +139,24 @@ for (const route of targets) {
   }
 }
 
+// sitemap.xml (§9): canonical URLs only — one entry per PUBLIC route.
+// Excludes dev routes (prerender === false, not in the prod route table
+// anyway), the 404 (path '*'), and the extensionless twins (twins are file
+// outputs for a single canonical URL, not distinct URLs). The canonical form
+// mirrors <Seo>: SITE_URL + path, trailing-slash-less except the homepage.
+const sitemapRoutes = routes.filter((r) => r.prerender !== false && r.path !== '*');
+const sitemapXml =
+  '<?xml version="1.0" encoding="UTF-8"?>\n' +
+  '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
+  sitemapRoutes
+    .map((r) => {
+      const loc = `${SITE_URL}${r.path === '/' ? '/' : r.path}`;
+      return `  <url>\n    <loc>${escapeHtml(loc)}</loc>\n    <lastmod>${SITEMAP_LASTMOD}</lastmod>\n  </url>`;
+    })
+    .join('\n') +
+  '\n</urlset>\n';
+await writeFile(path.join(distDir, 'sitemap.xml'), sitemapXml, 'utf-8');
+
 // The server bundle is a build artifact only — not deployed.
 await rm(path.join(root, 'dist-server'), { recursive: true, force: true });
 
@@ -141,3 +166,4 @@ console.log(`Prerendered ${pages.length} pages + ${twins.length} extensionless t
 for (const { file } of pages) console.log(`  dist/${file}`);
 console.log('  twins (slash-less URL fallback for vite-preview-shaped hosts):');
 for (const { file } of twins) console.log(`    dist/${file}`);
+console.log(`Wrote dist/sitemap.xml (${sitemapRoutes.length} canonical URLs).`);

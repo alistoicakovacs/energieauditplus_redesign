@@ -1,3 +1,6 @@
-# Placeholder — final robots.txt (incl. sitemap reference) lands in Phase 6.
+# robots.txt — EnergieAudit Plus (Phase 6B)
+# Allow all crawlers; keep the dev-only verification surface out of the index.
 User-agent: *
 Disallow: /dev/
+
+Sitemap: https://ea-plus.de/sitemap.xml

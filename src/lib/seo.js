@@ -124,6 +124,131 @@ export function buildServiceJsonLd({ name, description, path }) {
 }
 
 /**
+ * The six EnergieAudit-Plus-owned Standorte (dev brief §9 / handoff
+ * 01-company-research.md line 19). Addresses/phones/e-mails verbatim from
+ * handoff/content/kontakt.md — REAL data, no invented values. The three
+ * partner offices (EBE GmbH Friedeburg, SW Bautechnik GmbH Schorndorf, and
+ * the Erkelenz entry that shares the EBE address) belong to separate legal
+ * entities and are deliberately NOT modelled as branches of this Organization.
+ * `geo` is intentionally omitted — no verified coordinates are on record and
+ * the SEO gate forbids invented data.
+ */
+const STANDORTE = [
+  {
+    city: 'Strausberg',
+    zentrale: true,
+    street: 'Garzauer Chaussee 1a',
+    postalCode: '15344',
+    telephone: '+49 3341 4272935',
+    email: 'strausberg@ea-plus.de',
+  },
+  {
+    city: 'Güstrow',
+    street: 'Lange Str. 18',
+    postalCode: '18273',
+    telephone: '+49 3843 2298907',
+    email: 'guestrow@ea-plus.de',
+  },
+  {
+    city: 'Heiligengrabe',
+    street: 'Wernikower Dorfstr. 22',
+    postalCode: '16909',
+    telephone: '+49 3394 7192866',
+    email: 'wittstock@ea-plus.de',
+  },
+  {
+    city: 'Bad Langensalza',
+    street: 'Lange Str. 76',
+    postalCode: '99947',
+    telephone: '+49 1520 4944864',
+    email: 'bad-langensalza@ea-plus.de',
+  },
+  {
+    city: 'Berlin',
+    street: 'Blücherstr. 37',
+    postalCode: '10961',
+    telephone: '+49 30 75438943',
+    email: 'berlin@ea-plus.de',
+  },
+  {
+    city: 'Bad Belzig',
+    street: 'Lüsse 7',
+    postalCode: '14806',
+    telephone: '+49 174 2434739',
+    email: 'bad-belzig@ea-plus.de',
+  },
+];
+
+const LEGAL_NAME = 'EnergieAudit Plus GmbH & Co. KG';
+const ORG_ID = `${SITE_URL}/#organization`;
+
+/**
+ * schema.org `Organization` + six-branch multi-location `LocalBusiness`
+ * (dev brief §9). Returned as a single `@graph` so the whole company identity
+ * ships in ONE `<script type="application/ld+json">` block, emitted exactly
+ * once site-wide (the homepage — see components/layout/OrganizationJsonLd.jsx).
+ *
+ * Shape: one Organization node (`@id` = SITE_URL/#organization) carrying the
+ * legal identity + Zentrale address + contactPoint, plus one `LocalBusiness`
+ * node per owned Standort, each linked back via `parentOrganization`. Google
+ * resolves the `@id` references, so the Organization is described once and the
+ * branches reference it rather than duplicating it.
+ */
+export function buildOrganizationJsonLd() {
+  const zentrale = STANDORTE.find((s) => s.zentrale) ?? STANDORTE[0];
+
+  const organization = {
+    '@type': 'Organization',
+    '@id': ORG_ID,
+    name: LEGAL_NAME,
+    url: SITE_URL,
+    logo: DEFAULT_OG_IMAGE,
+    image: DEFAULT_OG_IMAGE,
+    email: 'team@ea-plus.de',
+    telephone: '+49 3341 4272935',
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: zentrale.street,
+      postalCode: zentrale.postalCode,
+      addressLocality: zentrale.city,
+      addressCountry: 'DE',
+    },
+    contactPoint: {
+      '@type': 'ContactPoint',
+      telephone: '+49 3341 4272935',
+      email: 'team@ea-plus.de',
+      contactType: 'customer service',
+      areaServed: 'DE',
+      availableLanguage: ['de'],
+    },
+    areaServed: { '@type': 'Country', name: 'Deutschland' },
+  };
+
+  const branches = STANDORTE.map((s) => ({
+    '@type': 'LocalBusiness',
+    '@id': `${SITE_URL}/#standort-${s.city.toLowerCase().replace(/\s+/g, '-')}`,
+    name: `${SITE_NAME} — ${s.city}`,
+    parentOrganization: { '@id': ORG_ID },
+    url: SITE_URL,
+    image: DEFAULT_OG_IMAGE,
+    telephone: s.telephone,
+    email: s.email,
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: s.street,
+      postalCode: s.postalCode,
+      addressLocality: s.city,
+      addressCountry: 'DE',
+    },
+  }));
+
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [organization, ...branches],
+  };
+}
+
+/**
  * schema.org `FAQPage` for service-page FAQ accordions (dev brief §9).
  * Only emit when the page renders the same Q/A text visibly (Google policy).
  *

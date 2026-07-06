@@ -19,6 +19,9 @@ import {
 // Static import (binding hero checklist): the hero is the LCP and must be in
 // the route chunk — never React.lazy.
 import HeroSlider from '../../components/patterns/HeroSlider.jsx';
+// §9 site-wide Organization + multi-location LocalBusiness JSON-LD — emitted
+// ONCE, here on the homepage only, to avoid duplicating the company graph.
+import OrganizationJsonLd from '../../components/layout/OrganizationJsonLd.jsx';
 import { ParallaxMedia, Reveal, StaggerGroup } from '../../components/motion/index.js';
 import {
   ablauf,
@@ -50,6 +53,10 @@ const serviceByRoute = new Map(bentoServices.map((service) => [service.to, servi
 export default function HomePage() {
   return (
     <>
+      {/* §9 Structured data: Organization + 6× LocalBusiness (@graph), emitted
+          once here as the single site-wide carrier. */}
+      <OrganizationJsonLd />
+
       {/* §9 LCP preload: NOT rendered here. React 19 refuses to hoist a
           responsive image preload (imageSrcSet without href) out of the lazy
           route's Suspense segment, and rendering it inline breaks hydration
