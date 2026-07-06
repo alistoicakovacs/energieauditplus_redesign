@@ -1,0 +1,23 @@
+# Netlify 301 redirect map — old flat live URLs → new /leistungen/* structure.
+# Mirror of vercel.json "redirects" (see docs/security-and-redirects.md).
+# `301!` forces the redirect (Netlify treats /foo and /foo/ as equivalent, so
+# the old trailing-slash URLs are covered too). Static, host-config level —
+# no runtime JS. Vercel ignores this file; Netlify ignores vercel.json.
+
+# --- 7 service pages: old flat slug → new nested Leistung ---
+/neubau-energieberatung                 /leistungen/neubau-energieberatung   301!
+/energieberatung-fuer-bestandsgebaeude  /leistungen/bestandsgebaeude          301!
+/bestandsgebaeude                       /leistungen/bestandsgebaeude          301!
+/foerdermittelservice                   /leistungen/fordermittelservice       301!
+/lebenszyklusanalyse-lca                /leistungen/lebenszyklusanalyse-lca   301!
+/raumluftmessung-baubiologie            /leistungen/raumluftmessung-baubiologie 301!
+/blower-door-test                       /leistungen/blower-door-test          301!
+/nachhaltigkeitsaudit-qng-flow          /leistungen/qng-flow                  301!
+
+# --- old top-level pages / out-of-v1-scope → sensible target ---
+/gebaeudeenergieberatung                /leistungen                           301!
+/ueber-uns                              /                                     301!
+/referenzen                             /                                     301!
+
+# --- legacy misspelled Datenschutz slug (live site used /datenschutzerklarung/) ---
+/datenschutzerklarung                   /datenschutzerklaerung                301!
